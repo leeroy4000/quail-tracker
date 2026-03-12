@@ -1,0 +1,21 @@
+services:
+  quail-tracker:
+    build: ./app
+    container_name: quail-tracker
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      - TZ=${TZ}
+    volumes:
+      - /opt/containers/quail-tracker/data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5055/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

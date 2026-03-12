@@ -1,0 +1,6 @@
+# Optional — add to your Caddyfile on the Caddy LXC (192.168.1.11)
+# Replace the hostname with whatever you want to use on your local DNS
+
+quail.home.net {
+    reverse_proxy 192.168.1.7:5055
+}

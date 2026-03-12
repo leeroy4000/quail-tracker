@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Quail Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400;600;700&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --earth:     #3B2F1E;
+    --bark:      #5C4033;
+    --clay:      #8D6E63;
+    --straw:     #D4A853;
+    --cream:     #FAF6EE;
+    --sage:      #7A9E7E;
+    --sage-lt:   #B2CCAC;
+    --rust:      #C0622A;
+    --mist:      #EDE8DF;
+    --shadow:    rgba(59,47,30,0.12);
+    --card-bg:   #FFFFFF;
+    --text:      #2C1F0E;
+    --text-soft: #7A6652;
+    --border:    #DDD5C5;
+    --tab-h:     56px;
+    --safe-b:    env(safe-area-inset-bottom, 0px);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'Source Sans 3', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--earth);
+    color: var(--cream);
+    padding: 18px 20px 14px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px var(--shadow);
+  }
+  header h1 {
+    font-family: 'Bitter', serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  header p {
+    font-size: 0.78rem;
+    color: var(--sage-lt);
+    margin-top: 2px;
+    font-weight: 300;
+  }
+
+  /* ── Tab bar ── */
+  .tab-bar {
+    display: flex;
+    background: var(--bark);
+    position: sticky;
+    top: 70px;
+    z-index: 99;
+  }
+  .tab-btn {
+    flex: 1;
+    border: none;
+    background: none;
+    color: var(--sage-lt);
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 10px 4px 8px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 3px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+    line-height: 1.3;
+  }
+  .tab-btn.active {
+    color: var(--straw);
+    border-bottom-color: var(--straw);
+  }
+  .tab-btn span { display: block; font-size: 1.1rem; margin-bottom: 2px; }
+
+  /* ── Page sections ── */
+  .page { display: none; padding: 16px 16px calc(var(--tab-h) + var(--safe-b) + 16px); }
+  .page.active { display: block; }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    padding: 16px;
+    margin-bottom: 14px;
+    box-shadow: 0 1px 4px var(--shadow);
+  }
+  .card-title {
+    font-family: 'Bitter', serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--bark);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .card-title .icon { font-size: 1.1rem; }
+
+  /* ── Input group ── */
+  .input-group { margin-bottom: 12px; }
+  .input-group label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-soft);
+    margin-bottom: 5px;
+  }
+  .input-group input, .input-group textarea, .input-group select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.95rem;
+    color: var(--text);
+    background: var(--cream);
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+  .input-group input:focus, .input-group textarea:focus {
+    outline: none;
+    border-color: var(--straw);
+  }
+  .input-group textarea { resize: vertical; min-height: 60px; }
+
+  /* ── Buttons ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s, opacity 0.2s;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: var(--earth); color: var(--cream); }
+  .btn-sage    { background: var(--sage);  color: white; }
+  .btn-rust    { background: var(--rust);  color: white; font-size: 0.8rem; padding: 6px 12px; }
+  .btn-sm      { padding: 6px 12px; font-size: 0.82rem; }
+  .btn-full    { width: 100%; justify-content: center; }
+
+  /* ── Timeline rows ── */
+  .timeline { display: flex; flex-direction: column; gap: 0; }
+  .tl-row {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    position: relative;
+  }
+  .tl-line {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 32px;
+    flex-shrink: 0;
+  }
+  .tl-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--clay);
+    flex-shrink: 0;
+    margin-top: 6px;
+    border: 2px solid var(--cream);
+    box-shadow: 0 0 0 2px var(--clay);
+    z-index: 1;
+  }
+  .tl-dot.milestone { background: var(--straw); box-shadow: 0 0 0 2px var(--straw); width: 14px; height: 14px; }
+  .tl-dot.today     { background: var(--sage);  box-shadow: 0 0 0 2px var(--sage); }
+  .tl-dot.past      { background: var(--border); box-shadow: 0 0 0 2px var(--border); }
+  .tl-connector {
+    width: 2px;
+    flex: 1;
+    background: var(--border);
+    min-height: 12px;
+  }
+  .tl-content {
+    flex: 1;
+    padding: 4px 0 16px 8px;
+  }
+  .tl-date {
+    font-size: 0.72rem;
+    color: var(--text-soft);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .tl-label {
+    font-family: 'Bitter', serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 1px 0 3px;
+  }
+  .tl-label.milestone { color: var(--bark); }
+  .tl-action {
+    font-size: 0.82rem;
+    color: var(--text-soft);
+    line-height: 1.4;
+  }
+  .tl-badges {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 5px;
+  }
+  .badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.04em;
+  }
+  .badge-temp { background: #FFF3E0; color: #E65100; }
+  .badge-hum  { background: #E3F2FD; color: #1565C0; }
+  .badge-note { background: var(--mist); color: var(--text-soft); }
+
+  /* ── Today marker ── */
+  .today-marker {
+    background: linear-gradient(135deg, #E8F5E9, #F1F8E9);
+    border: 1.5px solid var(--sage);
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .today-marker .icon { font-size: 1.4rem; }
+  .today-marker .info { flex: 1; }
+  .today-marker .info strong { font-size: 0.9rem; color: var(--sage); font-family: 'Bitter', serif; }
+  .today-marker .info p { font-size: 0.8rem; color: var(--text-soft); margin-top: 1px; }
+
+  /* ── Days remaining pill ── */
+  .days-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--earth);
+    color: var(--cream);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+
+  /* ── Egg log table ── */
+  .egg-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .egg-table th {
+    text-align: left;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-soft);
+    font-weight: 600;
+    padding: 6px 8px;
+    border-bottom: 2px solid var(--border);
+  }
+  .egg-table td {
+    padding: 9px 8px;
+    border-bottom: 1px solid var(--mist);
+    vertical-align: top;
+  }
+  .egg-table tr:last-child td { border-bottom: none; }
+  .egg-table .num { font-weight: 600; color: var(--bark); font-family: 'Bitter', serif; }
+  .egg-table .del-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--clay); font-size: 1rem; padding: 2px 4px;
+  }
+
+  /* ── Stats row ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .stat-box {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 10px;
+    text-align: center;
+  }
+  .stat-box .val {
+    font-family: 'Bitter', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--bark);
+    line-height: 1;
+  }
+  .stat-box .lbl {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-soft);
+    margin-top: 4px;
+    font-weight: 600;
+  }
+
+  /* ── Empty state ── */
+  .empty {
+    text-align: center;
+    padding: 32px 20px;
+    color: var(--text-soft);
+  }
+  .empty .icon { font-size: 2.5rem; margin-bottom: 8px; }
+  .empty p { font-size: 0.88rem; line-height: 1.5; }
+
+  /* ── Section divider ── */
+  .section-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--clay);
+    padding: 4px 0 8px;
+  }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed;
+    bottom: calc(var(--tab-h) + var(--safe-b) + 12px);
+    left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--earth);
+    color: var(--cream);
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+    z-index: 999;
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ── No-date state ── */
+  .no-date-banner {
+    background: linear-gradient(135deg, #FFF8E1, #FFF3E0);
+    border: 1.5px dashed var(--straw);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 14px;
+  }
+  .no-date-banner .icon { font-size: 2rem; margin-bottom: 6px; }
+  .no-date-banner p { font-size: 0.85rem; color: var(--text-soft); }
+  .no-date-banner strong { color: var(--bark); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🥚 Quail Tracker</h1>
+  <p id="header-sub">Coturnix Quail — Incubation &amp; Production</p>
+</header>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('incubation')">
+    <span>🐣</span>Incubation
+  </button>
+  <button class="tab-btn" onclick="switchTab('brooder')">
+    <span>🌡️</span>Brooder
+  </button>
+  <button class="tab-btn" onclick="switchTab('eggs')">
+    <span>📋</span>Egg Log
+  </button>
+</div>
+
+<!-- ══════════════ TAB 1: INCUBATION ══════════════ -->
+<div id="tab-incubation" class="page active">
+
+  <div class="card">
+    <div class="card-title"><span class="icon">📅</span> Incubation Start Date</div>
+    <div class="input-group">
+      <label>Date eggs were set</label>
+      <input type="date" id="start-date-input">
+    </div>
+    <button class="btn btn-primary btn-full" onclick="saveStartDate()">💾 Save Date</button>
+  </div>
+
+  <div id="incubation-content"></div>
+</div>
+
+<!-- ══════════════ TAB 2: BROODER ══════════════ -->
+<div id="tab-brooder" class="page">
+  <div id="brooder-content"></div>
+</div>
+
+<!-- ══════════════ TAB 3: EGG LOG ══════════════ -->
+<div id="tab-eggs" class="page">
+
+  <div id="egg-stats"></div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">➕</span> Log Today's Eggs</div>
+    <div class="input-group">
+      <label>Date</label>
+      <input type="date" id="log-date">
+    </div>
+    <div class="input-group">
+      <label>Eggs Collected</label>
+      <input type="number" id="log-eggs" min="0" placeholder="0">
+    </div>
+    <div class="input-group">
+      <label>Hens Laying (optional)</label>
+      <input type="number" id="log-hens" min="0" placeholder="—">
+    </div>
+    <div class="input-group">
+      <label>Set to Incubate</label>
+      <input type="number" id="log-incubate" min="0" placeholder="0">
+    </div>
+    <div class="input-group">
+      <label>Notes (optional)</label>
+      <textarea id="log-notes" placeholder="Any observations..."></textarea>
+    </div>
+    <button class="btn btn-sage btn-full" onclick="saveEggEntry()">✓ Save Entry</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">📋</span> Log History</div>
+    <div id="egg-log-table"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────────
+let appData = { incubation: { start_date: null }, egg_log: [] };
+
+// ── Incubation milestones ──────────────────────────────────────────────────
+const MILESTONES = [
+  { day: 0,  label: "Eggs Set",              action: "Confirm incubator stable at 99.5°F / 45–55% humidity. Start auto-turner.",     temp: "99.5°F", hum: "45–55%", milestone: true },
+  { day: 7,  label: "First Candle",          action: "Candle eggs. Remove clearly infertile or quitters. Veins = developing.",        temp: "99.5°F", hum: "45–55%", milestone: false },
+  { day: 14, label: "Second Candle",         action: "Candle again before lockdown. Air cell should be large and distinct.",          temp: "99.5°F", hum: "45–55%", milestone: false },
+  { day: 15, label: "🔒 Lockdown",           action: "Stop turning. Raise humidity. Do NOT open lid again until hatch complete.",     temp: "99.5°F", hum: "65–70%", milestone: true },
+  { day: 17, label: "🐣 Hatch Begins",       action: "Watch for pipping and zipping. Do not assist unless stuck for 24h+.",           temp: "99.5°F", hum: "70%",    milestone: true },
+  { day: 18, label: "✅ Hatch Complete",     action: "Move dry fluffy chicks to brooder. Discard unhatched after 24h.",              temp: "99.5°F", hum: "70%",    milestone: true },
+];
+
+// ── Brooder milestones ─────────────────────────────────────────────────────
+const BROODER = [
+  { offset: 0,   label: "🐣 Move to Brooder",      age: "Day 0",     temp: "95°F", action: "Dip beaks in water. Chick starter feed. Marbles in water dish to prevent drowning.", note: "Paper towels on floor for first 3 days." },
+  { offset: 7,   label: "Week 1 Complete",          age: "Week 1",    temp: "90°F", action: "Check for pasty butt daily. Keep draft-free.", note: "Drop brooder temp 5°F each week." },
+  { offset: 14,  label: "Week 2 Complete",          age: "Week 2",    temp: "85°F", action: "Chicks very active — ensure no crowding.", note: "Switch floor to pine shavings if not already." },
+  { offset: 21,  label: "🔍 Feathering / Sexing",   age: "Week 3",    temp: "80°F", action: "Sex by feather coloration begins.", note: "Males: rusty-red chest. Females: speckled/tan chest." },
+  { offset: 28,  label: "Fully Feathered",          age: "Week 4",    temp: "75°F", action: "Reduce heat if ambient temp >70°F.", note: "Transition to grower feed." },
+  { offset: 42,  label: "🔪 Harvest Window",        age: "Week 6",    temp: "Ambient", action: "Cull extra roosters for meat (~4–5 oz dressed).", note: "Hens may begin laying — watch for eggs." },
+  { offset: 56,  label: "🥚 Full Production",       age: "Week 8",    temp: "Ambient", action: "All keepers at full size. Consistent egg laying expected.", note: "Target ratio: 1 rooster per 4–5 hens." },
+];
+
+// ── Utilities ──────────────────────────────────────────────────────────────
+function parseLocalDate(str) {
+  if (!str) return null;
+  const [y, m, d] = str.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+
+function addDays(date, n) {
+  const d = new Date(date);
+  d.setDate(d.getDate() + n);
+  return d;
+}
+
+function fmtDate(date) {
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', weekday: 'short' });
+}
+
+function fmtDateShort(date) {
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function daysBetween(a, b) {
+  return Math.round((b - a) / 86400000);
+}
+
+function today() {
+  const n = new Date();
+  return new Date(n.getFullYear(), n.getMonth(), n.getDate());
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── Tabs ───────────────────────────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+// ── API ────────────────────────────────────────────────────────────────────
+async function loadData() {
+  const res = await fetch('/api/data');
+  appData = await res.json();
+  renderAll();
+}
+
+async function saveStartDate() {
+  const val = document.getElementById('start-date-input').value;
+  if (!val) { showToast('Please select a date first'); return; }
+  await fetch('/api/incubation', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ start_date: val })
+  });
+  appData.incubation.start_date = val;
+  showToast('✓ Start date saved');
+  renderAll();
+}
+
+async function saveEggEntry() {
+  const date = document.getElementById('log-date').value;
+  const eggs = document.getElementById('log-eggs').value;
+  if (!date || eggs === '') { showToast('Date and egg count are required'); return; }
+  const entry = {
+    date,
+    eggs: parseInt(eggs),
+    hens: document.getElementById('log-hens').value || null,
+    incubate: document.getElementById('log-incubate').value || 0,
+    notes: document.getElementById('log-notes').value || ''
+  };
+  await fetch('/api/egg_log', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(entry)
+  });
+  appData.egg_log = appData.egg_log.filter(e => e.date !== date);
+  appData.egg_log.push(entry);
+  appData.egg_log.sort((a, b) => a.date.localeCompare(b.date));
+  document.getElementById('log-eggs').value = '';
+  document.getElementById('log-hens').value = '';
+  document.getElementById('log-incubate').value = '';
+  document.getElementById('log-notes').value = '';
+  showToast('✓ Entry saved');
+  renderEggLog();
+}
+
+async function deleteEntry(date) {
+  await fetch('/api/egg_log/' + date, { method: 'DELETE' });
+  appData.egg_log = appData.egg_log.filter(e => e.date !== date);
+  showToast('Entry deleted');
+  renderEggLog();
+}
+
+// ── Render: Incubation ─────────────────────────────────────────────────────
+function renderIncubation() {
+  const el = document.getElementById('incubation-content');
+  const startStr = appData.incubation.start_date;
+
+  // Populate input
+  if (startStr) document.getElementById('start-date-input').value = startStr;
+
+  if (!startStr) {
+    el.innerHTML = `
+      <div class="no-date-banner">
+        <div class="icon">📅</div>
+        <p><strong>No start date set yet.</strong><br>Enter the date you placed eggs in the incubator above to see your full timeline.</p>
+      </div>`;
+    return;
+  }
+
+  const startDate = parseLocalDate(startStr);
+  const todayDate = today();
+  const dayNum = daysBetween(startDate, todayDate);
+  const hatchDate = addDays(startDate, 18);
+  const daysToHatch = daysBetween(todayDate, hatchDate);
+
+  // Today status
+  let todayHTML = '';
+  if (dayNum < 0) {
+    todayHTML = `<div class="today-marker"><div class="icon">⏳</div><div class="info"><strong>Not started yet</strong><p>Incubation begins in ${Math.abs(dayNum)} day${Math.abs(dayNum)!==1?'s':''}.</p></div></div>`;
+  } else if (dayNum > 18) {
+    todayHTML = `<div class="today-marker"><div class="icon">✅</div><div class="info"><strong>Hatch period complete</strong><p>Day ${dayNum} — chicks should be in the brooder.</p></div></div>`;
+  } else {
+    const current = MILESTONES.filter(m => m.day <= dayNum).pop();
+    const next = MILESTONES.find(m => m.day > dayNum);
+    todayHTML = `<div class="today-marker">
+      <div class="icon">📍</div>
+      <div class="info">
+        <strong>Day ${dayNum} of 18</strong>
+        <p>${next ? `Next: <b>${next.label}</b> in ${next.day - dayNum} day${(next.day-dayNum)!==1?'s':''}` : 'Hatch complete!'}</p>
+      </div>
+    </div>`;
+  }
+
+  // Timeline
+  let tlHTML = '<div class="timeline">';
+  MILESTONES.forEach((m, idx) => {
+    const mDate = addDays(startDate, m.day);
+    const isToday = daysBetween(mDate, todayDate) === 0;
+    const isPast  = mDate < todayDate;
+    const dotClass = isToday ? 'today' : (isPast ? 'past' : (m.milestone ? 'milestone' : ''));
+    const isLast = idx === MILESTONES.length - 1;
+
+    tlHTML += `<div class="tl-row">
+      <div class="tl-line">
+        <div class="tl-dot ${dotClass}"></div>
+        ${!isLast ? '<div class="tl-connector"></div>' : ''}
+      </div>
+      <div class="tl-content">
+        <div class="tl-date">${fmtDate(mDate)}${isToday ? ' — TODAY' : ''}</div>
+        <div class="tl-label ${m.milestone?'milestone':''}">${m.label}</div>
+        <div class="tl-action">${m.action}</div>
+        <div class="tl-badges">
+          <span class="badge badge-temp">🌡 ${m.temp}</span>
+          <span class="badge badge-hum">💧 ${m.hum}</span>
+        </div>
+      </div>
+    </div>`;
+  });
+  tlHTML += '</div>';
+
+  el.innerHTML = todayHTML + `<div class="card"><div class="card-title"><span class="icon">📆</span> Full Timeline</div>${tlHTML}</div>`;
+}
+
+// ── Render: Brooder ────────────────────────────────────────────────────────
+function renderBrooder() {
+  const el = document.getElementById('brooder-content');
+  const startStr = appData.incubation.start_date;
+
+  if (!startStr) {
+    el.innerHTML = `<div class="no-date-banner"><div class="icon">🌡️</div><p><strong>Set your incubation start date first</strong><br>on the Incubation tab to see the brooder timeline.</p></div>`;
+    return;
+  }
+
+  const hatchDate = addDays(parseLocalDate(startStr), 18);
+  const todayDate = today();
+
+  let tlHTML = '<div class="timeline">';
+  BROODER.forEach((m, idx) => {
+    const mDate = addDays(hatchDate, m.offset);
+    const isToday = daysBetween(mDate, todayDate) === 0;
+    const isPast  = mDate < todayDate;
+    const isFuture = mDate > todayDate;
+    const dotClass = isToday ? 'today' : (isPast ? 'past' : (m.offset === 0 || m.offset === 42 || m.offset === 56 ? 'milestone' : ''));
+    const isLast = idx === BROODER.length - 1;
+
+    tlHTML += `<div class="tl-row">
+      <div class="tl-line">
+        <div class="tl-dot ${dotClass}"></div>
+        ${!isLast ? '<div class="tl-connector"></div>' : ''}
+      </div>
+      <div class="tl-content">
+        <div class="tl-date">${fmtDate(mDate)}${isToday ? ' — TODAY' : ''} &nbsp;·&nbsp; ${m.age}</div>
+        <div class="tl-label">${m.label}</div>
+        <div class="tl-action">${m.action}</div>
+        <div class="tl-badges">
+          <span class="badge badge-temp">🌡 ${m.temp}</span>
+          <span class="badge badge-note">📝 ${m.note}</span>
+        </div>
+      </div>
+    </div>`;
+  });
+  tlHTML += '</div>';
+
+  el.innerHTML = `<div class="card"><div class="card-title"><span class="icon">🗓️</span> Brooder & Grow-Out Timeline</div>${tlHTML}</div>`;
+}
+
+// ── Render: Egg Log ────────────────────────────────────────────────────────
+function renderEggLog() {
+  // Set default date to today
+  if (!document.getElementById('log-date').value) {
+    document.getElementById('log-date').value = today().toISOString().split('T')[0];
+  }
+
+  const log = [...appData.egg_log].reverse();
+  const total = appData.egg_log.reduce((s, e) => s + (parseInt(e.eggs)||0), 0);
+  const days  = appData.egg_log.length;
+  const avg   = days >= 7
+    ? (appData.egg_log.slice(-7).reduce((s,e) => s+(parseInt(e.eggs)||0), 0) / 7).toFixed(1)
+    : (days > 0 ? (total/days).toFixed(1) : '—');
+
+  document.getElementById('egg-stats').innerHTML = `
+    <div class="stats-row">
+      <div class="stat-box"><div class="val">${total}</div><div class="lbl">Total Eggs</div></div>
+      <div class="stat-box"><div class="val">${days}</div><div class="lbl">Days Logged</div></div>
+      <div class="stat-box"><div class="val">${avg}</div><div class="lbl">7-Day Avg</div></div>
+    </div>`;
+
+  const tableEl = document.getElementById('egg-log-table');
+  if (log.length === 0) {
+    tableEl.innerHTML = `<div class="empty"><div class="icon">📋</div><p>No entries yet.<br>Log your first collection above.</p></div>`;
+    return;
+  }
+
+  let rows = log.map(e => {
+    const d = parseLocalDate(e.date);
+    return `<tr>
+      <td>${fmtDateShort(d)}</td>
+      <td class="num">${e.eggs}</td>
+      <td>${e.hens || '—'}</td>
+      <td style="font-size:0.78rem;color:var(--text-soft)">${e.notes || ''}</td>
+      <td><button class="del-btn" onclick="deleteEntry('${e.date}')">🗑</button></td>
+    </tr>`;
+  }).join('');
+
+  tableEl.innerHTML = `<table class="egg-table">
+    <thead><tr><th>Date</th><th>Eggs</th><th>Hens</th><th>Notes</th><th></th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
+}
+
+function renderAll() {
+  renderIncubation();
+  renderBrooder();
+  renderEggLog();
+}
+
+// ── Init ───────────────────────────────────────────────────────────────────
+loadData();
+</script>
+</body>
+</html>

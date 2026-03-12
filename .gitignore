@@ -1,0 +1,15 @@
+# Data — never commit persistent app data
+data/
+*.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+app/*.pyc
+
+# Editor / OS
+.DS_Store
+.vscode/
+*.swp
+*.swo
