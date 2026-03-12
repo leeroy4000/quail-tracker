@@ -6,426 +6,139 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Quail Tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400;600;700&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --earth:     #3B2F1E;
-  --bark:      #5C4033;
-  --clay:      #8D6E63;
-  --straw:     #D4A853;
-  --cream:     #FAF6EE;
-  --sage:      #7A9E7E;
-  --sage-lt:   #B2CCAC;
-  --rust:      #C0622A;
-  --mist:      #EDE8DF;
-  --card-bg:   #FFFFFF;
-  --text:      #2C1F0E;
-  --text-soft: #7A6652;
-  --border:    #DDD5C5;
-  --shadow:    rgba(59,47,30,0.10);
-
-  /* Event colors */
-  --ev-incubation: #D4A853;
-  --ev-brooder:    #7A9E7E;
-  --ev-eggs:       #C0622A;
+  --ink:       #2A1F0E;
+  --bark:      #5C3D1E;
+  --clay:      #8B5E3C;
+  --tan:       #C49A6C;
+  --straw:     #E8C87A;
+  --parchment: #F5EDD8;
+  --cream:     #FBF7EF;
+  --sage:      #6B8C6B;
+  --sage-lt:   #A8C5A0;
+  --moss:      #4A6741;
+  --rust:      #B5541E;
+  --mist:      #EDE4D0;
+  --white:     #FFFFFF;
+  --border:    #D4C5A9;
+  --border-dk: #B8A48A;
+  --shadow:    rgba(42,31,14,0.10);
+  --ev-inc:    #C49A6C;
+  --ev-brd:    #6B8C6B;
+  --ev-egg:    #B5541E;
 }
-
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { font-family: 'Lato', sans-serif; background: var(--cream); color: var(--ink); min-height: 100dvh; }
 
-body {
-  font-family: 'Source Sans 3', sans-serif;
-  background: var(--cream);
-  color: var(--text);
-  min-height: 100dvh;
-}
-
-/* ── Header ── */
 header {
-  background: var(--earth);
-  color: var(--cream);
-  padding: 16px 20px 12px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  background: var(--bark);
+  color: var(--parchment);
+  padding: 14px 16px 12px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 3px solid var(--tan);
 }
-header h1 { font-family: 'Bitter', serif; font-size: 1.25rem; font-weight: 700; }
-header p  { font-size: 0.75rem; color: var(--sage-lt); margin-top: 1px; }
+header h1 { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; color: var(--straw); letter-spacing: 0.02em; }
+header p  { font-size: 0.72rem; color: var(--tan); margin-top: 1px; font-weight: 300; }
 .header-add-btn {
-  background: var(--straw);
-  color: var(--earth);
-  border: none;
-  border-radius: 8px;
-  padding: 8px 14px;
-  font-family: 'Source Sans 3', sans-serif;
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
+  background: var(--straw); color: var(--bark); border: none; border-radius: 20px;
+  padding: 7px 14px; font-family: 'Lato', sans-serif; font-size: 0.82rem; font-weight: 700;
+  cursor: pointer; flex-shrink: 0; letter-spacing: 0.03em;
 }
 
-/* ── Calendar ── */
-.calendar-wrap {
-  background: var(--card-bg);
-  border-bottom: 1px solid var(--border);
-  padding: 12px 12px 8px;
-}
-.cal-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-.cal-nav button {
-  background: none;
-  border: none;
-  font-size: 1.3rem;
-  cursor: pointer;
-  color: var(--bark);
-  padding: 4px 10px;
-}
-.cal-nav h2 {
-  font-family: 'Bitter', serif;
-  font-size: 1.05rem;
-  font-weight: 600;
-  color: var(--earth);
-}
-.cal-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 3px;
-}
-.cal-dow {
-  text-align: center;
-  font-size: 0.65rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-soft);
-  padding: 2px 0 5px;
-}
-.cal-day {
-  position: relative;
-  aspect-ratio: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding-top: 4px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.15s;
-  min-height: 42px;
-}
-.cal-day:hover  { background: var(--mist); }
-.cal-day.empty  { cursor: default; }
-.cal-day.today .day-num {
-  background: var(--earth);
-  color: var(--cream);
-  border-radius: 50%;
-  width: 24px; height: 24px;
-  display: flex; align-items: center; justify-content: center;
-}
-.cal-day.selected { background: var(--mist); outline: 2px solid var(--straw); }
-.day-num {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--text);
-  line-height: 1;
-  width: 24px; height: 24px;
-  display: flex; align-items: center; justify-content: center;
-}
-.cal-day.other-month .day-num { color: var(--border); }
-.dot-row {
-  display: flex;
-  gap: 2px;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-top: 3px;
-  padding: 0 2px;
-}
-.dot {
-  width: 5px; height: 5px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-.dot-inc  { background: var(--ev-incubation); }
-.dot-brd  { background: var(--ev-brooder); }
-.dot-egg  { background: var(--ev-eggs); }
+.woodgrain { height: 3px; background: repeating-linear-gradient(90deg,var(--tan) 0,var(--tan) 6px,var(--straw) 6px,var(--straw) 10px,var(--border-dk) 10px,var(--border-dk) 14px); opacity: 0.4; }
 
-/* ── Legend ── */
-.legend {
-  display: flex;
-  gap: 12px;
-  padding: 6px 12px 10px;
-  flex-wrap: wrap;
-}
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 0.7rem;
-  color: var(--text-soft);
-  font-weight: 600;
-}
-.legend-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-}
-
-/* ── Detail panel ── */
-.detail-panel {
-  padding: 14px 14px 80px;
-}
-.detail-date-header {
-  font-family: 'Bitter', serif;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--earth);
-  margin-bottom: 12px;
-  padding-bottom: 8px;
-  border-bottom: 2px solid var(--mist);
-}
-.no-selection {
-  text-align: center;
-  padding: 40px 20px;
-  color: var(--text-soft);
-  font-size: 0.9rem;
-}
-.no-selection .icon { font-size: 2rem; margin-bottom: 8px; }
-
-/* ── Milestone card ── */
-.milestone-card {
-  border-radius: 10px;
-  border-left: 4px solid var(--ev-incubation);
-  background: var(--card-bg);
-  box-shadow: 0 1px 4px var(--shadow);
-  padding: 12px 14px;
-  margin-bottom: 10px;
-}
-.milestone-card.brooder { border-left-color: var(--ev-brooder); }
-.milestone-card.eggs    { border-left-color: var(--ev-eggs); }
-.mc-batch {
-  font-size: 0.68rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--clay);
-  margin-bottom: 3px;
-}
-.mc-label {
-  font-family: 'Bitter', serif;
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--earth);
-  margin-bottom: 5px;
-}
-.mc-action {
-  font-size: 0.85rem;
-  color: var(--text-soft);
-  line-height: 1.5;
-}
-.mc-badges {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  margin-top: 7px;
-}
-.badge {
-  font-size: 0.68rem;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 20px;
-}
-.badge-temp { background: #FFF3E0; color: #E65100; }
-.badge-hum  { background: #E3F2FD; color: #1565C0; }
-.badge-tip  { background: var(--mist); color: var(--text-soft); }
-
-/* ── Egg log section ── */
-.section-title {
-  font-family: 'Bitter', serif;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--bark);
-  margin: 14px 0 8px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.egg-form {
-  background: var(--card-bg);
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  padding: 14px;
-  box-shadow: 0 1px 4px var(--shadow);
-}
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-.input-group { margin-bottom: 0; }
-.input-group label {
-  display: block;
-  font-size: 0.72rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: var(--text-soft);
-  margin-bottom: 4px;
-}
-.input-group input,
-.input-group textarea {
-  width: 100%;
-  padding: 9px 11px;
-  border: 1.5px solid var(--border);
-  border-radius: 8px;
-  font-family: 'Source Sans 3', sans-serif;
-  font-size: 0.95rem;
-  color: var(--text);
-  background: var(--cream);
-  -webkit-appearance: none;
-}
-.input-group input:focus,
-.input-group textarea:focus { outline: none; border-color: var(--straw); }
-.input-group textarea { resize: vertical; min-height: 56px; }
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 18px;
-  border-radius: 8px;
-  border: none;
-  font-family: 'Source Sans 3', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.1s;
-}
-.btn:active { transform: scale(0.97); }
-.btn-primary { background: var(--earth); color: var(--cream); }
-.btn-sage    { background: var(--sage);  color: white; }
-.btn-rust    { background: var(--rust);  color: white; }
-.btn-full    { width: 100%; justify-content: center; }
-.btn-sm      { padding: 6px 12px; font-size: 0.8rem; }
-
-/* ── Saved egg entry ── */
-.egg-saved {
-  background: #F1F8E9;
-  border: 1.5px solid var(--sage-lt);
-  border-radius: 10px;
-  padding: 12px 14px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-.egg-saved-info strong {
-  font-family: 'Bitter', serif;
-  font-size: 1.1rem;
-  color: var(--bark);
-}
-.egg-saved-info p { font-size: 0.8rem; color: var(--text-soft); margin-top: 2px; }
-.egg-edit-btn {
-  background: none;
-  border: 1.5px solid var(--sage);
-  color: var(--sage);
-  border-radius: 7px;
-  padding: 5px 12px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: 'Source Sans 3', sans-serif;
-}
-
-/* ── Batches panel ── */
-.batches-section {
-  padding: 12px 14px;
-  border-bottom: 1px solid var(--border);
-  background: var(--card-bg);
-}
-.batches-title {
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-soft);
-  margin-bottom: 8px;
-}
-.batch-list { display: flex; flex-direction: column; gap: 6px; }
-.batch-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--cream);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 8px 12px;
-}
-.batch-item-info { flex: 1; }
-.batch-item-name { font-size: 0.88rem; font-weight: 600; color: var(--earth); }
-.batch-item-date { font-size: 0.75rem; color: var(--text-soft); margin-top: 1px; }
-.batch-actions { display: flex; gap: 6px; }
-.batch-btn {
-  background: none;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 4px 9px;
-  font-size: 0.72rem;
-  font-weight: 600;
-  cursor: pointer;
-  color: var(--text-soft);
-  font-family: 'Source Sans 3', sans-serif;
-}
+/* batches */
+.batches-section { background: var(--parchment); border-bottom: 1px solid var(--border); padding: 10px 14px; }
+.batches-title { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--clay); margin-bottom: 7px; }
+.batch-list { display: flex; flex-direction: column; gap: 5px; }
+.batch-item { display: flex; align-items: center; justify-content: space-between; background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 7px 11px; }
+.batch-item-name { font-size: 0.85rem; font-weight: 700; color: var(--bark); }
+.batch-item-date { font-size: 0.72rem; color: var(--clay); margin-top: 1px; }
+.batch-actions { display: flex; gap: 5px; }
+.batch-btn { background: none; border: 1px solid var(--border); border-radius: 6px; padding: 3px 9px; font-size: 0.7rem; font-weight: 700; cursor: pointer; color: var(--clay); font-family: 'Lato', sans-serif; }
 .batch-btn.archive { color: var(--sage); border-color: var(--sage-lt); }
-.batch-btn.delete  { color: var(--rust); border-color: #FFCCBC; }
-.batch-archived { opacity: 0.5; }
+.batch-btn.delete  { color: var(--rust); border-color: #E8B49A; }
+.batch-archived { opacity: 0.45; }
 
-/* ── Modal ── */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.45);
-  z-index: 200;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
+/* calendar outer */
+.calendar-outer { padding: 12px 12px 4px; }
+.calendar-wrap {
+  background: var(--white); border: 1.5px solid var(--border-dk);
+  border-radius: 16px; overflow: hidden; box-shadow: 0 2px 10px var(--shadow);
+  max-width: 460px; margin: 0 auto;
 }
+.cal-nav { display: flex; align-items: center; justify-content: space-between; background: var(--bark); padding: 9px 12px; }
+.cal-nav button { background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--straw); padding: 2px 8px; border-radius: 6px; line-height: 1; }
+.cal-nav h2 { font-family: 'Playfair Display', serif; font-size: 0.95rem; font-weight: 600; color: var(--straw); }
+
+.cal-grid { display: grid; grid-template-columns: repeat(7,1fr); border-left: 1px solid var(--mist); border-top: 1px solid var(--mist); }
+.cal-dow { text-align: center; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--clay); padding: 6px 0 5px; background: var(--parchment); border-right: 1px solid var(--mist); border-bottom: 1px solid var(--border); }
+.cal-day { position: relative; display: flex; flex-direction: column; align-items: center; padding: 4px 2px 5px; border-right: 1px solid var(--mist); border-bottom: 1px solid var(--mist); cursor: pointer; min-height: 46px; background: var(--white); transition: background 0.12s; }
+.cal-day:hover { background: var(--parchment); }
+.cal-day.empty { cursor: default; background: var(--cream); }
+.cal-day.other-month { background: var(--cream); }
+.cal-day.other-month .day-num { color: var(--border-dk); }
+.cal-day.today { background: #FFF8EC; }
+.cal-day.today .day-num { background: var(--bark); color: var(--straw); border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; }
+.cal-day.selected { background: var(--parchment); outline: 2px solid var(--tan); outline-offset: -2px; z-index: 1; }
+.day-num { font-size: 0.78rem; font-weight: 700; color: var(--ink); width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.dot-row { display: flex; gap: 2px; justify-content: center; margin-top: 3px; flex-wrap: wrap; padding: 0 1px; }
+.dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.dot-inc { background: var(--ev-inc); }
+.dot-brd { background: var(--ev-brd); }
+.dot-egg { background: var(--ev-egg); }
+
+.legend { display: flex; gap: 14px; padding: 7px 14px 10px; justify-content: center; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.68rem; color: var(--clay); font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+/* detail */
+.detail-panel { padding: 14px 14px 80px; max-width: 460px; margin: 0 auto; }
+.detail-date-header { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 600; color: var(--bark); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid var(--mist); }
+.no-selection { text-align: center; padding: 36px 20px; color: var(--clay); font-size: 0.88rem; }
+
+.milestone-card { border-radius: 12px; border: 1px solid var(--border); border-left: 4px solid var(--ev-inc); background: var(--white); box-shadow: 0 1px 5px var(--shadow); padding: 12px 13px; margin-bottom: 10px; }
+.milestone-card.brooder { border-left-color: var(--ev-brd); }
+.mc-batch { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--tan); margin-bottom: 3px; }
+.mc-label { font-family: 'Playfair Display', serif; font-size: 0.97rem; font-weight: 600; color: var(--bark); margin-bottom: 5px; }
+.mc-action { font-size: 0.84rem; color: var(--clay); line-height: 1.55; }
+.mc-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.badge { font-size: 0.67rem; font-weight: 700; padding: 3px 9px; border-radius: 20px; letter-spacing: 0.04em; line-height: 1.4; }
+.badge-temp { background: #FFF0DC; color: #8B4A00; }
+.badge-hum  { background: #E6F0FF; color: #1A4A8A; }
+.badge-tip  { background: var(--parchment); color: var(--clay); border: 1px solid var(--border); }
+
+.section-title { font-family: 'Playfair Display', serif; font-size: 0.92rem; font-weight: 600; color: var(--bark); margin: 14px 0 8px; }
+.egg-form { background: var(--white); border-radius: 12px; border: 1px solid var(--border); padding: 13px; box-shadow: 0 1px 5px var(--shadow); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.input-group label { display: block; font-size: 0.67rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--clay); margin-bottom: 4px; }
+.input-group input, .input-group textarea { width: 100%; padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Lato', sans-serif; font-size: 0.92rem; color: var(--ink); background: var(--parchment); -webkit-appearance: none; }
+.input-group input:focus, .input-group textarea:focus { outline: none; border-color: var(--tan); background: var(--white); }
+.input-group textarea { resize: vertical; min-height: 54px; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 18px; border-radius: 20px; border: none; font-family: 'Lato', sans-serif; font-size: 0.88rem; font-weight: 700; cursor: pointer; letter-spacing: 0.03em; transition: opacity 0.15s; }
+.btn:active { opacity: 0.8; }
+.btn-primary { background: var(--bark); color: var(--straw); }
+.btn-sage    { background: var(--moss); color: #E0EDDC; }
+.btn-rust    { background: var(--rust); color: #F9E0D4; }
+.btn-cancel  { background: var(--mist); color: var(--clay); }
+.btn-full    { width: 100%; }
+
+.egg-saved { background: #F4F9F0; border: 1.5px solid var(--sage-lt); border-radius: 12px; padding: 11px 13px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.egg-saved-info strong { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: var(--moss); }
+.egg-saved-info p { font-size: 0.78rem; color: var(--clay); margin-top: 2px; }
+.egg-edit-btn { background: none; border: 1.5px solid var(--sage); color: var(--sage); border-radius: 8px; padding: 5px 11px; font-size: 0.78rem; font-weight: 700; cursor: pointer; font-family: 'Lato', sans-serif; }
+
+.modal-overlay { position: fixed; inset: 0; background: rgba(42,31,14,0.55); z-index: 200; display: flex; align-items: flex-end; justify-content: center; }
 .modal-overlay.hidden { display: none; }
-.modal {
-  background: var(--card-bg);
-  border-radius: 18px 18px 0 0;
-  padding: 24px 20px 40px;
-  width: 100%;
-  max-width: 480px;
-}
-.modal h3 {
-  font-family: 'Bitter', serif;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--earth);
-  margin-bottom: 16px;
-}
-.modal .input-group { margin-bottom: 12px; }
+.modal { background: var(--cream); border-radius: 20px 20px 0 0; border-top: 3px solid var(--tan); padding: 22px 18px 40px; width: 100%; max-width: 480px; }
+.modal h3 { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--bark); margin-bottom: 16px; }
+.modal .input-group { margin-bottom: 11px; }
 .modal-actions { display: flex; gap: 10px; margin-top: 16px; }
-.btn-cancel { background: var(--mist); color: var(--text-soft); }
 
-/* ── Toast ── */
-.toast {
-  position: fixed;
-  bottom: 20px;
-  left: 50%; transform: translateX(-50%) translateY(20px);
-  background: var(--earth);
-  color: var(--cream);
-  padding: 10px 20px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  opacity: 0;
-  transition: opacity 0.3s, transform 0.3s;
-  z-index: 999;
-  white-space: nowrap;
-}
+.toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(16px); background: var(--bark); color: var(--straw); padding: 9px 20px; border-radius: 20px; font-size: 0.84rem; font-weight: 700; opacity: 0; transition: opacity 0.25s, transform 0.25s; z-index: 999; white-space: nowrap; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
 </head>
@@ -433,51 +146,42 @@ header p  { font-size: 0.75rem; color: var(--sage-lt); margin-top: 1px; }
 
 <header>
   <div>
-    <h1>🥚 Quail Tracker</h1>
+    <h1>Quail Tracker</h1>
     <p id="header-sub">Tap a date to see details</p>
   </div>
   <button class="header-add-btn" onclick="openAddBatch()">+ New Batch</button>
 </header>
+<div class="woodgrain"></div>
 
-<!-- Active batches strip -->
 <div class="batches-section" id="batches-section"></div>
 
-<!-- Calendar -->
-<div class="calendar-wrap">
-  <div class="cal-nav">
-    <button onclick="prevMonth()">‹</button>
-    <h2 id="cal-title"></h2>
-    <button onclick="nextMonth()">›</button>
+<div class="calendar-outer">
+  <div class="calendar-wrap">
+    <div class="cal-nav">
+      <button onclick="prevMonth()">&#8249;</button>
+      <h2 id="cal-title"></h2>
+      <button onclick="nextMonth()">&#8250;</button>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
   </div>
-  <div class="cal-grid" id="cal-grid"></div>
 </div>
 
 <div class="legend">
-  <div class="legend-item"><div class="legend-dot" style="background:var(--ev-incubation)"></div> Incubation</div>
-  <div class="legend-item"><div class="legend-dot" style="background:var(--ev-brooder)"></div> Brooder</div>
-  <div class="legend-item"><div class="legend-dot" style="background:var(--ev-eggs)"></div> Eggs logged</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--ev-inc)"></div>Incubation</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--ev-brd)"></div>Brooder</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--ev-egg)"></div>Eggs</div>
 </div>
+<div class="woodgrain"></div>
 
-<!-- Detail panel -->
 <div class="detail-panel" id="detail-panel">
-  <div class="no-selection">
-    <div class="icon">📅</div>
-    <p>Tap a date to see what's happening</p>
-  </div>
+  <div class="no-selection">Tap a date to see what&rsquo;s happening</div>
 </div>
 
-<!-- Add batch modal -->
 <div class="modal-overlay hidden" id="modal-overlay" onclick="closeModalOutside(event)">
   <div class="modal">
-    <h3>🐣 New Incubation Batch</h3>
-    <div class="input-group">
-      <label>Batch Name</label>
-      <input type="text" id="batch-name" placeholder="e.g. March eBay batch">
-    </div>
-    <div class="input-group">
-      <label>Date Eggs Were Set</label>
-      <input type="date" id="batch-start-date">
-    </div>
+    <h3>New Incubation Batch</h3>
+    <div class="input-group"><label>Batch Name</label><input type="text" id="batch-name" placeholder="e.g. March eBay batch"></div>
+    <div class="input-group"><label>Date Eggs Were Set</label><input type="date" id="batch-start-date"></div>
     <div class="modal-actions">
       <button class="btn btn-cancel btn-full" onclick="closeModal()">Cancel</button>
       <button class="btn btn-primary btn-full" onclick="saveBatch()">Save Batch</button>
@@ -488,379 +192,186 @@ header p  { font-size: 0.75rem; color: var(--sage-lt); margin-top: 1px; }
 <div class="toast" id="toast"></div>
 
 <script>
-// ── Data & state ───────────────────────────────────────────────────────────
-let appData = { batches: [], egg_log: [] };
-let calYear, calMonth;
-let selectedDateStr = null;
+let appData={batches:[],egg_log:[]}, calYear, calMonth, selectedDateStr=null;
 
-// ── Milestones ─────────────────────────────────────────────────────────────
-const INCUBATION_MILESTONES = [
-  { day: 0,  label: "🥚 Eggs Set",             type: "inc", action: "Confirm incubator stable at 99.5°F / 45–55% humidity. Start auto-turner.",      temp: "99.5°F", hum: "45–55%", tip: "Rest shipped eggs pointy-end down 12–24h before setting." },
-  { day: 7,  label: "🔦 First Candle",          type: "inc", action: "Candle eggs. Remove clearly infertile eggs or early quitters.",                  temp: "99.5°F", hum: "45–55%", tip: "Veins = developing. Fully clear = likely infertile. Dark mass with movement = great." },
-  { day: 14, label: "🔦 Second Candle",         type: "inc", action: "Final candle before lockdown. Remove any late quitters.",                        temp: "99.5°F", hum: "45–55%", tip: "Air cell should be large and well-defined. Track egg weight loss — target 13–15% by today." },
-  { day: 15, label: "🔒 Lockdown",              type: "inc", action: "Stop turning eggs. Raise humidity. Do NOT open incubator until hatch is done.",  temp: "99.5°F", hum: "65–70%", tip: "Lay eggs on their sides. Resist the urge to open the lid — humidity loss kills chicks during hatch." },
-  { day: 17, label: "🐣 Hatch Begins",          type: "inc", action: "Watch for pipping and zipping. Do not assist unless chick is stuck for 24h+.",  temp: "99.5°F", hum: "70%",    tip: "Coturnix hatch fast. Some will be done in hours. Do not open the lid — shrink-wrapping is a real risk." },
-  { day: 18, label: "✅ Hatch Complete",        type: "inc", action: "Move dry fluffy chicks to brooder. Discard unhatched eggs after 24h.",           temp: "99.5°F", hum: "70%",    tip: "Chicks can survive 24–48h on yolk reserves. Don't rush them into the brooder while still wet." },
+const INC=[
+  {day:0, label:"Eggs Set",       type:"inc", action:"Confirm incubator stable at 99.5\u00b0F / 45\u201355% humidity. Start auto-turner.",       temp:"99.5\u00b0F", hum:"45\u201355%", tip:"Rest shipped eggs pointy-end down 12\u201324h before setting."},
+  {day:7, label:"First Candle",   type:"inc", action:"Candle eggs. Remove clearly infertile eggs or early quitters.",                              temp:"99.5\u00b0F", hum:"45\u201355%", tip:"Veins = developing. Fully clear = likely infertile. Dark mass with movement = great."},
+  {day:14,label:"Second Candle",  type:"inc", action:"Final candle before lockdown. Remove any late quitters.",                                    temp:"99.5\u00b0F", hum:"45\u201355%", tip:"Air cell should be large and well-defined. Target 13\u201315% egg weight loss by today."},
+  {day:15,label:"Lockdown",       type:"inc", action:"Stop turning eggs. Raise humidity. Do NOT open incubator until hatch is complete.",         temp:"99.5\u00b0F", hum:"65\u201370%", tip:"Lay eggs on their sides. Resist opening the lid \u2014 humidity loss kills chicks during hatch."},
+  {day:17,label:"Hatch Begins",   type:"inc", action:"Watch for pipping and zipping. Do not assist unless a chick is stuck for 24h+.",            temp:"99.5\u00b0F", hum:"70%",        tip:"Coturnix hatch fast. Do not open the lid \u2014 shrink-wrapping is a real risk."},
+  {day:18,label:"Hatch Complete", type:"inc", action:"Move dry fluffy chicks to brooder. Discard unhatched eggs after 24h.",                      temp:"99.5\u00b0F", hum:"70%",        tip:"Chicks survive 24\u201348h on yolk reserves. Don\u2019t rush them while still wet."},
+];
+const BRD=[
+  {day:0, label:"Move to Brooder",    type:"brd", action:"Set up brooder at 95\u00b0F. Dip beaks in water. Chick starter feed. Marbles in water dish.", temp:"95\u00b0F",  tip:"Paper towels on floor first 3 days \u2014 easier to clean, prevents leg splaying."},
+  {day:7, label:"Week 1 \u2014 Drop Temp", type:"brd", action:"Reduce brooder temp to 90\u00b0F. Check for pasty butt daily.",                       temp:"90\u00b0F",  tip:"Piling up = cold. Spread to edges = hot."},
+  {day:14,label:"Week 2 \u2014 Drop Temp", type:"brd", action:"Reduce brooder temp to 85\u00b0F.",                                                   temp:"85\u00b0F",  tip:"Switch floor to pine shavings if not already done."},
+  {day:21,label:"Sexing Window",       type:"brd", action:"Sex by feather coloration. Begin culling plan for extra roosters.",                        temp:"80\u00b0F",  tip:"Pharaoh males: rusty-red chest. Females: speckled/tan. Cull beyond 1:4\u20135 ratio."},
+  {day:28,label:"Fully Feathered",     type:"brd", action:"Reduce heat if ambient >70\u00b0F. Transition to grower feed.",                           temp:"75\u00b0F",  tip:"Watch for feather pecking if crowded."},
+  {day:42,label:"Harvest Window",      type:"brd", action:"Extra roosters ready for harvest (~4\u20135 oz dressed weight).",                          temp:"Ambient",    tip:"Hens may begin laying around this time \u2014 watch for eggs."},
+  {day:56,label:"Full Production",     type:"brd", action:"All keepers at full size. Consistent egg laying expected from hens.",                      temp:"Ambient",    tip:"Target colony ratio: 1 rooster per 4\u20135 hens."},
 ];
 
-const BROODER_MILESTONES = [
-  { day: 0,  label: "🏠 Move to Brooder",       type: "brd", action: "Set up brooder at 95°F. Dip beaks in water. Chick starter feed. Marbles in water dish.", temp: "95°F", tip: "Paper towels on floor for first 3 days — easier to clean and prevents leg splaying." },
-  { day: 7,  label: "Week 1 — Drop Temp",       type: "brd", action: "Reduce brooder temp to 90°F. Check for pasty butt daily.",                              temp: "90°F", tip: "If chicks are piling up, they're cold. If spread to edges, they're hot. Aim for even distribution." },
-  { day: 14, label: "Week 2 — Drop Temp",       type: "brd", action: "Reduce brooder temp to 85°F.",                                                           temp: "85°F", tip: "Switch floor from paper towels to pine shavings if not already." },
-  { day: 21, label: "🔍 Sexing Window",         type: "brd", action: "Sex by feather coloration. Begin culling plan for extra roosters.",                      temp: "80°F", tip: "Pharaoh males: rusty-red chest. Females: speckled/tan. Cull roosters beyond your 1:4–5 ratio." },
-  { day: 28, label: "Week 4 — Fully Feathered", type: "brd", action: "Reduce heat if ambient temp >70°F. Transition to grower feed.",                          temp: "75°F", tip: "Birds are largely self-regulating now. Watch for feather pecking if crowded." },
-  { day: 42, label: "🔪 Harvest Window Opens",  type: "brd", action: "Extra roosters ready for harvest (~4–5 oz dressed weight).",                             temp: "Ambient", tip: "Hens may begin laying around this time — watch for eggs." },
-  { day: 56, label: "🥚 Full Production",       type: "brd", action: "All keepers at full size. Consistent egg laying expected from hens.",                    temp: "Ambient", tip: "Target colony ratio: 1 rooster per 4–5 hens. Remove excess roosters if not already done." },
-];
+function parseLocal(s){if(!s)return null;const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);}
+function toDS(d){return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function addDays(d,n){const r=new Date(d);r.setDate(r.getDate()+n);return r;}
+function todayStr(){return toDS(new Date());}
+function fmtFull(s){return parseLocal(s).toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});}
+function fmtShort(s){return parseLocal(s).toLocaleDateString('en-US',{month:'short',day:'numeric'});}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
 
-// ── Utilities ──────────────────────────────────────────────────────────────
-function parseLocal(str) {
-  if (!str) return null;
-  const [y, m, d] = str.split('-').map(Number);
-  return new Date(y, m - 1, d);
-}
-function toDateStr(date) {
-  return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
-}
-function addDays(date, n) {
-  const d = new Date(date); d.setDate(d.getDate() + n); return d;
-}
-function todayStr() { return toDateStr(new Date()); }
-function fmtFull(str) {
-  return parseLocal(str).toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
-}
-function fmtShort(str) {
-  return parseLocal(str).toLocaleDateString('en-US', { month:'short', day:'numeric' });
-}
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
-}
-
-// ── Build event map ────────────────────────────────────────────────────────
-function buildEventMap() {
-  const map = {}; // dateStr -> [{type, label, action, tip, batchName, temp, hum}]
-  const add = (dateStr, ev) => {
-    if (!map[dateStr]) map[dateStr] = [];
-    map[dateStr].push(ev);
-  };
-
-  appData.batches.forEach(batch => {
-    if (!batch.start_date) return;
-    const start = parseLocal(batch.start_date);
-    const hatch = addDays(start, 18);
-
-    INCUBATION_MILESTONES.forEach(m => {
-      const d = toDateStr(addDays(start, m.day));
-      add(d, { ...m, batchName: batch.name, batchId: batch.id, active: batch.active });
-    });
-    BROODER_MILESTONES.forEach(m => {
-      const d = toDateStr(addDays(hatch, m.day));
-      add(d, { ...m, batchName: batch.name, batchId: batch.id, active: batch.active });
-    });
+function buildEventMap(){
+  const map={};
+  const add=(ds,ev)=>{if(!map[ds])map[ds]=[];map[ds].push(ev);};
+  appData.batches.forEach(b=>{
+    if(!b.start_date)return;
+    const start=parseLocal(b.start_date), hatch=addDays(start,18);
+    INC.forEach(m=>add(toDS(addDays(start,m.day)),{...m,batchName:b.name,batchId:b.id,active:b.active}));
+    BRD.forEach(m=>add(toDS(addDays(hatch,m.day)),{...m,batchName:b.name,batchId:b.id,active:b.active}));
   });
-
-  appData.egg_log.forEach(entry => {
-    add(entry.date, { type: 'egg', label: `🥚 ${entry.eggs} egg${entry.eggs!==1?'s':''}`, entry });
-  });
-
+  appData.egg_log.forEach(e=>add(e.date,{type:'egg',entry:e}));
   return map;
 }
 
-// ── Calendar render ────────────────────────────────────────────────────────
-function renderCalendar() {
-  const eventMap = buildEventMap();
-  const today = todayStr();
-  const firstDay = new Date(calYear, calMonth, 1);
-  const lastDay  = new Date(calYear, calMonth + 1, 0);
-
-  document.getElementById('cal-title').textContent =
-    firstDay.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-
-  const grid = document.getElementById('cal-grid');
-  grid.innerHTML = '';
-
-  // Day-of-week headers
-  ['Su','Mo','Tu','We','Th','Fr','Sa'].forEach(d => {
-    const el = document.createElement('div');
-    el.className = 'cal-dow'; el.textContent = d;
-    grid.appendChild(el);
-  });
-
-  // Leading blanks
-  for (let i = 0; i < firstDay.getDay(); i++) {
-    const el = document.createElement('div');
-    el.className = 'cal-day empty';
-    grid.appendChild(el);
-  }
-
-  // Days
-  for (let d = 1; d <= lastDay.getDate(); d++) {
-    const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const events  = eventMap[dateStr] || [];
-    const el = document.createElement('div');
-    el.className = 'cal-day' +
-      (dateStr === today ? ' today' : '') +
-      (dateStr === selectedDateStr ? ' selected' : '');
-    el.onclick = () => selectDate(dateStr);
-
-    const numEl = document.createElement('div');
-    numEl.className = 'day-num'; numEl.textContent = d;
-    el.appendChild(numEl);
-
-    if (events.length) {
-      const dotRow = document.createElement('div');
-      dotRow.className = 'dot-row';
-      const types = [...new Set(events.map(e => e.type))];
-      types.forEach(t => {
-        const dot = document.createElement('div');
-        dot.className = 'dot ' + (t==='inc'?'dot-inc':t==='brd'?'dot-brd':'dot-egg');
-        dotRow.appendChild(dot);
-      });
-      el.appendChild(dotRow);
+function renderCalendar(){
+  const em=buildEventMap(), today=todayStr();
+  const first=new Date(calYear,calMonth,1), last=new Date(calYear,calMonth+1,0);
+  document.getElementById('cal-title').textContent=first.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+  const grid=document.getElementById('cal-grid'); grid.innerHTML='';
+  ['Su','Mo','Tu','We','Th','Fr','Sa'].forEach(d=>{const el=document.createElement('div');el.className='cal-dow';el.textContent=d;grid.appendChild(el);});
+  for(let i=0;i<first.getDay();i++){const el=document.createElement('div');el.className='cal-day empty';grid.appendChild(el);}
+  for(let d=1;d<=last.getDate();d++){
+    const ds=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const evs=em[ds]||[], el=document.createElement('div');
+    el.className='cal-day'+(ds===today?' today':'')+(ds===selectedDateStr?' selected':'');
+    el.onclick=()=>selectDate(ds);
+    const num=document.createElement('div');num.className='day-num';num.textContent=d;el.appendChild(num);
+    if(evs.length){
+      const row=document.createElement('div');row.className='dot-row';
+      [...new Set(evs.map(e=>e.type))].forEach(t=>{const dot=document.createElement('div');dot.className='dot '+(t==='inc'?'dot-inc':t==='brd'?'dot-brd':'dot-egg');row.appendChild(dot);});
+      el.appendChild(row);
     }
     grid.appendChild(el);
   }
 }
 
-// ── Date selection ─────────────────────────────────────────────────────────
-function selectDate(dateStr) {
-  selectedDateStr = dateStr;
-  renderCalendar();
-  renderDetail(dateStr);
-}
+function selectDate(ds){selectedDateStr=ds;renderCalendar();renderDetail(ds);}
 
-function renderDetail(dateStr) {
-  const eventMap = buildEventMap();
-  const events   = eventMap[dateStr] || [];
-  const panel    = document.getElementById('detail-panel');
-  const eggEntry = appData.egg_log.find(e => e.date === dateStr);
-
-  const milestones = events.filter(e => e.type === 'inc' || e.type === 'brd');
-  const eggEvent   = events.find(e => e.type === 'egg');
-
-  let html = `<div class="detail-date-header">${fmtFull(dateStr)}</div>`;
-
-  // Milestone cards
-  if (milestones.length) {
-    milestones.forEach(m => {
-      const cls = m.type === 'brd' ? 'brooder' : '';
-      html += `<div class="milestone-card ${cls}">
-        <div class="mc-batch">${m.batchName}${!m.active ? ' · archived' : ''}</div>
-        <div class="mc-label">${m.label}</div>
-        <div class="mc-action">${m.action}</div>
-        <div class="mc-badges">
-          ${m.temp ? `<span class="badge badge-temp">🌡 ${m.temp}</span>` : ''}
-          ${m.hum  ? `<span class="badge badge-hum">💧 ${m.hum}</span>`   : ''}
-          ${m.tip  ? `<span class="badge badge-tip">💡 ${m.tip}</span>`   : ''}
-        </div>
-      </div>`;
-    });
-  }
-
-  // Egg section
-  html += `<div class="section-title">🥚 Egg Log</div>`;
-
-  if (eggEntry && !window._editingEgg) {
-    html += `<div class="egg-saved">
+function renderDetail(ds){
+  const em=buildEventMap(), evs=em[ds]||[], panel=document.getElementById('detail-panel');
+  const eggEntry=appData.egg_log.find(e=>e.date===ds);
+  const milestones=evs.filter(e=>e.type==='inc'||e.type==='brd');
+  let html=`<div class="detail-date-header">${fmtFull(ds)}</div>`;
+  if(!milestones.length&&!eggEntry) html+=`<p style="font-size:0.85rem;color:var(--clay);margin-bottom:12px;">Nothing scheduled today.</p>`;
+  milestones.forEach(m=>{
+    html+=`<div class="milestone-card ${m.type==='brd'?'brooder':''}">
+      <div class="mc-batch">${m.batchName}${!m.active?' \u00b7 archived':''}</div>
+      <div class="mc-label">${m.label}</div>
+      <div class="mc-action">${m.action}</div>
+      <div class="mc-badges">
+        ${m.temp?`<span class="badge badge-temp">${m.temp}</span>`:''}
+        ${m.hum?`<span class="badge badge-hum">${m.hum}</span>`:''}
+        ${m.tip?`<span class="badge badge-tip">${m.tip}</span>`:''}
+      </div>
+    </div>`;
+  });
+  html+=`<div class="section-title">Egg Log</div>`;
+  if(eggEntry&&!window._editingEgg){
+    html+=`<div class="egg-saved">
       <div class="egg-saved-info">
         <strong>${eggEntry.eggs} egg${eggEntry.eggs!==1?'s':''} collected</strong>
-        <p>${eggEntry.hens ? `${eggEntry.hens} hens laying` : ''}${eggEntry.notes ? (eggEntry.hens ? ' · ' : '') + eggEntry.notes : ''}</p>
+        <p>${eggEntry.hens?`${eggEntry.hens} hens laying`:''}${eggEntry.notes?(eggEntry.hens?' \u00b7 ':'')+eggEntry.notes:''}</p>
       </div>
       <button class="egg-edit-btn" onclick="editEgg()">Edit</button>
     </div>`;
   } else {
-    html += `<div class="egg-form">
+    html+=`<div class="egg-form">
       <div class="form-row">
-        <div class="input-group">
-          <label>Eggs Collected</label>
-          <input type="number" id="egg-count" min="0" placeholder="0" value="${eggEntry ? eggEntry.eggs : ''}">
-        </div>
-        <div class="input-group">
-          <label>Hens Laying</label>
-          <input type="number" id="egg-hens" min="0" placeholder="—" value="${eggEntry && eggEntry.hens ? eggEntry.hens : ''}">
-        </div>
+        <div class="input-group"><label>Eggs Collected</label><input type="number" id="egg-count" min="0" placeholder="0" value="${eggEntry?eggEntry.eggs:''}"></div>
+        <div class="input-group"><label>Hens Laying</label><input type="number" id="egg-hens" min="0" placeholder="\u2014" value="${eggEntry&&eggEntry.hens?eggEntry.hens:''}"></div>
       </div>
-      <div class="input-group" style="margin-bottom:10px">
-        <label>Notes</label>
-        <textarea id="egg-notes" placeholder="Any observations...">${eggEntry ? eggEntry.notes || '' : ''}</textarea>
-      </div>
-      <button class="btn btn-sage btn-full" onclick="saveEgg('${dateStr}')">✓ Save</button>
-      ${eggEntry ? `<button class="btn btn-rust btn-full" style="margin-top:8px" onclick="deleteEgg('${dateStr}')">Delete Entry</button>` : ''}
+      <div class="input-group" style="margin-bottom:10px"><label>Notes</label><textarea id="egg-notes" placeholder="Any observations...">${eggEntry?eggEntry.notes||'':''}</textarea></div>
+      <button class="btn btn-sage btn-full" onclick="saveEgg('${ds}')">Save Entry</button>
+      ${eggEntry?`<button class="btn btn-rust btn-full" style="margin-top:8px" onclick="deleteEgg('${ds}')">Delete Entry</button>`:''}
     </div>`;
   }
-
-  if (!milestones.length && !eggEntry && !window._editingEgg) {
-    html = `<div class="detail-date-header">${fmtFull(dateStr)}</div>
-      <div class="no-selection" style="padding:20px 0">
-        <p>Nothing scheduled. Log eggs below if needed.</p>
-      </div>` + html.split('</div>').slice(1).join('</div>');
-  }
-
-  panel.innerHTML = html;
-  window._editingEgg = false;
+  panel.innerHTML=html; window._editingEgg=false;
 }
 
-function editEgg() {
-  window._editingEgg = true;
-  renderDetail(selectedDateStr);
-  setTimeout(() => document.getElementById('egg-count')?.focus(), 50);
+function editEgg(){window._editingEgg=true;renderDetail(selectedDateStr);setTimeout(()=>document.getElementById('egg-count')?.focus(),50);}
+
+async function saveEgg(ds){
+  const eggs=document.getElementById('egg-count').value;
+  if(eggs===''){showToast('Enter an egg count');return;}
+  const entry={date:ds,eggs:parseInt(eggs),hens:document.getElementById('egg-hens').value||null,notes:document.getElementById('egg-notes').value||''};
+  await fetch('/api/egg_log',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(entry)});
+  const idx=appData.egg_log.findIndex(e=>e.date===ds);
+  if(idx>=0)appData.egg_log[idx]=entry;else{appData.egg_log.push(entry);appData.egg_log.sort((a,b)=>a.date.localeCompare(b.date));}
+  showToast('Saved');window._editingEgg=false;renderCalendar();renderDetail(ds);
+}
+async function deleteEgg(ds){
+  await fetch(`/api/egg_log/${ds}`,{method:'DELETE'});
+  appData.egg_log=appData.egg_log.filter(e=>e.date!==ds);
+  showToast('Entry deleted');renderCalendar();renderDetail(ds);
 }
 
-// ── Egg save/delete ────────────────────────────────────────────────────────
-async function saveEgg(dateStr) {
-  const eggs = document.getElementById('egg-count').value;
-  if (eggs === '') { showToast('Enter an egg count'); return; }
-  const entry = {
-    date: dateStr,
-    eggs: parseInt(eggs),
-    hens: document.getElementById('egg-hens').value || null,
-    notes: document.getElementById('egg-notes').value || ''
-  };
-  await fetch('/api/egg_log', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(entry)
-  });
-  const idx = appData.egg_log.findIndex(e => e.date === dateStr);
-  if (idx >= 0) appData.egg_log[idx] = entry;
-  else { appData.egg_log.push(entry); appData.egg_log.sort((a,b) => a.date.localeCompare(b.date)); }
-  showToast('✓ Saved');
-  window._editingEgg = false;
-  renderCalendar();
-  renderDetail(dateStr);
-}
-
-async function deleteEgg(dateStr) {
-  await fetch(`/api/egg_log/${dateStr}`, { method: 'DELETE' });
-  appData.egg_log = appData.egg_log.filter(e => e.date !== dateStr);
-  showToast('Entry deleted');
-  renderCalendar();
-  renderDetail(dateStr);
-}
-
-// ── Batches ────────────────────────────────────────────────────────────────
-function renderBatches() {
-  const el = document.getElementById('batches-section');
-  const active   = appData.batches.filter(b => b.active);
-  const archived = appData.batches.filter(b => !b.active);
-
-  if (!appData.batches.length) {
-    el.innerHTML = `<div class="batches-title">No batches yet — add one to get started</div>`;
-    return;
-  }
-
-  let html = `<div class="batches-title">Active Batches</div><div class="batch-list">`;
-  active.forEach(b => {
-    const hatch = toDateStr(addDays(parseLocal(b.start_date), 18));
-    html += `<div class="batch-item">
-      <div class="batch-item-info">
-        <div class="batch-item-name">${b.name}</div>
-        <div class="batch-item-date">Set ${fmtShort(b.start_date)} · Hatch ~${fmtShort(hatch)}</div>
-      </div>
-      <div class="batch-actions">
-        <button class="batch-btn archive" onclick="archiveBatch('${b.id}')">Archive</button>
-        <button class="batch-btn delete"  onclick="deleteBatch('${b.id}')">✕</button>
-      </div>
+function renderBatches(){
+  const el=document.getElementById('batches-section');
+  const active=appData.batches.filter(b=>b.active), archived=appData.batches.filter(b=>!b.active);
+  if(!appData.batches.length){el.innerHTML=`<div class="batches-title">No batches yet \u2014 add one to get started</div>`;return;}
+  let html=`<div class="batches-title">Active Batches</div><div class="batch-list">`;
+  active.forEach(b=>{
+    const hatch=toDS(addDays(parseLocal(b.start_date),18));
+    html+=`<div class="batch-item">
+      <div class="batch-item-info"><div class="batch-item-name">${b.name}</div><div class="batch-item-date">Set ${fmtShort(b.start_date)} &middot; Hatch ~${fmtShort(hatch)}</div></div>
+      <div class="batch-actions"><button class="batch-btn archive" onclick="archiveBatch('${b.id}')">Archive</button><button class="batch-btn delete" onclick="deleteBatch('${b.id}')">&times;</button></div>
     </div>`;
   });
-
-  if (archived.length) {
-    html += `</div><div class="batches-title" style="margin-top:10px">Archived</div><div class="batch-list">`;
-    archived.forEach(b => {
-      html += `<div class="batch-item batch-archived">
-        <div class="batch-item-info">
-          <div class="batch-item-name">${b.name}</div>
-          <div class="batch-item-date">Set ${fmtShort(b.start_date)}</div>
-        </div>
-        <div class="batch-actions">
-          <button class="batch-btn delete" onclick="deleteBatch('${b.id}')">✕</button>
-        </div>
+  if(archived.length){
+    html+=`</div><div class="batches-title" style="margin-top:9px">Archived</div><div class="batch-list">`;
+    archived.forEach(b=>{
+      html+=`<div class="batch-item batch-archived">
+        <div class="batch-item-info"><div class="batch-item-name">${b.name}</div><div class="batch-item-date">Set ${fmtShort(b.start_date)}</div></div>
+        <div class="batch-actions"><button class="batch-btn delete" onclick="deleteBatch('${b.id}')">&times;</button></div>
       </div>`;
     });
   }
-
-  html += `</div>`;
-  el.innerHTML = html;
+  el.innerHTML=html+'</div>';
 }
 
-function openAddBatch() {
-  document.getElementById('batch-name').value = '';
-  document.getElementById('batch-start-date').value = todayStr();
-  document.getElementById('modal-overlay').classList.remove('hidden');
-}
-function closeModal() {
-  document.getElementById('modal-overlay').classList.add('hidden');
-}
-function closeModalOutside(e) {
-  if (e.target === document.getElementById('modal-overlay')) closeModal();
-}
+function openAddBatch(){document.getElementById('batch-name').value='';document.getElementById('batch-start-date').value=todayStr();document.getElementById('modal-overlay').classList.remove('hidden');}
+function closeModal(){document.getElementById('modal-overlay').classList.add('hidden');}
+function closeModalOutside(e){if(e.target===document.getElementById('modal-overlay'))closeModal();}
 
-async function saveBatch() {
-  const name  = document.getElementById('batch-name').value.trim();
-  const start = document.getElementById('batch-start-date').value;
-  if (!name || !start) { showToast('Name and date are required'); return; }
-  const res   = await fetch('/api/batches', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, start_date: start })
-  });
-  const batch = await res.json();
-  appData.batches.push(batch);
-  closeModal();
-  showToast(`✓ ${name} added`);
-  renderBatches();
-  renderCalendar();
-  // Jump to the batch start month
-  const d = parseLocal(start);
-  calYear = d.getFullYear(); calMonth = d.getMonth();
-  renderCalendar();
+async function saveBatch(){
+  const name=document.getElementById('batch-name').value.trim(), start=document.getElementById('batch-start-date').value;
+  if(!name||!start){showToast('Name and date are required');return;}
+  const res=await fetch('/api/batches',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,start_date:start})});
+  const batch=await res.json();
+  appData.batches.push(batch);closeModal();showToast(`${name} added`);
+  const d=parseLocal(start);calYear=d.getFullYear();calMonth=d.getMonth();
+  renderBatches();renderCalendar();
 }
+async function archiveBatch(id){
+  await fetch(`/api/batches/${id}/archive`,{method:'POST'});
+  const b=appData.batches.find(b=>b.id===id);if(b)b.active=false;
+  showToast('Batch archived');renderBatches();renderCalendar();
+}
+async function deleteBatch(id){
+  await fetch(`/api/batches/${id}`,{method:'DELETE'});
+  appData.batches=appData.batches.filter(b=>b.id!==id);
+  showToast('Batch deleted');renderBatches();renderCalendar();
+}
+function prevMonth(){calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendar();}
+function nextMonth(){calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();}
 
-async function archiveBatch(id) {
-  await fetch(`/api/batches/${id}/archive`, { method: 'POST' });
-  const b = appData.batches.find(b => b.id === id);
-  if (b) b.active = false;
-  showToast('Batch archived');
-  renderBatches();
-  renderCalendar();
+async function init(){
+  const now=new Date();calYear=now.getFullYear();calMonth=now.getMonth();
+  const res=await fetch('/api/data');appData=await res.json();
+  if(!appData.batches)appData.batches=[];
+  if(!appData.egg_log)appData.egg_log=[];
+  renderBatches();renderCalendar();selectDate(todayStr());
 }
-
-async function deleteBatch(id) {
-  await fetch(`/api/batches/${id}`, { method: 'DELETE' });
-  appData.batches = appData.batches.filter(b => b.id !== id);
-  showToast('Batch deleted');
-  renderBatches();
-  renderCalendar();
-}
-
-// ── Month nav ──────────────────────────────────────────────────────────────
-function prevMonth() {
-  calMonth--;
-  if (calMonth < 0) { calMonth = 11; calYear--; }
-  renderCalendar();
-}
-function nextMonth() {
-  calMonth++;
-  if (calMonth > 11) { calMonth = 0; calYear++; }
-  renderCalendar();
-}
-
-// ── Init ───────────────────────────────────────────────────────────────────
-async function init() {
-  const now = new Date();
-  calYear = now.getFullYear(); calMonth = now.getMonth();
-  const res = await fetch('/api/data');
-  appData = await res.json();
-  if (!appData.batches) appData.batches = [];
-  if (!appData.egg_log) appData.egg_log = [];
-  renderBatches();
-  renderCalendar();
-  // Auto-select today
-  selectDate(todayStr());
-}
-
 init();
 </script>
 </body>
