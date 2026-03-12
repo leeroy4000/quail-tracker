@@ -4,745 +4,864 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Quail Tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400;600;700&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --earth:     #3B2F1E;
-    --bark:      #5C4033;
-    --clay:      #8D6E63;
-    --straw:     #D4A853;
-    --cream:     #FAF6EE;
-    --sage:      #7A9E7E;
-    --sage-lt:   #B2CCAC;
-    --rust:      #C0622A;
-    --mist:      #EDE8DF;
-    --shadow:    rgba(59,47,30,0.12);
-    --card-bg:   #FFFFFF;
-    --text:      #2C1F0E;
-    --text-soft: #7A6652;
-    --border:    #DDD5C5;
-    --tab-h:     56px;
-    --safe-b:    env(safe-area-inset-bottom, 0px);
-  }
+:root {
+  --earth:     #3B2F1E;
+  --bark:      #5C4033;
+  --clay:      #8D6E63;
+  --straw:     #D4A853;
+  --cream:     #FAF6EE;
+  --sage:      #7A9E7E;
+  --sage-lt:   #B2CCAC;
+  --rust:      #C0622A;
+  --mist:      #EDE8DF;
+  --card-bg:   #FFFFFF;
+  --text:      #2C1F0E;
+  --text-soft: #7A6652;
+  --border:    #DDD5C5;
+  --shadow:    rgba(59,47,30,0.10);
 
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  /* Event colors */
+  --ev-incubation: #D4A853;
+  --ev-brooder:    #7A9E7E;
+  --ev-eggs:       #C0622A;
+}
 
-  body {
-    font-family: 'Source Sans 3', sans-serif;
-    background: var(--cream);
-    color: var(--text);
-    min-height: 100dvh;
-    overflow-x: hidden;
-  }
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
-  /* ── Header ── */
-  header {
-    background: var(--earth);
-    color: var(--cream);
-    padding: 18px 20px 14px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 2px 12px var(--shadow);
-  }
-  header h1 {
-    font-family: 'Bitter', serif;
-    font-size: 1.35rem;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-  }
-  header p {
-    font-size: 0.78rem;
-    color: var(--sage-lt);
-    margin-top: 2px;
-    font-weight: 300;
-  }
+body {
+  font-family: 'Source Sans 3', sans-serif;
+  background: var(--cream);
+  color: var(--text);
+  min-height: 100dvh;
+}
 
-  /* ── Tab bar ── */
-  .tab-bar {
-    display: flex;
-    background: var(--bark);
-    position: sticky;
-    top: 70px;
-    z-index: 99;
-  }
-  .tab-btn {
-    flex: 1;
-    border: none;
-    background: none;
-    color: var(--sage-lt);
-    font-family: 'Source Sans 3', sans-serif;
-    font-size: 0.72rem;
-    font-weight: 600;
-    padding: 10px 4px 8px;
-    cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    border-bottom: 3px solid transparent;
-    transition: color 0.2s, border-color 0.2s;
-    line-height: 1.3;
-  }
-  .tab-btn.active {
-    color: var(--straw);
-    border-bottom-color: var(--straw);
-  }
-  .tab-btn span { display: block; font-size: 1.1rem; margin-bottom: 2px; }
+/* ── Header ── */
+header {
+  background: var(--earth);
+  color: var(--cream);
+  padding: 16px 20px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+header h1 { font-family: 'Bitter', serif; font-size: 1.25rem; font-weight: 700; }
+header p  { font-size: 0.75rem; color: var(--sage-lt); margin-top: 1px; }
+.header-add-btn {
+  background: var(--straw);
+  color: var(--earth);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
 
-  /* ── Page sections ── */
-  .page { display: none; padding: 16px 16px calc(var(--tab-h) + var(--safe-b) + 16px); }
-  .page.active { display: block; }
+/* ── Calendar ── */
+.calendar-wrap {
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 12px 8px;
+}
+.cal-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.cal-nav button {
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  color: var(--bark);
+  padding: 4px 10px;
+}
+.cal-nav h2 {
+  font-family: 'Bitter', serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--earth);
+}
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+.cal-dow {
+  text-align: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-soft);
+  padding: 2px 0 5px;
+}
+.cal-day {
+  position: relative;
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 4px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+  min-height: 42px;
+}
+.cal-day:hover  { background: var(--mist); }
+.cal-day.empty  { cursor: default; }
+.cal-day.today .day-num {
+  background: var(--earth);
+  color: var(--cream);
+  border-radius: 50%;
+  width: 24px; height: 24px;
+  display: flex; align-items: center; justify-content: center;
+}
+.cal-day.selected { background: var(--mist); outline: 2px solid var(--straw); }
+.day-num {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1;
+  width: 24px; height: 24px;
+  display: flex; align-items: center; justify-content: center;
+}
+.cal-day.other-month .day-num { color: var(--border); }
+.dot-row {
+  display: flex;
+  gap: 2px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 3px;
+  padding: 0 2px;
+}
+.dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.dot-inc  { background: var(--ev-incubation); }
+.dot-brd  { background: var(--ev-brooder); }
+.dot-egg  { background: var(--ev-eggs); }
 
-  /* ── Cards ── */
-  .card {
-    background: var(--card-bg);
-    border-radius: 12px;
-    border: 1px solid var(--border);
-    padding: 16px;
-    margin-bottom: 14px;
-    box-shadow: 0 1px 4px var(--shadow);
-  }
-  .card-title {
-    font-family: 'Bitter', serif;
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--bark);
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 7px;
-  }
-  .card-title .icon { font-size: 1.1rem; }
+/* ── Legend ── */
+.legend {
+  display: flex;
+  gap: 12px;
+  padding: 6px 12px 10px;
+  flex-wrap: wrap;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.7rem;
+  color: var(--text-soft);
+  font-weight: 600;
+}
+.legend-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+}
 
-  /* ── Input group ── */
-  .input-group { margin-bottom: 12px; }
-  .input-group label {
-    display: block;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    color: var(--text-soft);
-    margin-bottom: 5px;
-  }
-  .input-group input, .input-group textarea, .input-group select {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    font-family: 'Source Sans 3', sans-serif;
-    font-size: 0.95rem;
-    color: var(--text);
-    background: var(--cream);
-    transition: border-color 0.2s;
-    -webkit-appearance: none;
-  }
-  .input-group input:focus, .input-group textarea:focus {
-    outline: none;
-    border-color: var(--straw);
-  }
-  .input-group textarea { resize: vertical; min-height: 60px; }
+/* ── Detail panel ── */
+.detail-panel {
+  padding: 14px 14px 80px;
+}
+.detail-date-header {
+  font-family: 'Bitter', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--earth);
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--mist);
+}
+.no-selection {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-soft);
+  font-size: 0.9rem;
+}
+.no-selection .icon { font-size: 2rem; margin-bottom: 8px; }
 
-  /* ── Buttons ── */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 10px 18px;
-    border-radius: 8px;
-    border: none;
-    font-family: 'Source Sans 3', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform 0.1s, opacity 0.2s;
-  }
-  .btn:active { transform: scale(0.97); }
-  .btn-primary { background: var(--earth); color: var(--cream); }
-  .btn-sage    { background: var(--sage);  color: white; }
-  .btn-rust    { background: var(--rust);  color: white; font-size: 0.8rem; padding: 6px 12px; }
-  .btn-sm      { padding: 6px 12px; font-size: 0.82rem; }
-  .btn-full    { width: 100%; justify-content: center; }
+/* ── Milestone card ── */
+.milestone-card {
+  border-radius: 10px;
+  border-left: 4px solid var(--ev-incubation);
+  background: var(--card-bg);
+  box-shadow: 0 1px 4px var(--shadow);
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+.milestone-card.brooder { border-left-color: var(--ev-brooder); }
+.milestone-card.eggs    { border-left-color: var(--ev-eggs); }
+.mc-batch {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--clay);
+  margin-bottom: 3px;
+}
+.mc-label {
+  font-family: 'Bitter', serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--earth);
+  margin-bottom: 5px;
+}
+.mc-action {
+  font-size: 0.85rem;
+  color: var(--text-soft);
+  line-height: 1.5;
+}
+.mc-badges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 7px;
+}
+.badge {
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+.badge-temp { background: #FFF3E0; color: #E65100; }
+.badge-hum  { background: #E3F2FD; color: #1565C0; }
+.badge-tip  { background: var(--mist); color: var(--text-soft); }
 
-  /* ── Timeline rows ── */
-  .timeline { display: flex; flex-direction: column; gap: 0; }
-  .tl-row {
-    display: flex;
-    align-items: stretch;
-    gap: 0;
-    position: relative;
-  }
-  .tl-line {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 32px;
-    flex-shrink: 0;
-  }
-  .tl-dot {
-    width: 12px; height: 12px;
-    border-radius: 50%;
-    background: var(--clay);
-    flex-shrink: 0;
-    margin-top: 6px;
-    border: 2px solid var(--cream);
-    box-shadow: 0 0 0 2px var(--clay);
-    z-index: 1;
-  }
-  .tl-dot.milestone { background: var(--straw); box-shadow: 0 0 0 2px var(--straw); width: 14px; height: 14px; }
-  .tl-dot.today     { background: var(--sage);  box-shadow: 0 0 0 2px var(--sage); }
-  .tl-dot.past      { background: var(--border); box-shadow: 0 0 0 2px var(--border); }
-  .tl-connector {
-    width: 2px;
-    flex: 1;
-    background: var(--border);
-    min-height: 12px;
-  }
-  .tl-content {
-    flex: 1;
-    padding: 4px 0 16px 8px;
-  }
-  .tl-date {
-    font-size: 0.72rem;
-    color: var(--text-soft);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-  .tl-label {
-    font-family: 'Bitter', serif;
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--text);
-    margin: 1px 0 3px;
-  }
-  .tl-label.milestone { color: var(--bark); }
-  .tl-action {
-    font-size: 0.82rem;
-    color: var(--text-soft);
-    line-height: 1.4;
-  }
-  .tl-badges {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-    margin-top: 5px;
-  }
-  .badge {
-    font-size: 0.7rem;
-    font-weight: 600;
-    padding: 2px 8px;
-    border-radius: 20px;
-    letter-spacing: 0.04em;
-  }
-  .badge-temp { background: #FFF3E0; color: #E65100; }
-  .badge-hum  { background: #E3F2FD; color: #1565C0; }
-  .badge-note { background: var(--mist); color: var(--text-soft); }
+/* ── Egg log section ── */
+.section-title {
+  font-family: 'Bitter', serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--bark);
+  margin: 14px 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.egg-form {
+  background: var(--card-bg);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  padding: 14px;
+  box-shadow: 0 1px 4px var(--shadow);
+}
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.input-group { margin-bottom: 0; }
+.input-group label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-soft);
+  margin-bottom: 4px;
+}
+.input-group input,
+.input-group textarea {
+  width: 100%;
+  padding: 9px 11px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.95rem;
+  color: var(--text);
+  background: var(--cream);
+  -webkit-appearance: none;
+}
+.input-group input:focus,
+.input-group textarea:focus { outline: none; border-color: var(--straw); }
+.input-group textarea { resize: vertical; min-height: 56px; }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: none;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--earth); color: var(--cream); }
+.btn-sage    { background: var(--sage);  color: white; }
+.btn-rust    { background: var(--rust);  color: white; }
+.btn-full    { width: 100%; justify-content: center; }
+.btn-sm      { padding: 6px 12px; font-size: 0.8rem; }
 
-  /* ── Today marker ── */
-  .today-marker {
-    background: linear-gradient(135deg, #E8F5E9, #F1F8E9);
-    border: 1.5px solid var(--sage);
-    border-radius: 10px;
-    padding: 10px 14px;
-    margin-bottom: 14px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .today-marker .icon { font-size: 1.4rem; }
-  .today-marker .info { flex: 1; }
-  .today-marker .info strong { font-size: 0.9rem; color: var(--sage); font-family: 'Bitter', serif; }
-  .today-marker .info p { font-size: 0.8rem; color: var(--text-soft); margin-top: 1px; }
+/* ── Saved egg entry ── */
+.egg-saved {
+  background: #F1F8E9;
+  border: 1.5px solid var(--sage-lt);
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.egg-saved-info strong {
+  font-family: 'Bitter', serif;
+  font-size: 1.1rem;
+  color: var(--bark);
+}
+.egg-saved-info p { font-size: 0.8rem; color: var(--text-soft); margin-top: 2px; }
+.egg-edit-btn {
+  background: none;
+  border: 1.5px solid var(--sage);
+  color: var(--sage);
+  border-radius: 7px;
+  padding: 5px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Source Sans 3', sans-serif;
+}
 
-  /* ── Days remaining pill ── */
-  .days-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    background: var(--earth);
-    color: var(--cream);
-    border-radius: 20px;
-    padding: 4px 12px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    margin-bottom: 14px;
-  }
+/* ── Batches panel ── */
+.batches-section {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--card-bg);
+}
+.batches-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-soft);
+  margin-bottom: 8px;
+}
+.batch-list { display: flex; flex-direction: column; gap: 6px; }
+.batch-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+.batch-item-info { flex: 1; }
+.batch-item-name { font-size: 0.88rem; font-weight: 600; color: var(--earth); }
+.batch-item-date { font-size: 0.75rem; color: var(--text-soft); margin-top: 1px; }
+.batch-actions { display: flex; gap: 6px; }
+.batch-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 9px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text-soft);
+  font-family: 'Source Sans 3', sans-serif;
+}
+.batch-btn.archive { color: var(--sage); border-color: var(--sage-lt); }
+.batch-btn.delete  { color: var(--rust); border-color: #FFCCBC; }
+.batch-archived { opacity: 0.5; }
 
-  /* ── Egg log table ── */
-  .egg-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-  .egg-table th {
-    text-align: left;
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    color: var(--text-soft);
-    font-weight: 600;
-    padding: 6px 8px;
-    border-bottom: 2px solid var(--border);
-  }
-  .egg-table td {
-    padding: 9px 8px;
-    border-bottom: 1px solid var(--mist);
-    vertical-align: top;
-  }
-  .egg-table tr:last-child td { border-bottom: none; }
-  .egg-table .num { font-weight: 600; color: var(--bark); font-family: 'Bitter', serif; }
-  .egg-table .del-btn {
-    background: none; border: none; cursor: pointer;
-    color: var(--clay); font-size: 1rem; padding: 2px 4px;
-  }
+/* ── Modal ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.modal-overlay.hidden { display: none; }
+.modal {
+  background: var(--card-bg);
+  border-radius: 18px 18px 0 0;
+  padding: 24px 20px 40px;
+  width: 100%;
+  max-width: 480px;
+}
+.modal h3 {
+  font-family: 'Bitter', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--earth);
+  margin-bottom: 16px;
+}
+.modal .input-group { margin-bottom: 12px; }
+.modal-actions { display: flex; gap: 10px; margin-top: 16px; }
+.btn-cancel { background: var(--mist); color: var(--text-soft); }
 
-  /* ── Stats row ── */
-  .stats-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 14px;
-  }
-  .stat-box {
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px 10px;
-    text-align: center;
-  }
-  .stat-box .val {
-    font-family: 'Bitter', serif;
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: var(--bark);
-    line-height: 1;
-  }
-  .stat-box .lbl {
-    font-size: 0.68rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--text-soft);
-    margin-top: 4px;
-    font-weight: 600;
-  }
-
-  /* ── Empty state ── */
-  .empty {
-    text-align: center;
-    padding: 32px 20px;
-    color: var(--text-soft);
-  }
-  .empty .icon { font-size: 2.5rem; margin-bottom: 8px; }
-  .empty p { font-size: 0.88rem; line-height: 1.5; }
-
-  /* ── Section divider ── */
-  .section-label {
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--clay);
-    padding: 4px 0 8px;
-  }
-
-  /* ── Toast ── */
-  .toast {
-    position: fixed;
-    bottom: calc(var(--tab-h) + var(--safe-b) + 12px);
-    left: 50%; transform: translateX(-50%) translateY(20px);
-    background: var(--earth);
-    color: var(--cream);
-    padding: 10px 20px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    opacity: 0;
-    transition: opacity 0.3s, transform 0.3s;
-    z-index: 999;
-    white-space: nowrap;
-  }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-  /* ── No-date state ── */
-  .no-date-banner {
-    background: linear-gradient(135deg, #FFF8E1, #FFF3E0);
-    border: 1.5px dashed var(--straw);
-    border-radius: 12px;
-    padding: 20px;
-    text-align: center;
-    margin-bottom: 14px;
-  }
-  .no-date-banner .icon { font-size: 2rem; margin-bottom: 6px; }
-  .no-date-banner p { font-size: 0.85rem; color: var(--text-soft); }
-  .no-date-banner strong { color: var(--bark); }
+/* ── Toast ── */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--earth);
+  color: var(--cream);
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 999;
+  white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>🥚 Quail Tracker</h1>
-  <p id="header-sub">Coturnix Quail — Incubation &amp; Production</p>
+  <div>
+    <h1>🥚 Quail Tracker</h1>
+    <p id="header-sub">Tap a date to see details</p>
+  </div>
+  <button class="header-add-btn" onclick="openAddBatch()">+ New Batch</button>
 </header>
 
-<div class="tab-bar">
-  <button class="tab-btn active" onclick="switchTab('incubation')">
-    <span>🐣</span>Incubation
-  </button>
-  <button class="tab-btn" onclick="switchTab('brooder')">
-    <span>🌡️</span>Brooder
-  </button>
-  <button class="tab-btn" onclick="switchTab('eggs')">
-    <span>📋</span>Egg Log
-  </button>
-</div>
+<!-- Active batches strip -->
+<div class="batches-section" id="batches-section"></div>
 
-<!-- ══════════════ TAB 1: INCUBATION ══════════════ -->
-<div id="tab-incubation" class="page active">
-
-  <div class="card">
-    <div class="card-title"><span class="icon">📅</span> Incubation Start Date</div>
-    <div class="input-group">
-      <label>Date eggs were set</label>
-      <input type="date" id="start-date-input">
-    </div>
-    <button class="btn btn-primary btn-full" onclick="saveStartDate()">💾 Save Date</button>
+<!-- Calendar -->
+<div class="calendar-wrap">
+  <div class="cal-nav">
+    <button onclick="prevMonth()">‹</button>
+    <h2 id="cal-title"></h2>
+    <button onclick="nextMonth()">›</button>
   </div>
-
-  <div id="incubation-content"></div>
+  <div class="cal-grid" id="cal-grid"></div>
 </div>
 
-<!-- ══════════════ TAB 2: BROODER ══════════════ -->
-<div id="tab-brooder" class="page">
-  <div id="brooder-content"></div>
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--ev-incubation)"></div> Incubation</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--ev-brooder)"></div> Brooder</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--ev-eggs)"></div> Eggs logged</div>
 </div>
 
-<!-- ══════════════ TAB 3: EGG LOG ══════════════ -->
-<div id="tab-eggs" class="page">
-
-  <div id="egg-stats"></div>
-
-  <div class="card">
-    <div class="card-title"><span class="icon">➕</span> Log Today's Eggs</div>
-    <div class="input-group">
-      <label>Date</label>
-      <input type="date" id="log-date">
-    </div>
-    <div class="input-group">
-      <label>Eggs Collected</label>
-      <input type="number" id="log-eggs" min="0" placeholder="0">
-    </div>
-    <div class="input-group">
-      <label>Hens Laying (optional)</label>
-      <input type="number" id="log-hens" min="0" placeholder="—">
-    </div>
-    <div class="input-group">
-      <label>Set to Incubate</label>
-      <input type="number" id="log-incubate" min="0" placeholder="0">
-    </div>
-    <div class="input-group">
-      <label>Notes (optional)</label>
-      <textarea id="log-notes" placeholder="Any observations..."></textarea>
-    </div>
-    <button class="btn btn-sage btn-full" onclick="saveEggEntry()">✓ Save Entry</button>
+<!-- Detail panel -->
+<div class="detail-panel" id="detail-panel">
+  <div class="no-selection">
+    <div class="icon">📅</div>
+    <p>Tap a date to see what's happening</p>
   </div>
+</div>
 
-  <div class="card">
-    <div class="card-title"><span class="icon">📋</span> Log History</div>
-    <div id="egg-log-table"></div>
+<!-- Add batch modal -->
+<div class="modal-overlay hidden" id="modal-overlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <h3>🐣 New Incubation Batch</h3>
+    <div class="input-group">
+      <label>Batch Name</label>
+      <input type="text" id="batch-name" placeholder="e.g. March eBay batch">
+    </div>
+    <div class="input-group">
+      <label>Date Eggs Were Set</label>
+      <input type="date" id="batch-start-date">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel btn-full" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary btn-full" onclick="saveBatch()">Save Batch</button>
+    </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// ── State ──────────────────────────────────────────────────────────────────
-let appData = { incubation: { start_date: null }, egg_log: [] };
+// ── Data & state ───────────────────────────────────────────────────────────
+let appData = { batches: [], egg_log: [] };
+let calYear, calMonth;
+let selectedDateStr = null;
 
-// ── Incubation milestones ──────────────────────────────────────────────────
-const MILESTONES = [
-  { day: 0,  label: "Eggs Set",              action: "Confirm incubator stable at 99.5°F / 45–55% humidity. Start auto-turner.",     temp: "99.5°F", hum: "45–55%", milestone: true },
-  { day: 7,  label: "First Candle",          action: "Candle eggs. Remove clearly infertile or quitters. Veins = developing.",        temp: "99.5°F", hum: "45–55%", milestone: false },
-  { day: 14, label: "Second Candle",         action: "Candle again before lockdown. Air cell should be large and distinct.",          temp: "99.5°F", hum: "45–55%", milestone: false },
-  { day: 15, label: "🔒 Lockdown",           action: "Stop turning. Raise humidity. Do NOT open lid again until hatch complete.",     temp: "99.5°F", hum: "65–70%", milestone: true },
-  { day: 17, label: "🐣 Hatch Begins",       action: "Watch for pipping and zipping. Do not assist unless stuck for 24h+.",           temp: "99.5°F", hum: "70%",    milestone: true },
-  { day: 18, label: "✅ Hatch Complete",     action: "Move dry fluffy chicks to brooder. Discard unhatched after 24h.",              temp: "99.5°F", hum: "70%",    milestone: true },
+// ── Milestones ─────────────────────────────────────────────────────────────
+const INCUBATION_MILESTONES = [
+  { day: 0,  label: "🥚 Eggs Set",             type: "inc", action: "Confirm incubator stable at 99.5°F / 45–55% humidity. Start auto-turner.",      temp: "99.5°F", hum: "45–55%", tip: "Rest shipped eggs pointy-end down 12–24h before setting." },
+  { day: 7,  label: "🔦 First Candle",          type: "inc", action: "Candle eggs. Remove clearly infertile eggs or early quitters.",                  temp: "99.5°F", hum: "45–55%", tip: "Veins = developing. Fully clear = likely infertile. Dark mass with movement = great." },
+  { day: 14, label: "🔦 Second Candle",         type: "inc", action: "Final candle before lockdown. Remove any late quitters.",                        temp: "99.5°F", hum: "45–55%", tip: "Air cell should be large and well-defined. Track egg weight loss — target 13–15% by today." },
+  { day: 15, label: "🔒 Lockdown",              type: "inc", action: "Stop turning eggs. Raise humidity. Do NOT open incubator until hatch is done.",  temp: "99.5°F", hum: "65–70%", tip: "Lay eggs on their sides. Resist the urge to open the lid — humidity loss kills chicks during hatch." },
+  { day: 17, label: "🐣 Hatch Begins",          type: "inc", action: "Watch for pipping and zipping. Do not assist unless chick is stuck for 24h+.",  temp: "99.5°F", hum: "70%",    tip: "Coturnix hatch fast. Some will be done in hours. Do not open the lid — shrink-wrapping is a real risk." },
+  { day: 18, label: "✅ Hatch Complete",        type: "inc", action: "Move dry fluffy chicks to brooder. Discard unhatched eggs after 24h.",           temp: "99.5°F", hum: "70%",    tip: "Chicks can survive 24–48h on yolk reserves. Don't rush them into the brooder while still wet." },
 ];
 
-// ── Brooder milestones ─────────────────────────────────────────────────────
-const BROODER = [
-  { offset: 0,   label: "🐣 Move to Brooder",      age: "Day 0",     temp: "95°F", action: "Dip beaks in water. Chick starter feed. Marbles in water dish to prevent drowning.", note: "Paper towels on floor for first 3 days." },
-  { offset: 7,   label: "Week 1 Complete",          age: "Week 1",    temp: "90°F", action: "Check for pasty butt daily. Keep draft-free.", note: "Drop brooder temp 5°F each week." },
-  { offset: 14,  label: "Week 2 Complete",          age: "Week 2",    temp: "85°F", action: "Chicks very active — ensure no crowding.", note: "Switch floor to pine shavings if not already." },
-  { offset: 21,  label: "🔍 Feathering / Sexing",   age: "Week 3",    temp: "80°F", action: "Sex by feather coloration begins.", note: "Males: rusty-red chest. Females: speckled/tan chest." },
-  { offset: 28,  label: "Fully Feathered",          age: "Week 4",    temp: "75°F", action: "Reduce heat if ambient temp >70°F.", note: "Transition to grower feed." },
-  { offset: 42,  label: "🔪 Harvest Window",        age: "Week 6",    temp: "Ambient", action: "Cull extra roosters for meat (~4–5 oz dressed).", note: "Hens may begin laying — watch for eggs." },
-  { offset: 56,  label: "🥚 Full Production",       age: "Week 8",    temp: "Ambient", action: "All keepers at full size. Consistent egg laying expected.", note: "Target ratio: 1 rooster per 4–5 hens." },
+const BROODER_MILESTONES = [
+  { day: 0,  label: "🏠 Move to Brooder",       type: "brd", action: "Set up brooder at 95°F. Dip beaks in water. Chick starter feed. Marbles in water dish.", temp: "95°F", tip: "Paper towels on floor for first 3 days — easier to clean and prevents leg splaying." },
+  { day: 7,  label: "Week 1 — Drop Temp",       type: "brd", action: "Reduce brooder temp to 90°F. Check for pasty butt daily.",                              temp: "90°F", tip: "If chicks are piling up, they're cold. If spread to edges, they're hot. Aim for even distribution." },
+  { day: 14, label: "Week 2 — Drop Temp",       type: "brd", action: "Reduce brooder temp to 85°F.",                                                           temp: "85°F", tip: "Switch floor from paper towels to pine shavings if not already." },
+  { day: 21, label: "🔍 Sexing Window",         type: "brd", action: "Sex by feather coloration. Begin culling plan for extra roosters.",                      temp: "80°F", tip: "Pharaoh males: rusty-red chest. Females: speckled/tan. Cull roosters beyond your 1:4–5 ratio." },
+  { day: 28, label: "Week 4 — Fully Feathered", type: "brd", action: "Reduce heat if ambient temp >70°F. Transition to grower feed.",                          temp: "75°F", tip: "Birds are largely self-regulating now. Watch for feather pecking if crowded." },
+  { day: 42, label: "🔪 Harvest Window Opens",  type: "brd", action: "Extra roosters ready for harvest (~4–5 oz dressed weight).",                             temp: "Ambient", tip: "Hens may begin laying around this time — watch for eggs." },
+  { day: 56, label: "🥚 Full Production",       type: "brd", action: "All keepers at full size. Consistent egg laying expected from hens.",                    temp: "Ambient", tip: "Target colony ratio: 1 rooster per 4–5 hens. Remove excess roosters if not already done." },
 ];
 
 // ── Utilities ──────────────────────────────────────────────────────────────
-function parseLocalDate(str) {
+function parseLocal(str) {
   if (!str) return null;
   const [y, m, d] = str.split('-').map(Number);
   return new Date(y, m - 1, d);
 }
-
+function toDateStr(date) {
+  return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+}
 function addDays(date, n) {
-  const d = new Date(date);
-  d.setDate(d.getDate() + n);
-  return d;
+  const d = new Date(date); d.setDate(d.getDate() + n); return d;
 }
-
-function fmtDate(date) {
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', weekday: 'short' });
+function todayStr() { return toDateStr(new Date()); }
+function fmtFull(str) {
+  return parseLocal(str).toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
 }
-
-function fmtDateShort(date) {
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+function fmtShort(str) {
+  return parseLocal(str).toLocaleDateString('en-US', { month:'short', day:'numeric' });
 }
-
-function daysBetween(a, b) {
-  return Math.round((b - a) / 86400000);
-}
-
-function today() {
-  const n = new Date();
-  return new Date(n.getFullYear(), n.getMonth(), n.getDate());
-}
-
 function showToast(msg) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
+  t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2500);
 }
 
-// ── Tabs ───────────────────────────────────────────────────────────────────
-function switchTab(name) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
-  event.currentTarget.classList.add('active');
-}
+// ── Build event map ────────────────────────────────────────────────────────
+function buildEventMap() {
+  const map = {}; // dateStr -> [{type, label, action, tip, batchName, temp, hum}]
+  const add = (dateStr, ev) => {
+    if (!map[dateStr]) map[dateStr] = [];
+    map[dateStr].push(ev);
+  };
 
-// ── API ────────────────────────────────────────────────────────────────────
-async function loadData() {
-  const res = await fetch('/api/data');
-  appData = await res.json();
-  renderAll();
-}
+  appData.batches.forEach(batch => {
+    if (!batch.start_date) return;
+    const start = parseLocal(batch.start_date);
+    const hatch = addDays(start, 18);
 
-async function saveStartDate() {
-  const val = document.getElementById('start-date-input').value;
-  if (!val) { showToast('Please select a date first'); return; }
-  await fetch('/api/incubation', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ start_date: val })
+    INCUBATION_MILESTONES.forEach(m => {
+      const d = toDateStr(addDays(start, m.day));
+      add(d, { ...m, batchName: batch.name, batchId: batch.id, active: batch.active });
+    });
+    BROODER_MILESTONES.forEach(m => {
+      const d = toDateStr(addDays(hatch, m.day));
+      add(d, { ...m, batchName: batch.name, batchId: batch.id, active: batch.active });
+    });
   });
-  appData.incubation.start_date = val;
-  showToast('✓ Start date saved');
-  renderAll();
+
+  appData.egg_log.forEach(entry => {
+    add(entry.date, { type: 'egg', label: `🥚 ${entry.eggs} egg${entry.eggs!==1?'s':''}`, entry });
+  });
+
+  return map;
 }
 
-async function saveEggEntry() {
-  const date = document.getElementById('log-date').value;
-  const eggs = document.getElementById('log-eggs').value;
-  if (!date || eggs === '') { showToast('Date and egg count are required'); return; }
+// ── Calendar render ────────────────────────────────────────────────────────
+function renderCalendar() {
+  const eventMap = buildEventMap();
+  const today = todayStr();
+  const firstDay = new Date(calYear, calMonth, 1);
+  const lastDay  = new Date(calYear, calMonth + 1, 0);
+
+  document.getElementById('cal-title').textContent =
+    firstDay.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+  const grid = document.getElementById('cal-grid');
+  grid.innerHTML = '';
+
+  // Day-of-week headers
+  ['Su','Mo','Tu','We','Th','Fr','Sa'].forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'cal-dow'; el.textContent = d;
+    grid.appendChild(el);
+  });
+
+  // Leading blanks
+  for (let i = 0; i < firstDay.getDay(); i++) {
+    const el = document.createElement('div');
+    el.className = 'cal-day empty';
+    grid.appendChild(el);
+  }
+
+  // Days
+  for (let d = 1; d <= lastDay.getDate(); d++) {
+    const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const events  = eventMap[dateStr] || [];
+    const el = document.createElement('div');
+    el.className = 'cal-day' +
+      (dateStr === today ? ' today' : '') +
+      (dateStr === selectedDateStr ? ' selected' : '');
+    el.onclick = () => selectDate(dateStr);
+
+    const numEl = document.createElement('div');
+    numEl.className = 'day-num'; numEl.textContent = d;
+    el.appendChild(numEl);
+
+    if (events.length) {
+      const dotRow = document.createElement('div');
+      dotRow.className = 'dot-row';
+      const types = [...new Set(events.map(e => e.type))];
+      types.forEach(t => {
+        const dot = document.createElement('div');
+        dot.className = 'dot ' + (t==='inc'?'dot-inc':t==='brd'?'dot-brd':'dot-egg');
+        dotRow.appendChild(dot);
+      });
+      el.appendChild(dotRow);
+    }
+    grid.appendChild(el);
+  }
+}
+
+// ── Date selection ─────────────────────────────────────────────────────────
+function selectDate(dateStr) {
+  selectedDateStr = dateStr;
+  renderCalendar();
+  renderDetail(dateStr);
+}
+
+function renderDetail(dateStr) {
+  const eventMap = buildEventMap();
+  const events   = eventMap[dateStr] || [];
+  const panel    = document.getElementById('detail-panel');
+  const eggEntry = appData.egg_log.find(e => e.date === dateStr);
+
+  const milestones = events.filter(e => e.type === 'inc' || e.type === 'brd');
+  const eggEvent   = events.find(e => e.type === 'egg');
+
+  let html = `<div class="detail-date-header">${fmtFull(dateStr)}</div>`;
+
+  // Milestone cards
+  if (milestones.length) {
+    milestones.forEach(m => {
+      const cls = m.type === 'brd' ? 'brooder' : '';
+      html += `<div class="milestone-card ${cls}">
+        <div class="mc-batch">${m.batchName}${!m.active ? ' · archived' : ''}</div>
+        <div class="mc-label">${m.label}</div>
+        <div class="mc-action">${m.action}</div>
+        <div class="mc-badges">
+          ${m.temp ? `<span class="badge badge-temp">🌡 ${m.temp}</span>` : ''}
+          ${m.hum  ? `<span class="badge badge-hum">💧 ${m.hum}</span>`   : ''}
+          ${m.tip  ? `<span class="badge badge-tip">💡 ${m.tip}</span>`   : ''}
+        </div>
+      </div>`;
+    });
+  }
+
+  // Egg section
+  html += `<div class="section-title">🥚 Egg Log</div>`;
+
+  if (eggEntry && !window._editingEgg) {
+    html += `<div class="egg-saved">
+      <div class="egg-saved-info">
+        <strong>${eggEntry.eggs} egg${eggEntry.eggs!==1?'s':''} collected</strong>
+        <p>${eggEntry.hens ? `${eggEntry.hens} hens laying` : ''}${eggEntry.notes ? (eggEntry.hens ? ' · ' : '') + eggEntry.notes : ''}</p>
+      </div>
+      <button class="egg-edit-btn" onclick="editEgg()">Edit</button>
+    </div>`;
+  } else {
+    html += `<div class="egg-form">
+      <div class="form-row">
+        <div class="input-group">
+          <label>Eggs Collected</label>
+          <input type="number" id="egg-count" min="0" placeholder="0" value="${eggEntry ? eggEntry.eggs : ''}">
+        </div>
+        <div class="input-group">
+          <label>Hens Laying</label>
+          <input type="number" id="egg-hens" min="0" placeholder="—" value="${eggEntry && eggEntry.hens ? eggEntry.hens : ''}">
+        </div>
+      </div>
+      <div class="input-group" style="margin-bottom:10px">
+        <label>Notes</label>
+        <textarea id="egg-notes" placeholder="Any observations...">${eggEntry ? eggEntry.notes || '' : ''}</textarea>
+      </div>
+      <button class="btn btn-sage btn-full" onclick="saveEgg('${dateStr}')">✓ Save</button>
+      ${eggEntry ? `<button class="btn btn-rust btn-full" style="margin-top:8px" onclick="deleteEgg('${dateStr}')">Delete Entry</button>` : ''}
+    </div>`;
+  }
+
+  if (!milestones.length && !eggEntry && !window._editingEgg) {
+    html = `<div class="detail-date-header">${fmtFull(dateStr)}</div>
+      <div class="no-selection" style="padding:20px 0">
+        <p>Nothing scheduled. Log eggs below if needed.</p>
+      </div>` + html.split('</div>').slice(1).join('</div>');
+  }
+
+  panel.innerHTML = html;
+  window._editingEgg = false;
+}
+
+function editEgg() {
+  window._editingEgg = true;
+  renderDetail(selectedDateStr);
+  setTimeout(() => document.getElementById('egg-count')?.focus(), 50);
+}
+
+// ── Egg save/delete ────────────────────────────────────────────────────────
+async function saveEgg(dateStr) {
+  const eggs = document.getElementById('egg-count').value;
+  if (eggs === '') { showToast('Enter an egg count'); return; }
   const entry = {
-    date,
+    date: dateStr,
     eggs: parseInt(eggs),
-    hens: document.getElementById('log-hens').value || null,
-    incubate: document.getElementById('log-incubate').value || 0,
-    notes: document.getElementById('log-notes').value || ''
+    hens: document.getElementById('egg-hens').value || null,
+    notes: document.getElementById('egg-notes').value || ''
   };
   await fetch('/api/egg_log', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(entry)
   });
-  appData.egg_log = appData.egg_log.filter(e => e.date !== date);
-  appData.egg_log.push(entry);
-  appData.egg_log.sort((a, b) => a.date.localeCompare(b.date));
-  document.getElementById('log-eggs').value = '';
-  document.getElementById('log-hens').value = '';
-  document.getElementById('log-incubate').value = '';
-  document.getElementById('log-notes').value = '';
-  showToast('✓ Entry saved');
-  renderEggLog();
+  const idx = appData.egg_log.findIndex(e => e.date === dateStr);
+  if (idx >= 0) appData.egg_log[idx] = entry;
+  else { appData.egg_log.push(entry); appData.egg_log.sort((a,b) => a.date.localeCompare(b.date)); }
+  showToast('✓ Saved');
+  window._editingEgg = false;
+  renderCalendar();
+  renderDetail(dateStr);
 }
 
-async function deleteEntry(date) {
-  await fetch('/api/egg_log/' + date, { method: 'DELETE' });
-  appData.egg_log = appData.egg_log.filter(e => e.date !== date);
+async function deleteEgg(dateStr) {
+  await fetch(`/api/egg_log/${dateStr}`, { method: 'DELETE' });
+  appData.egg_log = appData.egg_log.filter(e => e.date !== dateStr);
   showToast('Entry deleted');
-  renderEggLog();
+  renderCalendar();
+  renderDetail(dateStr);
 }
 
-// ── Render: Incubation ─────────────────────────────────────────────────────
-function renderIncubation() {
-  const el = document.getElementById('incubation-content');
-  const startStr = appData.incubation.start_date;
+// ── Batches ────────────────────────────────────────────────────────────────
+function renderBatches() {
+  const el = document.getElementById('batches-section');
+  const active   = appData.batches.filter(b => b.active);
+  const archived = appData.batches.filter(b => !b.active);
 
-  // Populate input
-  if (startStr) document.getElementById('start-date-input').value = startStr;
+  if (!appData.batches.length) {
+    el.innerHTML = `<div class="batches-title">No batches yet — add one to get started</div>`;
+    return;
+  }
 
-  if (!startStr) {
-    el.innerHTML = `
-      <div class="no-date-banner">
-        <div class="icon">📅</div>
-        <p><strong>No start date set yet.</strong><br>Enter the date you placed eggs in the incubator above to see your full timeline.</p>
+  let html = `<div class="batches-title">Active Batches</div><div class="batch-list">`;
+  active.forEach(b => {
+    const hatch = toDateStr(addDays(parseLocal(b.start_date), 18));
+    html += `<div class="batch-item">
+      <div class="batch-item-info">
+        <div class="batch-item-name">${b.name}</div>
+        <div class="batch-item-date">Set ${fmtShort(b.start_date)} · Hatch ~${fmtShort(hatch)}</div>
+      </div>
+      <div class="batch-actions">
+        <button class="batch-btn archive" onclick="archiveBatch('${b.id}')">Archive</button>
+        <button class="batch-btn delete"  onclick="deleteBatch('${b.id}')">✕</button>
+      </div>
+    </div>`;
+  });
+
+  if (archived.length) {
+    html += `</div><div class="batches-title" style="margin-top:10px">Archived</div><div class="batch-list">`;
+    archived.forEach(b => {
+      html += `<div class="batch-item batch-archived">
+        <div class="batch-item-info">
+          <div class="batch-item-name">${b.name}</div>
+          <div class="batch-item-date">Set ${fmtShort(b.start_date)}</div>
+        </div>
+        <div class="batch-actions">
+          <button class="batch-btn delete" onclick="deleteBatch('${b.id}')">✕</button>
+        </div>
       </div>`;
-    return;
+    });
   }
 
-  const startDate = parseLocalDate(startStr);
-  const todayDate = today();
-  const dayNum = daysBetween(startDate, todayDate);
-  const hatchDate = addDays(startDate, 18);
-  const daysToHatch = daysBetween(todayDate, hatchDate);
+  html += `</div>`;
+  el.innerHTML = html;
+}
 
-  // Today status
-  let todayHTML = '';
-  if (dayNum < 0) {
-    todayHTML = `<div class="today-marker"><div class="icon">⏳</div><div class="info"><strong>Not started yet</strong><p>Incubation begins in ${Math.abs(dayNum)} day${Math.abs(dayNum)!==1?'s':''}.</p></div></div>`;
-  } else if (dayNum > 18) {
-    todayHTML = `<div class="today-marker"><div class="icon">✅</div><div class="info"><strong>Hatch period complete</strong><p>Day ${dayNum} — chicks should be in the brooder.</p></div></div>`;
-  } else {
-    const current = MILESTONES.filter(m => m.day <= dayNum).pop();
-    const next = MILESTONES.find(m => m.day > dayNum);
-    todayHTML = `<div class="today-marker">
-      <div class="icon">📍</div>
-      <div class="info">
-        <strong>Day ${dayNum} of 18</strong>
-        <p>${next ? `Next: <b>${next.label}</b> in ${next.day - dayNum} day${(next.day-dayNum)!==1?'s':''}` : 'Hatch complete!'}</p>
-      </div>
-    </div>`;
-  }
+function openAddBatch() {
+  document.getElementById('batch-name').value = '';
+  document.getElementById('batch-start-date').value = todayStr();
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+}
+function closeModalOutside(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+}
 
-  // Timeline
-  let tlHTML = '<div class="timeline">';
-  MILESTONES.forEach((m, idx) => {
-    const mDate = addDays(startDate, m.day);
-    const isToday = daysBetween(mDate, todayDate) === 0;
-    const isPast  = mDate < todayDate;
-    const dotClass = isToday ? 'today' : (isPast ? 'past' : (m.milestone ? 'milestone' : ''));
-    const isLast = idx === MILESTONES.length - 1;
-
-    tlHTML += `<div class="tl-row">
-      <div class="tl-line">
-        <div class="tl-dot ${dotClass}"></div>
-        ${!isLast ? '<div class="tl-connector"></div>' : ''}
-      </div>
-      <div class="tl-content">
-        <div class="tl-date">${fmtDate(mDate)}${isToday ? ' — TODAY' : ''}</div>
-        <div class="tl-label ${m.milestone?'milestone':''}">${m.label}</div>
-        <div class="tl-action">${m.action}</div>
-        <div class="tl-badges">
-          <span class="badge badge-temp">🌡 ${m.temp}</span>
-          <span class="badge badge-hum">💧 ${m.hum}</span>
-        </div>
-      </div>
-    </div>`;
+async function saveBatch() {
+  const name  = document.getElementById('batch-name').value.trim();
+  const start = document.getElementById('batch-start-date').value;
+  if (!name || !start) { showToast('Name and date are required'); return; }
+  const res   = await fetch('/api/batches', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, start_date: start })
   });
-  tlHTML += '</div>';
-
-  el.innerHTML = todayHTML + `<div class="card"><div class="card-title"><span class="icon">📆</span> Full Timeline</div>${tlHTML}</div>`;
+  const batch = await res.json();
+  appData.batches.push(batch);
+  closeModal();
+  showToast(`✓ ${name} added`);
+  renderBatches();
+  renderCalendar();
+  // Jump to the batch start month
+  const d = parseLocal(start);
+  calYear = d.getFullYear(); calMonth = d.getMonth();
+  renderCalendar();
 }
 
-// ── Render: Brooder ────────────────────────────────────────────────────────
-function renderBrooder() {
-  const el = document.getElementById('brooder-content');
-  const startStr = appData.incubation.start_date;
-
-  if (!startStr) {
-    el.innerHTML = `<div class="no-date-banner"><div class="icon">🌡️</div><p><strong>Set your incubation start date first</strong><br>on the Incubation tab to see the brooder timeline.</p></div>`;
-    return;
-  }
-
-  const hatchDate = addDays(parseLocalDate(startStr), 18);
-  const todayDate = today();
-
-  let tlHTML = '<div class="timeline">';
-  BROODER.forEach((m, idx) => {
-    const mDate = addDays(hatchDate, m.offset);
-    const isToday = daysBetween(mDate, todayDate) === 0;
-    const isPast  = mDate < todayDate;
-    const isFuture = mDate > todayDate;
-    const dotClass = isToday ? 'today' : (isPast ? 'past' : (m.offset === 0 || m.offset === 42 || m.offset === 56 ? 'milestone' : ''));
-    const isLast = idx === BROODER.length - 1;
-
-    tlHTML += `<div class="tl-row">
-      <div class="tl-line">
-        <div class="tl-dot ${dotClass}"></div>
-        ${!isLast ? '<div class="tl-connector"></div>' : ''}
-      </div>
-      <div class="tl-content">
-        <div class="tl-date">${fmtDate(mDate)}${isToday ? ' — TODAY' : ''} &nbsp;·&nbsp; ${m.age}</div>
-        <div class="tl-label">${m.label}</div>
-        <div class="tl-action">${m.action}</div>
-        <div class="tl-badges">
-          <span class="badge badge-temp">🌡 ${m.temp}</span>
-          <span class="badge badge-note">📝 ${m.note}</span>
-        </div>
-      </div>
-    </div>`;
-  });
-  tlHTML += '</div>';
-
-  el.innerHTML = `<div class="card"><div class="card-title"><span class="icon">🗓️</span> Brooder & Grow-Out Timeline</div>${tlHTML}</div>`;
+async function archiveBatch(id) {
+  await fetch(`/api/batches/${id}/archive`, { method: 'POST' });
+  const b = appData.batches.find(b => b.id === id);
+  if (b) b.active = false;
+  showToast('Batch archived');
+  renderBatches();
+  renderCalendar();
 }
 
-// ── Render: Egg Log ────────────────────────────────────────────────────────
-function renderEggLog() {
-  // Set default date to today
-  if (!document.getElementById('log-date').value) {
-    document.getElementById('log-date').value = today().toISOString().split('T')[0];
-  }
-
-  const log = [...appData.egg_log].reverse();
-  const total = appData.egg_log.reduce((s, e) => s + (parseInt(e.eggs)||0), 0);
-  const days  = appData.egg_log.length;
-  const avg   = days >= 7
-    ? (appData.egg_log.slice(-7).reduce((s,e) => s+(parseInt(e.eggs)||0), 0) / 7).toFixed(1)
-    : (days > 0 ? (total/days).toFixed(1) : '—');
-
-  document.getElementById('egg-stats').innerHTML = `
-    <div class="stats-row">
-      <div class="stat-box"><div class="val">${total}</div><div class="lbl">Total Eggs</div></div>
-      <div class="stat-box"><div class="val">${days}</div><div class="lbl">Days Logged</div></div>
-      <div class="stat-box"><div class="val">${avg}</div><div class="lbl">7-Day Avg</div></div>
-    </div>`;
-
-  const tableEl = document.getElementById('egg-log-table');
-  if (log.length === 0) {
-    tableEl.innerHTML = `<div class="empty"><div class="icon">📋</div><p>No entries yet.<br>Log your first collection above.</p></div>`;
-    return;
-  }
-
-  let rows = log.map(e => {
-    const d = parseLocalDate(e.date);
-    return `<tr>
-      <td>${fmtDateShort(d)}</td>
-      <td class="num">${e.eggs}</td>
-      <td>${e.hens || '—'}</td>
-      <td style="font-size:0.78rem;color:var(--text-soft)">${e.notes || ''}</td>
-      <td><button class="del-btn" onclick="deleteEntry('${e.date}')">🗑</button></td>
-    </tr>`;
-  }).join('');
-
-  tableEl.innerHTML = `<table class="egg-table">
-    <thead><tr><th>Date</th><th>Eggs</th><th>Hens</th><th>Notes</th><th></th></tr></thead>
-    <tbody>${rows}</tbody>
-  </table>`;
+async function deleteBatch(id) {
+  await fetch(`/api/batches/${id}`, { method: 'DELETE' });
+  appData.batches = appData.batches.filter(b => b.id !== id);
+  showToast('Batch deleted');
+  renderBatches();
+  renderCalendar();
 }
 
-function renderAll() {
-  renderIncubation();
-  renderBrooder();
-  renderEggLog();
+// ── Month nav ──────────────────────────────────────────────────────────────
+function prevMonth() {
+  calMonth--;
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  renderCalendar();
+}
+function nextMonth() {
+  calMonth++;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  renderCalendar();
 }
 
 // ── Init ───────────────────────────────────────────────────────────────────
-loadData();
+async function init() {
+  const now = new Date();
+  calYear = now.getFullYear(); calMonth = now.getMonth();
+  const res = await fetch('/api/data');
+  appData = await res.json();
+  if (!appData.batches) appData.batches = [];
+  if (!appData.egg_log) appData.egg_log = [];
+  renderBatches();
+  renderCalendar();
+  // Auto-select today
+  selectDate(todayStr());
+}
+
+init();
 </script>
 </body>
 </html>
