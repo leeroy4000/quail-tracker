@@ -14,6 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root {
   --ink:       #2A1F0E;
@@ -329,6 +330,7 @@ header p  { font-size: 0.72rem; color: var(--tan); margin-top: 1px; font-weight:
     <div class="egg-table-wrap">
       <div class="egg-table-header">
         <span>All Entries</span>
+        <button class="export-btn" onclick="exportEggLog()" style="border-color:rgba(232,200,122,0.4);color:var(--straw);">&#x2913; Export .xlsx</button>
       </div>
       <div id="egg-table-body"></div>
     </div>
@@ -594,6 +596,23 @@ function renderEggTable(){
     </tr>`;
   });
   wrap.innerHTML=html+'</tbody></table>';
+}
+
+function exportEggLog(){
+  if(!appData.egg_log.length){showToast('No entries to export');return;}
+  const rows=appData.egg_log
+    .slice().sort((a,b)=>a.date.localeCompare(b.date))
+    .map(e=>({
+      Date: e.date,
+      'Eggs Collected': e.eggs,
+      'Hens Laying': e.hens||'',
+      Notes: e.notes||''
+    }));
+  const ws=XLSX.utils.json_to_sheet(rows);
+  ws['!cols']=[{wch:12},{wch:16},{wch:12},{wch:40}];
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,'Egg Log',ws);
+  XLSX.writeFile(wb,`quail-egg-log-${todayStr()}.xlsx`);
 }
 
 function renderEggPage(){
