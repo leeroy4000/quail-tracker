@@ -13,3 +13,4 @@ app/*.pyc
 .vscode/
 *.swp
 *.swo
+.env
