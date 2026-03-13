@@ -13,6 +13,7 @@
 <title>Quail Tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 :root {
   --ink:       #2A1F0E;
@@ -55,6 +56,22 @@ header p  { font-size: 0.72rem; color: var(--tan); margin-top: 1px; font-weight:
 
 .woodgrain { height: 3px; background: repeating-linear-gradient(90deg,var(--tan) 0,var(--tan) 6px,var(--straw) 6px,var(--straw) 10px,var(--border-dk) 10px,var(--border-dk) 14px); opacity: 0.4; }
 
+/* ── Tab nav ── */
+.tab-nav {
+  display: flex; background: var(--parchment); border-bottom: 1.5px solid var(--border);
+}
+.tab-btn {
+  flex: 1; padding: 10px 0; font-family: 'Lato', sans-serif; font-size: 0.82rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.08em; color: var(--clay); background: none;
+  border: none; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -1.5px;
+  transition: color 0.15s, border-color 0.15s;
+}
+.tab-btn.active { color: var(--bark); border-bottom-color: var(--bark); }
+
+/* ── Pages ── */
+.page { display: none; }
+.page.active { display: block; }
+
 /* batches */
 .batches-section { background: var(--parchment); border-bottom: 1px solid var(--border); padding: 10px 14px; }
 .batches-title { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--clay); margin-bottom: 7px; }
@@ -94,7 +111,6 @@ header p  { font-size: 0.72rem; color: var(--tan); margin-top: 1px; font-weight:
 .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
 .dot-inc { background: var(--ev-inc); }
 .dot-brd { background: var(--ev-brd); }
-.dot-egg { background: var(--ev-egg); }
 
 .legend { display: flex; gap: 14px; padding: 7px 14px 10px; justify-content: center; }
 .legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.68rem; color: var(--clay); font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
@@ -116,14 +132,6 @@ header p  { font-size: 0.72rem; color: var(--tan); margin-top: 1px; font-weight:
 .badge-hum  { background: #E6F0FF; color: #1A4A8A; }
 .badge-tip  { background: var(--parchment); color: var(--clay); border: 1px solid var(--border); }
 
-.section-title { font-family: 'Playfair Display', serif; font-size: 0.92rem; font-weight: 600; color: var(--bark); margin: 14px 0 8px; }
-.egg-form { background: var(--white); border-radius: 12px; border: 1px solid var(--border); padding: 13px; box-shadow: 0 1px 5px var(--shadow); }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-.input-group label { display: block; font-size: 0.67rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--clay); margin-bottom: 4px; }
-.input-group input, .input-group textarea { width: 100%; padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Lato', sans-serif; font-size: 0.92rem; color: var(--ink); background: var(--parchment); -webkit-appearance: none; }
-.input-group input:focus, .input-group textarea:focus { outline: none; border-color: var(--tan); background: var(--white); }
-.input-group textarea { resize: vertical; min-height: 54px; }
-
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 18px; border-radius: 20px; border: none; font-family: 'Lato', sans-serif; font-size: 0.88rem; font-weight: 700; cursor: pointer; letter-spacing: 0.03em; transition: opacity 0.15s; }
 .btn:active { opacity: 0.8; }
 .btn-primary { background: var(--bark); color: var(--straw); }
@@ -132,17 +140,20 @@ header p  { font-size: 0.72rem; color: var(--tan); margin-top: 1px; font-weight:
 .btn-cancel  { background: var(--mist); color: var(--clay); }
 .btn-full    { width: 100%; }
 
-.egg-saved { background: #F4F9F0; border: 1.5px solid var(--sage-lt); border-radius: 12px; padding: 11px 13px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-.egg-saved-info strong { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: var(--moss); }
-.egg-saved-info p { font-size: 0.78rem; color: var(--clay); margin-top: 2px; }
-.egg-edit-btn { background: none; border: 1.5px solid var(--sage); color: var(--sage); border-radius: 8px; padding: 5px 11px; font-size: 0.78rem; font-weight: 700; cursor: pointer; font-family: 'Lato', sans-serif; }
-
 .modal-overlay { position: fixed; inset: 0; background: rgba(42,31,14,0.55); z-index: 200; display: flex; align-items: flex-end; justify-content: center; }
 .modal-overlay.hidden { display: none; }
 .modal { background: var(--cream); border-radius: 20px 20px 0 0; border-top: 3px solid var(--tan); padding: 22px 18px 40px; width: 100%; max-width: 480px; }
 .modal h3 { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--bark); margin-bottom: 16px; }
 .modal .input-group { margin-bottom: 11px; }
 .modal-actions { display: flex; gap: 10px; margin-top: 16px; }
+
+/* ── Egg log modal (floating from bottom) ── */
+#egg-modal .input-group { margin-bottom: 11px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.input-group label { display: block; font-size: 0.67rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--clay); margin-bottom: 4px; }
+.input-group input, .input-group textarea { width: 100%; padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Lato', sans-serif; font-size: 0.92rem; color: var(--ink); background: var(--parchment); -webkit-appearance: none; }
+.input-group input:focus, .input-group textarea:focus { outline: none; border-color: var(--tan); background: var(--white); }
+.input-group textarea { resize: vertical; min-height: 54px; }
 
 .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(16px); background: var(--bark); color: var(--straw); padding: 9px 20px; border-radius: 20px; font-size: 0.84rem; font-weight: 700; opacity: 0; transition: opacity 0.25s, transform 0.25s; z-index: 999; white-space: nowrap; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -153,11 +164,60 @@ header p  { font-size: 0.72rem; color: var(--tan); margin-top: 1px; font-weight:
 .export-btn:hover { background: var(--parchment); }
 .export-btn.print-btn { border-color: var(--bark); color: var(--bark); }
 
+/* ── Egg Log Page ── */
+.egg-page { padding: 12px 12px 80px; max-width: 460px; margin: 0 auto; }
+
+.egg-page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.egg-page-header h2 { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 600; color: var(--bark); }
+
+.chart-card {
+  background: var(--white); border: 1.5px solid var(--border-dk); border-radius: 16px;
+  box-shadow: 0 2px 10px var(--shadow); overflow: hidden; margin-bottom: 14px;
+}
+.chart-header { background: var(--bark); padding: 9px 14px; display: flex; align-items: center; justify-content: space-between; }
+.chart-title { font-family: 'Playfair Display', serif; font-size: 0.92rem; font-weight: 600; color: var(--straw); }
+.range-pills { display: flex; gap: 4px; }
+.range-pill {
+  background: rgba(255,255,255,0.12); border: 1px solid rgba(232,200,122,0.3);
+  color: var(--tan); border-radius: 20px; padding: 3px 10px;
+  font-family: 'Lato', sans-serif; font-size: 0.68rem; font-weight: 700;
+  letter-spacing: 0.06em; cursor: pointer; transition: background 0.15s, color 0.15s;
+}
+.range-pill.active { background: var(--straw); color: var(--bark); border-color: var(--straw); }
+.chart-body { padding: 14px 10px 10px; position: relative; height: 200px; }
+
+.chart-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border-top: 1px solid var(--border); }
+.stat-cell { background: var(--parchment); padding: 9px 10px; text-align: center; }
+.stat-val { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--bark); }
+.stat-lbl { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--clay); margin-top: 1px; }
+
+/* egg table */
+.egg-table-wrap {
+  background: var(--white); border: 1.5px solid var(--border-dk); border-radius: 16px;
+  overflow: hidden; box-shadow: 0 2px 10px var(--shadow);
+}
+.egg-table-header { background: var(--bark); padding: 9px 14px; display: flex; align-items: center; justify-content: space-between; }
+.egg-table-header span { font-family: 'Playfair Display', serif; font-size: 0.92rem; font-weight: 600; color: var(--straw); }
+.egg-table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+.egg-table th { background: var(--parchment); padding: 7px 10px; text-align: left; font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--clay); border-bottom: 1px solid var(--border); }
+.egg-table td { padding: 8px 10px; border-bottom: 1px solid var(--mist); vertical-align: top; }
+.egg-table tr:last-child td { border-bottom: none; }
+.egg-table tr:hover td { background: var(--parchment); }
+.egg-count { font-family: 'Playfair Display', serif; font-size: 1.0rem; font-weight: 600; color: var(--bark); }
+.egg-hens { font-size: 0.75rem; color: var(--clay); margin-top: 1px; }
+.egg-notes-cell { font-size: 0.78rem; color: var(--clay); line-height: 1.4; }
+.row-actions { display: flex; gap: 5px; white-space: nowrap; }
+.tbl-btn { background: none; border: 1px solid var(--border); border-radius: 6px; padding: 3px 8px; font-size: 0.68rem; font-weight: 700; cursor: pointer; color: var(--clay); font-family: 'Lato', sans-serif; }
+.tbl-btn.edit   { color: var(--moss); border-color: var(--sage-lt); }
+.tbl-btn.delete { color: var(--rust); border-color: #E8B49A; }
+.empty-log { text-align: center; padding: 32px 20px; color: var(--clay); font-size: 0.85rem; }
+
 /* ── Print styles ── */
 @media print {
   header, .woodgrain, .batches-section, .export-bar, .legend,
-  .cal-nav button, .header-add-btn, .egg-form, .egg-edit-btn,
-  .batch-actions, .modal-overlay, .toast { display: none !important; }
+  .cal-nav button, .header-add-btn, .tab-nav,
+  .batch-actions, .modal-overlay, .toast, #egg-page { display: none !important; }
+  #calendar-page { display: block !important; }
 
   body { background: white; font-size: 10pt; color: #000; }
   .calendar-outer { padding: 0; }
@@ -180,10 +240,8 @@ header p  { font-size: 0.72rem; color: var(--tan); margin-top: 1px; font-weight:
   .detail-panel { page-break-before: always; padding: 10pt; }
   .detail-date-header { font-size: 14pt; border-bottom: 1pt solid #CCC; }
   .milestone-card { box-shadow: none; border: 0.5pt solid #CCC; page-break-inside: avoid; }
-  .section-title, .egg-saved { display: none !important; }
 }
 
-/* Hide print events on screen */
 @media screen { .print-events { display: none; } }
 </style>
 </head>
@@ -194,39 +252,89 @@ header p  { font-size: 0.72rem; color: var(--tan); margin-top: 1px; font-weight:
     <h1>Quail Tracker</h1>
     <p id="header-sub">Tap a date to see details</p>
   </div>
-  <button class="header-add-btn" onclick="openAddBatch()">+ New Batch</button>
+  <button class="header-add-btn" id="header-action-btn" onclick="headerAction()">+ New Batch</button>
 </header>
 <div class="woodgrain"></div>
 
-<div class="batches-section" id="batches-section"></div>
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('calendar')">Calendar</button>
+  <button class="tab-btn" onclick="switchTab('eggs')">Egg Log</button>
+</div>
 
-<div class="calendar-outer">
-  <div class="calendar-wrap">
-    <div class="cal-nav">
-      <button onclick="prevMonth()">&#8249;</button>
-      <h2 id="cal-title"></h2>
-      <button onclick="nextMonth()">&#8250;</button>
+<!-- ══ CALENDAR PAGE ══ -->
+<div class="page active" id="calendar-page">
+
+  <div class="batches-section" id="batches-section"></div>
+
+  <div class="calendar-outer">
+    <div class="calendar-wrap">
+      <div class="cal-nav">
+        <button onclick="prevMonth()">&#8249;</button>
+        <h2 id="cal-title"></h2>
+        <button onclick="nextMonth()">&#8250;</button>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
     </div>
-    <div class="cal-grid" id="cal-grid"></div>
   </div>
-</div>
 
-<div class="legend">
-  <div class="legend-item"><div class="legend-dot" style="background:var(--ev-inc)"></div>Incubation</div>
-  <div class="legend-item"><div class="legend-dot" style="background:var(--ev-brd)"></div>Brooder</div>
-  <div class="legend-item"><div class="legend-dot" style="background:var(--ev-egg)"></div>Eggs</div>
-</div>
-<div class="woodgrain"></div>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--ev-inc)"></div>Incubation</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--ev-brd)"></div>Brooder</div>
+  </div>
+  <div class="woodgrain"></div>
 
-<div class="export-bar">
-  <a class="export-btn" href="/calendar.ics" download="quail-tracker.ics">&#x2913; Download .ics</a>
-  <button class="export-btn print-btn" onclick="window.print()">&#x2399; Print</button>
-</div>
+  <div class="export-bar">
+    <a class="export-btn" href="/calendar.ics" download="quail-tracker.ics">&#x2913; Download .ics</a>
+    <button class="export-btn print-btn" onclick="window.print()">&#x2399; Print</button>
+  </div>
 
-<div class="detail-panel" id="detail-panel">
-  <div class="no-selection">Tap a date to see what&rsquo;s happening</div>
-</div>
+  <div class="detail-panel" id="detail-panel">
+    <div class="no-selection">Tap a date to see what&rsquo;s happening</div>
+  </div>
 
+</div><!-- /calendar-page -->
+
+<!-- ══ EGG LOG PAGE ══ -->
+<div class="page" id="egg-page">
+  <div class="egg-page">
+
+    <div class="egg-page-header">
+      <h2>Egg Production</h2>
+    </div>
+
+    <!-- Chart card -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-title">Daily Egg Count</span>
+        <div class="range-pills">
+          <button class="range-pill" onclick="setRange(7)" id="pill-7">7D</button>
+          <button class="range-pill active" onclick="setRange(30)" id="pill-30">30D</button>
+          <button class="range-pill" onclick="setRange(90)" id="pill-90">3M</button>
+          <button class="range-pill" onclick="setRange(365)" id="pill-365">1Y</button>
+        </div>
+      </div>
+      <div class="chart-body">
+        <canvas id="egg-chart"></canvas>
+      </div>
+      <div class="chart-stats">
+        <div class="stat-cell"><div class="stat-val" id="stat-total">—</div><div class="stat-lbl">Total Eggs</div></div>
+        <div class="stat-cell"><div class="stat-val" id="stat-avg">—</div><div class="stat-lbl">Daily Avg</div></div>
+        <div class="stat-cell"><div class="stat-val" id="stat-best">—</div><div class="stat-lbl">Best Day</div></div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="egg-table-wrap">
+      <div class="egg-table-header">
+        <span>All Entries</span>
+      </div>
+      <div id="egg-table-body"></div>
+    </div>
+
+  </div>
+</div><!-- /egg-page -->
+
+<!-- New Batch Modal -->
 <div class="modal-overlay hidden" id="modal-overlay" onclick="closeModalOutside(event)">
   <div class="modal">
     <h3>New Incubation Batch</h3>
@@ -239,10 +347,27 @@ header p  { font-size: 0.72rem; color: var(--tan); margin-top: 1px; font-weight:
   </div>
 </div>
 
+<!-- Egg Entry Modal -->
+<div class="modal-overlay hidden" id="egg-modal" onclick="closeEggModalOutside(event)">
+  <div class="modal" id="egg-modal-inner">
+    <h3 id="egg-modal-title">Log Eggs</h3>
+    <div class="form-row">
+      <div class="input-group"><label>Eggs Collected</label><input type="number" id="egg-count" min="0" placeholder="0"></div>
+      <div class="input-group"><label>Hens Laying</label><input type="number" id="egg-hens" min="0" placeholder="—"></div>
+    </div>
+    <div class="input-group"><label>Notes</label><textarea id="egg-notes" placeholder="Any observations..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel btn-full" onclick="closeEggModal()">Cancel</button>
+      <button class="btn btn-sage btn-full" onclick="saveEggModal()">Save Entry</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
 let appData={batches:[],egg_log:[]}, calYear, calMonth, selectedDateStr=null;
+let currentRange=30, eggChart=null, editingEggDate=null, currentTab='calendar';
 
 const INC=[
   {day:0, label:"Eggs Set",       type:"inc", action:"Confirm incubator stable at 99.5\u00b0F / 45\u201355% humidity. Start auto-turner.",       temp:"99.5\u00b0F", hum:"45\u201355%", tip:"Rest shipped eggs pointy-end down 12\u201324h before setting."},
@@ -268,8 +393,28 @@ function addDays(d,n){const r=new Date(d);r.setDate(r.getDate()+n);return r;}
 function todayStr(){return toDS(new Date());}
 function fmtFull(s){return parseLocal(s).toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});}
 function fmtShort(s){return parseLocal(s).toLocaleDateString('en-US',{month:'short',day:'numeric'});}
+function fmtMed(s){return parseLocal(s).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
 
+/* ── Tab switching ── */
+function switchTab(tab){
+  currentTab=tab;
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',['calendar','eggs'][i]===tab));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(tab==='calendar'?'calendar-page':'egg-page').classList.add('active');
+  const btn=document.getElementById('header-action-btn');
+  const sub=document.getElementById('header-sub');
+  if(tab==='calendar'){
+    btn.textContent='+ New Batch';btn.onclick=openAddBatch;
+    sub.textContent='Tap a date to see details';
+  } else {
+    btn.textContent='+ Log Eggs';btn.onclick=()=>openEggModal(todayStr());
+    sub.textContent='Egg production log';
+    renderEggPage();
+  }
+}
+
+/* ── Calendar ── */
 function buildEventMap(){
   const map={};
   const add=(ds,ev)=>{if(!map[ds])map[ds]=[];map[ds].push(ev);};
@@ -279,7 +424,6 @@ function buildEventMap(){
     INC.forEach(m=>add(toDS(addDays(start,m.day)),{...m,batchName:b.name,batchId:b.id,active:b.active}));
     BRD.forEach(m=>add(toDS(addDays(hatch,m.day)),{...m,batchName:b.name,batchId:b.id,active:b.active}));
   });
-  appData.egg_log.forEach(e=>add(e.date,{type:'egg',entry:e}));
   return map;
 }
 
@@ -298,7 +442,11 @@ function renderCalendar(){
     const num=document.createElement('div');num.className='day-num';num.textContent=d;el.appendChild(num);
     if(evs.length){
       const row=document.createElement('div');row.className='dot-row';
-      [...new Set(evs.map(e=>e.type))].forEach(t=>{const dot=document.createElement('div');dot.className='dot '+(t==='inc'?'dot-inc':t==='brd'?'dot-brd':'dot-egg');row.appendChild(dot);});
+      [...new Set(evs.map(e=>e.type))].forEach(t=>{
+        const dot=document.createElement('div');
+        dot.className='dot '+(t==='inc'?'dot-inc':'dot-brd');
+        row.appendChild(dot);
+      });
       el.appendChild(row);
       const pe=document.createElement('div');pe.className='print-events';
       evs.filter(e=>e.type==='inc'||e.type==='brd').forEach(e=>{
@@ -317,13 +465,12 @@ function selectDate(ds){selectedDateStr=ds;renderCalendar();renderDetail(ds);}
 
 function renderDetail(ds){
   const em=buildEventMap(), evs=em[ds]||[], panel=document.getElementById('detail-panel');
-  const eggEntry=appData.egg_log.find(e=>e.date===ds);
   const milestones=evs.filter(e=>e.type==='inc'||e.type==='brd');
   let html=`<div class="detail-date-header">${fmtFull(ds)}</div>`;
-  if(!milestones.length&&!eggEntry) html+=`<p style="font-size:0.85rem;color:var(--clay);margin-bottom:12px;">Nothing scheduled today.</p>`;
+  if(!milestones.length) html+=`<p style="font-size:0.85rem;color:var(--clay);margin-bottom:12px;">Nothing scheduled today.</p>`;
   milestones.forEach(m=>{
     html+=`<div class="milestone-card ${m.type==='brd'?'brooder':''}">
-      <div class="mc-batch">${m.batchName}${!m.active?' \u00b7 archived':''}</div>
+      <div class="mc-batch">${m.batchName}${!m.active?' · archived':''}</div>
       <div class="mc-label">${m.label}</div>
       <div class="mc-action">${m.action}</div>
       <div class="mc-badges">
@@ -333,50 +480,163 @@ function renderDetail(ds){
       </div>
     </div>`;
   });
-  html+=`<div class="section-title">Egg Log</div>`;
-  if(eggEntry&&!window._editingEgg){
-    html+=`<div class="egg-saved">
-      <div class="egg-saved-info">
-        <strong>${eggEntry.eggs} egg${eggEntry.eggs!==1?'s':''} collected</strong>
-        <p>${eggEntry.hens?`${eggEntry.hens} hens laying`:''}${eggEntry.notes?(eggEntry.hens?' \u00b7 ':'')+eggEntry.notes:''}</p>
-      </div>
-      <button class="egg-edit-btn" onclick="editEgg()">Edit</button>
-    </div>`;
-  } else {
-    html+=`<div class="egg-form">
-      <div class="form-row">
-        <div class="input-group"><label>Eggs Collected</label><input type="number" id="egg-count" min="0" placeholder="0" value="${eggEntry?eggEntry.eggs:''}"></div>
-        <div class="input-group"><label>Hens Laying</label><input type="number" id="egg-hens" min="0" placeholder="\u2014" value="${eggEntry&&eggEntry.hens?eggEntry.hens:''}"></div>
-      </div>
-      <div class="input-group" style="margin-bottom:10px"><label>Notes</label><textarea id="egg-notes" placeholder="Any observations...">${eggEntry?eggEntry.notes||'':''}</textarea></div>
-      <button class="btn btn-sage btn-full" onclick="saveEgg('${ds}')">Save Entry</button>
-      ${eggEntry?`<button class="btn btn-rust btn-full" style="margin-top:8px" onclick="deleteEgg('${ds}')">Delete Entry</button>`:''}
-    </div>`;
-  }
-  panel.innerHTML=html; window._editingEgg=false;
+  panel.innerHTML=html;
 }
 
-function editEgg(){window._editingEgg=true;renderDetail(selectedDateStr);setTimeout(()=>document.getElementById('egg-count')?.focus(),50);}
+/* ── Egg Log Page ── */
+function setRange(days){
+  currentRange=days;
+  document.querySelectorAll('.range-pill').forEach(p=>p.classList.remove('active'));
+  document.getElementById('pill-'+days).classList.add('active');
+  renderChart();
+}
 
-async function saveEgg(ds){
+function getWindowedLog(days){
+  const cutoff=toDS(addDays(new Date(), -days+1));
+  return appData.egg_log.filter(e=>e.date>=cutoff).sort((a,b)=>a.date.localeCompare(b.date));
+}
+
+function renderChart(){
+  const log=getWindowedLog(currentRange);
+  const labels=log.map(e=>fmtShort(e.date));
+  const data=log.map(e=>e.eggs);
+
+  // Stats (over full windowed range)
+  const total=data.reduce((s,v)=>s+v,0);
+  const avg=data.length?Math.round(total/data.length*10)/10:0;
+  const best=data.length?Math.max(...data):0;
+  document.getElementById('stat-total').textContent=data.length?total:'—';
+  document.getElementById('stat-avg').textContent=data.length?avg:'—';
+  document.getElementById('stat-best').textContent=data.length?best:'—';
+
+  const ctx=document.getElementById('egg-chart').getContext('2d');
+
+  const gradient=ctx.createLinearGradient(0,0,0,180);
+  gradient.addColorStop(0,'rgba(181,84,30,0.35)');
+  gradient.addColorStop(1,'rgba(181,84,30,0.02)');
+
+  if(eggChart) eggChart.destroy();
+
+  eggChart=new Chart(ctx,{
+    type:'line',
+    data:{
+      labels,
+      datasets:[{
+        data,
+        borderColor:'#B5541E',
+        backgroundColor:gradient,
+        borderWidth:2,
+        pointBackgroundColor:'#B5541E',
+        pointRadius:data.length>60?0:3,
+        pointHoverRadius:5,
+        fill:true,
+        tension:0.35,
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{
+        backgroundColor:'#2A1F0E',
+        titleColor:'#E8C87A',
+        bodyColor:'#F5EDD8',
+        padding:9,
+        cornerRadius:8,
+        callbacks:{
+          title:items=>labels[items[0].dataIndex],
+          label:item=>`${item.raw} egg${item.raw!==1?'s':''}`
+        }
+      }},
+      scales:{
+        x:{
+          ticks:{color:'#8B5E3C',font:{size:10},maxTicksLimit:8,maxRotation:0},
+          grid:{color:'rgba(212,197,169,0.3)'},
+          border:{color:'rgba(212,197,169,0.5)'}
+        },
+        y:{
+          beginAtZero:true,
+          ticks:{color:'#8B5E3C',font:{size:10},stepSize:1,precision:0},
+          grid:{color:'rgba(212,197,169,0.3)'},
+          border:{color:'rgba(212,197,169,0.5)'}
+        }
+      }
+    }
+  });
+}
+
+function renderEggTable(){
+  const sorted=[...appData.egg_log].sort((a,b)=>b.date.localeCompare(a.date));
+  const wrap=document.getElementById('egg-table-body');
+  if(!sorted.length){
+    wrap.innerHTML=`<div class="empty-log">No egg entries yet.<br>Tap &ldquo;+ Log Eggs&rdquo; to add your first entry.</div>`;
+    return;
+  }
+  let html=`<table class="egg-table"><thead><tr>
+    <th>Date</th><th>Eggs</th><th>Notes</th><th></th>
+  </tr></thead><tbody>`;
+  sorted.forEach(e=>{
+    html+=`<tr>
+      <td style="white-space:nowrap">
+        <div style="font-size:0.83rem;font-weight:700;color:var(--ink)">${fmtMed(e.date)}</div>
+        ${e.hens?`<div class="egg-hens">${e.hens} hens</div>`:''}
+      </td>
+      <td><span class="egg-count">${e.eggs}</span></td>
+      <td class="egg-notes-cell">${e.notes||''}</td>
+      <td>
+        <div class="row-actions">
+          <button class="tbl-btn edit" onclick="openEggModal('${e.date}')">Edit</button>
+          <button class="tbl-btn delete" onclick="deleteEgg('${e.date}')">✕</button>
+        </div>
+      </td>
+    </tr>`;
+  });
+  wrap.innerHTML=html+'</tbody></table>';
+}
+
+function renderEggPage(){
+  renderChart();
+  renderEggTable();
+}
+
+/* ── Egg Modal ── */
+function openEggModal(ds){
+  editingEggDate=ds;
+  const existing=appData.egg_log.find(e=>e.date===ds);
+  document.getElementById('egg-modal-title').textContent=existing?`Edit — ${fmtShort(ds)}`:`Log Eggs — ${fmtShort(ds)}`;
+  document.getElementById('egg-count').value=existing?existing.eggs:'';
+  document.getElementById('egg-hens').value=existing&&existing.hens?existing.hens:'';
+  document.getElementById('egg-notes').value=existing?existing.notes||'':'';
+  document.getElementById('egg-modal').classList.remove('hidden');
+  setTimeout(()=>document.getElementById('egg-count').focus(),50);
+}
+function closeEggModal(){document.getElementById('egg-modal').classList.add('hidden');editingEggDate=null;}
+function closeEggModalOutside(e){if(e.target===document.getElementById('egg-modal'))closeEggModal();}
+
+async function saveEggModal(){
   const eggs=document.getElementById('egg-count').value;
   if(eggs===''){showToast('Enter an egg count');return;}
+  const ds=editingEggDate;
   const entry={date:ds,eggs:parseInt(eggs),hens:document.getElementById('egg-hens').value||null,notes:document.getElementById('egg-notes').value||''};
   await fetch('/api/egg_log',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(entry)});
   const idx=appData.egg_log.findIndex(e=>e.date===ds);
   if(idx>=0)appData.egg_log[idx]=entry;else{appData.egg_log.push(entry);appData.egg_log.sort((a,b)=>a.date.localeCompare(b.date));}
-  showToast('Saved');window._editingEgg=false;renderCalendar();renderDetail(ds);
-}
-async function deleteEgg(ds){
-  await fetch(`/api/egg_log/${ds}`,{method:'DELETE'});
-  appData.egg_log=appData.egg_log.filter(e=>e.date!==ds);
-  showToast('Entry deleted');renderCalendar();renderDetail(ds);
+  closeEggModal();showToast('Saved');
+  if(currentTab==='eggs') renderEggPage();
 }
 
+async function deleteEgg(ds){
+  if(!confirm(`Delete entry for ${fmtMed(ds)}?`))return;
+  await fetch(`/api/egg_log/${ds}`,{method:'DELETE'});
+  appData.egg_log=appData.egg_log.filter(e=>e.date!==ds);
+  showToast('Entry deleted');
+  if(currentTab==='eggs') renderEggPage();
+}
+
+/* ── Batches ── */
 function renderBatches(){
   const el=document.getElementById('batches-section');
   const active=appData.batches.filter(b=>b.active), archived=appData.batches.filter(b=>!b.active);
-  if(!appData.batches.length){el.innerHTML=`<div class="batches-title">No batches yet \u2014 add one to get started</div>`;return;}
+  if(!appData.batches.length){el.innerHTML=`<div class="batches-title">No batches yet — add one to get started</div>`;return;}
   let html=`<div class="batches-title">Active Batches</div><div class="batch-list">`;
   active.forEach(b=>{
     const hatch=toDS(addDays(parseLocal(b.start_date),18));
@@ -397,6 +657,7 @@ function renderBatches(){
   el.innerHTML=html+'</div>';
 }
 
+function headerAction(){openAddBatch();}
 function openAddBatch(){document.getElementById('batch-name').value='';document.getElementById('batch-start-date').value=todayStr();document.getElementById('modal-overlay').classList.remove('hidden');}
 function closeModal(){document.getElementById('modal-overlay').classList.add('hidden');}
 function closeModalOutside(e){if(e.target===document.getElementById('modal-overlay'))closeModal();}
@@ -420,6 +681,7 @@ async function deleteBatch(id){
   appData.batches=appData.batches.filter(b=>b.id!==id);
   showToast('Batch deleted');renderBatches();renderCalendar();
 }
+
 function prevMonth(){calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendar();}
 function nextMonth(){calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();}
 
