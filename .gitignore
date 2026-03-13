@@ -1,6 +1,6 @@
 # Data — never commit persistent app data
 data/
-*.json
+quail_data.json
 
 # Python
 __pycache__/
