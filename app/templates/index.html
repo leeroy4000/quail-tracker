@@ -604,9 +604,9 @@ function exportEggLog(){
     .slice().sort((a,b)=>a.date.localeCompare(b.date))
     .map(e=>({
       Date: e.date,
-      'Eggs Collected': e.eggs,
-      'Hens Laying': e.hens||'',
-      Notes: e.notes||''
+      'Eggs Collected': Number(e.eggs),
+      'Hens Laying': e.hens!=null ? Number(e.hens) : '',
+      Notes: e.notes ? String(e.notes) : ''
     }));
   const ws=XLSX.utils.json_to_sheet(rows);
   ws['!cols']=[{wch:12},{wch:16},{wch:12},{wch:40}];
