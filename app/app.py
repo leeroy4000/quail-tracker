@@ -5,7 +5,7 @@ from datetime import datetime, timedelta, timezone
 app = Flask(__name__)
 DATA_FILE = "/data/quail_data.json"
 
-DEFAULT_DATA = {"batches": [], "egg_log": []}
+DEFAULT_DATA = {"batches": [], "egg_log": [], "custom_events": []}
 
 def load_data():
     if os.path.exists(DATA_FILE):
@@ -195,6 +195,13 @@ def save_egg_log():
 def delete_egg_log(date):
     data = load_data()
     data["egg_log"] = [e for e in data["egg_log"] if e["date"] != date]
+    save_data(data)
+    return jsonify({"status": "ok"})
+
+@app.route("/api/custom_events", methods=["POST"])
+def save_custom_events():
+    data = load_data()
+    data["custom_events"] = request.get_json()
     save_data(data)
     return jsonify({"status": "ok"})
 

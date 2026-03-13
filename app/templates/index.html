@@ -123,7 +123,7 @@ header p  { font-size: 0.72rem; color: var(--tan); margin-top: 1px; font-weight:
 
 .milestone-card { border-radius: 12px; border: 1px solid var(--border); border-left: 4px solid var(--ev-inc); background: var(--white); box-shadow: 0 1px 5px var(--shadow); padding: 12px 13px; margin-bottom: 10px; }
 .milestone-card.brooder { border-left-color: var(--ev-brd); }
-.mc-batch { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--tan); margin-bottom: 3px; }
+.milestone-card.custom-card { border-left-color: var(--moss); } font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--tan); margin-bottom: 3px; }
 .mc-label { font-family: 'Playfair Display', serif; font-size: 0.97rem; font-weight: 600; color: var(--bark); margin-bottom: 5px; }
 .mc-action { font-size: 0.84rem; color: var(--clay); line-height: 1.55; }
 .mc-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
@@ -279,10 +279,6 @@ header p  { font-size: 0.72rem; color: var(--tan); margin-top: 1px; font-weight:
     </div>
   </div>
 
-  <div class="legend">
-    <div class="legend-item"><div class="legend-dot" style="background:var(--ev-inc)"></div>Incubation</div>
-    <div class="legend-item"><div class="legend-dot" style="background:var(--ev-brd)"></div>Brooder</div>
-  </div>
   <div class="woodgrain"></div>
 
   <div class="export-bar">
@@ -369,26 +365,40 @@ header p  { font-size: 0.72rem; color: var(--tan); margin-top: 1px; font-weight:
 
 <div class="toast" id="toast"></div>
 
+<!-- Custom Event Modal -->
+<div class="modal-overlay hidden" id="custom-modal" onclick="closeCustomModalOutside(event)">
+  <div class="modal" style="border-radius:20px;padding:22px 18px 24px;">
+    <h3 id="custom-modal-title">Add Event</h3>
+    <div class="input-group" style="margin-bottom:11px"><label>Date</label><input type="date" id="custom-date"></div>
+    <div class="input-group" style="margin-bottom:11px"><label>Title</label><input type="text" id="custom-title" placeholder="e.g. Start holding eggs for next batch"></div>
+    <div class="input-group" style="margin-bottom:11px"><label>Notes (optional)</label><textarea id="custom-note" placeholder="Any details..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel btn-full" onclick="closeCustomModal()">Cancel</button>
+      <button class="btn btn-primary btn-full" onclick="saveCustomEvent()">Save Event</button>
+    </div>
+  </div>
+</div>
+
 <script>
-let appData={batches:[],egg_log:[]}, calYear, calMonth, selectedDateStr=null;
+let appData={batches:[],egg_log:[],custom_events:[]}, calYear, calMonth, selectedDateStr=null;
 let currentRange=30, eggChart=null, editingEggDate=null, currentTab='calendar';
 
 const INC=[
-  {day:0, label:"Eggs Set",       type:"inc", action:"Confirm incubator stable at 99.5\u00b0F / 45\u201355% humidity. Start auto-turner.",       temp:"99.5\u00b0F", hum:"45\u201355%", tip:"Rest shipped eggs pointy-end down 12\u201324h before setting."},
-  {day:7, label:"First Candle",   type:"inc", action:"Candle eggs. Remove clearly infertile eggs or early quitters.",                              temp:"99.5\u00b0F", hum:"45\u201355%", tip:"Veins = developing. Fully clear = likely infertile. Dark mass with movement = great."},
-  {day:14,label:"Second Candle",  type:"inc", action:"Final candle before lockdown. Remove any late quitters.",                                    temp:"99.5\u00b0F", hum:"45\u201355%", tip:"Air cell should be large and well-defined. Target 13\u201315% egg weight loss by today."},
-  {day:15,label:"Lockdown",       type:"inc", action:"Stop turning eggs. Raise humidity. Do NOT open incubator until hatch is complete.",         temp:"99.5\u00b0F", hum:"65\u201370%", tip:"Lay eggs on their sides. Resist opening the lid \u2014 humidity loss kills chicks during hatch."},
-  {day:17,label:"Hatch Begins",   type:"inc", action:"Watch for pipping and zipping. Do not assist unless a chick is stuck for 24h+.",            temp:"99.5\u00b0F", hum:"70%",        tip:"Coturnix hatch fast. Do not open the lid \u2014 shrink-wrapping is a real risk."},
-  {day:18,label:"Hatch Complete", type:"inc", action:"Move dry fluffy chicks to brooder. Discard unhatched eggs after 24h.",                      temp:"99.5\u00b0F", hum:"70%",        tip:"Chicks survive 24\u201348h on yolk reserves. Don\u2019t rush them while still wet."},
+  {day:0, label:"Eggs Set",       type:"milestone", action:"Confirm incubator stable at 99.5\u00b0F / 45\u201355% humidity. Start auto-turner.",       temp:"99.5\u00b0F", hum:"45\u201355%", tip:"Rest shipped eggs pointy-end down 12\u201324h before setting."},
+  {day:7, label:"First Candle",   type:"milestone", action:"Candle eggs. Remove clearly infertile eggs or early quitters.",                              temp:"99.5\u00b0F", hum:"45\u201355%", tip:"Veins = developing. Fully clear = likely infertile. Dark mass with movement = great."},
+  {day:14,label:"Second Candle",  type:"milestone", action:"Final candle before lockdown. Remove any late quitters.",                                    temp:"99.5\u00b0F", hum:"45\u201355%", tip:"Air cell should be large and well-defined. Target 13\u201315% egg weight loss by today."},
+  {day:15,label:"Lockdown",       type:"milestone", action:"Stop turning eggs. Raise humidity. Do NOT open incubator until hatch is complete.",         temp:"99.5\u00b0F", hum:"65\u201370%", tip:"Lay eggs on their sides. Resist opening the lid \u2014 humidity loss kills chicks during hatch."},
+  {day:17,label:"Hatch Begins",   type:"milestone", action:"Watch for pipping and zipping. Do not assist unless a chick is stuck for 24h+.",            temp:"99.5\u00b0F", hum:"70%",        tip:"Coturnix hatch fast. Do not open the lid \u2014 shrink-wrapping is a real risk."},
+  {day:18,label:"Hatch Complete", type:"milestone", action:"Move dry fluffy chicks to brooder. Discard unhatched eggs after 24h.",                      temp:"99.5\u00b0F", hum:"70%",        tip:"Chicks survive 24\u201348h on yolk reserves. Don\u2019t rush them while still wet."},
 ];
 const BRD=[
-  {day:0, label:"Move to Brooder",    type:"brd", action:"Set up brooder at 95\u00b0F. Dip beaks in water. Chick starter feed. Marbles in water dish.", temp:"95\u00b0F",  tip:"Paper towels on floor first 3 days \u2014 easier to clean, prevents leg splaying."},
-  {day:7, label:"Week 1 \u2014 Drop Temp", type:"brd", action:"Reduce brooder temp to 90\u00b0F. Check for pasty butt daily.",                       temp:"90\u00b0F",  tip:"Piling up = cold. Spread to edges = hot."},
-  {day:14,label:"Week 2 \u2014 Drop Temp", type:"brd", action:"Reduce brooder temp to 85\u00b0F.",                                                   temp:"85\u00b0F",  tip:"Switch floor to pine shavings if not already done."},
-  {day:21,label:"Sexing Window",       type:"brd", action:"Sex by feather coloration. Begin culling plan for extra roosters.",                        temp:"80\u00b0F",  tip:"Pharaoh males: rusty-red chest. Females: speckled/tan. Cull beyond 1:4\u20135 ratio."},
-  {day:28,label:"Fully Feathered",     type:"brd", action:"Reduce heat if ambient >70\u00b0F. Transition to grower feed.",                           temp:"75\u00b0F",  tip:"Watch for feather pecking if crowded."},
-  {day:42,label:"Harvest Window",      type:"brd", action:"Extra roosters ready for harvest (~4\u20135 oz dressed weight).",                          temp:"Ambient",    tip:"Hens may begin laying around this time \u2014 watch for eggs."},
-  {day:56,label:"Full Production",     type:"brd", action:"All keepers at full size. Consistent egg laying expected from hens.",                      temp:"Ambient",    tip:"Target colony ratio: 1 rooster per 4\u20135 hens."},
+  {day:0, label:"Move to Brooder",         type:"milestone", action:"Set up brooder at 95\u00b0F. Dip beaks in water. Chick starter feed. Marbles in water dish.", temp:"95\u00b0F", tip:"Paper towels on floor first 3 days \u2014 easier to clean, prevents leg splaying."},
+  {day:7, label:"Week 1 \u2014 Drop Temp", type:"milestone", action:"Reduce brooder temp to 90\u00b0F. Check for pasty butt daily.",                               temp:"90\u00b0F", tip:"Piling up = cold. Spread to edges = hot."},
+  {day:14,label:"Week 2 \u2014 Drop Temp", type:"milestone", action:"Reduce brooder temp to 85\u00b0F.",                                                           temp:"85\u00b0F", tip:"Switch floor to pine shavings if not already done."},
+  {day:21,label:"Sexing Window",            type:"milestone", action:"Sex by feather coloration. Begin culling plan for extra roosters.",                            temp:"80\u00b0F", tip:"Pharaoh males: rusty-red chest. Females: speckled/tan. Cull beyond 1:4\u20135 ratio."},
+  {day:28,label:"Move to Permanent Cage",  type:"milestone", action:"Chicks are fully feathered and ready for permanent housing. Transition off heat entirely if ambient temps are above 65\u00b0F.", temp:"Ambient", tip:"1/4\" hardware cloth floor, 1/2\u00d71\" walls. Ensure predator protection before moving outdoors. Set up free-choice oyster shell and game bird feed now if not already done."},
+  {day:42,label:"Harvest Window",          type:"milestone", action:"Extra roosters ready for harvest (~4\u20135 oz dressed weight).",                              temp:"Ambient", tip:"Hens may begin laying around this time \u2014 watch for eggs."},
+  {day:56,label:"Full Production",         type:"milestone", action:"All keepers at full size. Consistent egg laying expected from hens.",                          temp:"Ambient", tip:"Target colony ratio: 1 rooster per 4\u20135 hens."},
 ];
 
 function parseLocal(s){if(!s)return null;const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);}
@@ -428,6 +438,7 @@ function buildEventMap(){
     INC.forEach(m=>add(toDS(addDays(start,m.day)),{...m,batchName:b.name,batchId:b.id,active:b.active}));
     BRD.forEach(m=>add(toDS(addDays(hatch,m.day)),{...m,batchName:b.name,batchId:b.id,active:b.active}));
   });
+  (appData.custom_events||[]).forEach(e=>add(e.date,{type:'custom',label:e.title,note:e.note,id:e.id}));
   return map;
 }
 
@@ -446,16 +457,13 @@ function renderCalendar(){
     const num=document.createElement('div');num.className='day-num';num.textContent=d;el.appendChild(num);
     if(evs.length){
       const row=document.createElement('div');row.className='dot-row';
-      [...new Set(evs.map(e=>e.type))].forEach(t=>{
-        const dot=document.createElement('div');
-        dot.className='dot '+(t==='inc'?'dot-inc':'dot-brd');
-        row.appendChild(dot);
-      });
+      const dot=document.createElement('div');dot.className='dot dot-brd';
+      row.appendChild(dot);
       el.appendChild(row);
       const pe=document.createElement('div');pe.className='print-events';
-      evs.filter(e=>e.type==='inc'||e.type==='brd').forEach(e=>{
+      evs.filter(e=>e.type==='milestone').forEach(e=>{
         const ev=document.createElement('div');
-        ev.className='print-event '+(e.type==='inc'?'inc':'brd');
+        ev.className='print-event brd';
         ev.textContent=e.label+(e.batchName?' · '+e.batchName:'');
         pe.appendChild(ev);
       });
@@ -469,11 +477,12 @@ function selectDate(ds){selectedDateStr=ds;renderCalendar();renderDetail(ds);}
 
 function renderDetail(ds){
   const em=buildEventMap(), evs=em[ds]||[], panel=document.getElementById('detail-panel');
-  const milestones=evs.filter(e=>e.type==='inc'||e.type==='brd');
+  const milestones=evs.filter(e=>e.type==='milestone');
+  const customs=evs.filter(e=>e.type==='custom');
   let html=`<div class="detail-date-header">${fmtFull(ds)}</div>`;
-  if(!milestones.length) html+=`<p style="font-size:0.85rem;color:var(--clay);margin-bottom:12px;">Nothing scheduled today.</p>`;
+  if(!milestones.length&&!customs.length) html+=`<p style="font-size:0.85rem;color:var(--clay);margin-bottom:12px;">Nothing scheduled today.</p>`;
   milestones.forEach(m=>{
-    html+=`<div class="milestone-card ${m.type==='brd'?'brooder':''}">
+    html+=`<div class="milestone-card">
       <div class="mc-batch">${m.batchName}${!m.active?' · archived':''}</div>
       <div class="mc-label">${m.label}</div>
       <div class="mc-action">${m.action}</div>
@@ -484,6 +493,18 @@ function renderDetail(ds){
       </div>
     </div>`;
   });
+  customs.forEach(e=>{
+    html+=`<div class="milestone-card custom-card">
+      <div class="mc-batch">Custom Event</div>
+      <div class="mc-label">${e.label}</div>
+      ${e.note?`<div class="mc-action">${e.note}</div>`:''}
+      <div style="margin-top:8px;display:flex;gap:6px;">
+        <button class="tbl-btn edit" onclick="openCustomModal('${ds}','${e.id}')">Edit</button>
+        <button class="tbl-btn delete" onclick="deleteCustomEvent('${e.id}')">Delete</button>
+      </div>
+    </div>`;
+  });
+  html+=`<button class="btn btn-primary" style="margin-top:12px;width:100%" onclick="openCustomModal('${ds}',null)">+ Add Event</button>`;
   panel.innerHTML=html;
 }
 
@@ -635,7 +656,7 @@ function openEggModal(ds){
   setTimeout(()=>document.getElementById('egg-count').focus(),50);
 }
 function closeEggModal(){document.getElementById('egg-modal').classList.add('hidden');editingEggDate=null;}
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeEggModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeEggModal();closeCustomModal();}});
 function closeEggModalOutside(e){if(e.target===document.getElementById('egg-modal'))closeEggModal();}
 
 async function saveEggModal(){
@@ -712,11 +733,49 @@ async function deleteBatch(id){
 function prevMonth(){calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendar();}
 function nextMonth(){calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();}
 
+/* ── Custom Events ── */
+let editingCustomId=null;
+function openCustomModal(ds,id){
+  editingCustomId=id;
+  const existing=id?(appData.custom_events||[]).find(e=>e.id===id):null;
+  document.getElementById('custom-modal-title').textContent=existing?'Edit Event':'Add Event';
+  document.getElementById('custom-date').value=existing?existing.date:ds;
+  document.getElementById('custom-title').value=existing?existing.title:'';
+  document.getElementById('custom-note').value=existing?existing.note||'':'';
+  document.getElementById('custom-modal').classList.remove('hidden');
+  setTimeout(()=>document.getElementById('custom-title').focus(),50);
+}
+function closeCustomModal(){document.getElementById('custom-modal').classList.add('hidden');editingCustomId=null;}
+function closeCustomModalOutside(e){if(e.target===document.getElementById('custom-modal'))closeCustomModal();}
+
+async function saveCustomEvent(){
+  const title=document.getElementById('custom-title').value.trim();
+  const ds=document.getElementById('custom-date').value;
+  if(!title){showToast('Enter a title');return;}
+  if(!ds){showToast('Choose a date');return;}
+  if(!appData.custom_events)appData.custom_events=[];
+  if(editingCustomId){
+    const ev=appData.custom_events.find(e=>e.id===editingCustomId);
+    if(ev){ev.date=ds;ev.title=title;ev.note=document.getElementById('custom-note').value||'';}
+  } else {
+    appData.custom_events.push({id:crypto.randomUUID(),date:ds,title,note:document.getElementById('custom-note').value||''});
+  }
+  await fetch('/api/custom_events',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(appData.custom_events)});
+  closeCustomModal();showToast('Saved');renderCalendar();renderDetail(ds);selectedDateStr=ds;
+}
+
+async function deleteCustomEvent(id){
+  appData.custom_events=(appData.custom_events||[]).filter(e=>e.id!==id);
+  await fetch('/api/custom_events',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(appData.custom_events)});
+  showToast('Event deleted');renderCalendar();if(selectedDateStr)renderDetail(selectedDateStr);
+}
+
 async function init(){
   const now=new Date();calYear=now.getFullYear();calMonth=now.getMonth();
   const res=await fetch('/api/data');appData=await res.json();
   if(!appData.batches)appData.batches=[];
   if(!appData.egg_log)appData.egg_log=[];
+  if(!appData.custom_events)appData.custom_events=[];
   renderBatches();renderCalendar();selectDate(todayStr());
 }
 init();
