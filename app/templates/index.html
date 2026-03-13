@@ -147,7 +147,9 @@ header p  { font-size: 0.72rem; color: var(--tan); margin-top: 1px; font-weight:
 .modal .input-group { margin-bottom: 11px; }
 .modal-actions { display: flex; gap: 10px; margin-top: 16px; }
 
-/* ── Egg log modal (floating from bottom) ── */
+/* ── Egg log modal (centered) ── */
+#egg-modal { align-items: center; padding: 16px; }
+#egg-modal .modal { border-radius: 20px; padding: 22px 18px 24px; }
 #egg-modal .input-group { margin-bottom: 11px; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
 .input-group label { display: block; font-size: 0.67rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--clay); margin-bottom: 4px; }
@@ -351,6 +353,7 @@ header p  { font-size: 0.72rem; color: var(--tan); margin-top: 1px; font-weight:
 <div class="modal-overlay hidden" id="egg-modal" onclick="closeEggModalOutside(event)">
   <div class="modal" id="egg-modal-inner">
     <h3 id="egg-modal-title">Log Eggs</h3>
+    <div class="input-group"><label>Date</label><input type="date" id="egg-date"></div>
     <div class="form-row">
       <div class="input-group"><label>Eggs Collected</label><input type="number" id="egg-count" min="0" placeholder="0"></div>
       <div class="input-group"><label>Hens Laying</label><input type="number" id="egg-hens" min="0" placeholder="—"></div>
@@ -602,7 +605,8 @@ function renderEggPage(){
 function openEggModal(ds){
   editingEggDate=ds;
   const existing=appData.egg_log.find(e=>e.date===ds);
-  document.getElementById('egg-modal-title').textContent=existing?`Edit — ${fmtShort(ds)}`:`Log Eggs — ${fmtShort(ds)}`;
+  document.getElementById('egg-modal-title').textContent=existing?'Edit Entry':'Log Eggs';
+  document.getElementById('egg-date').value=ds;
   document.getElementById('egg-count').value=existing?existing.eggs:'';
   document.getElementById('egg-hens').value=existing&&existing.hens?existing.hens:'';
   document.getElementById('egg-notes').value=existing?existing.notes||'':'';
@@ -610,12 +614,14 @@ function openEggModal(ds){
   setTimeout(()=>document.getElementById('egg-count').focus(),50);
 }
 function closeEggModal(){document.getElementById('egg-modal').classList.add('hidden');editingEggDate=null;}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeEggModal();});
 function closeEggModalOutside(e){if(e.target===document.getElementById('egg-modal'))closeEggModal();}
 
 async function saveEggModal(){
+  const ds=document.getElementById('egg-date').value;
   const eggs=document.getElementById('egg-count').value;
+  if(!ds){showToast('Choose a date');return;}
   if(eggs===''){showToast('Enter an egg count');return;}
-  const ds=editingEggDate;
   const entry={date:ds,eggs:parseInt(eggs),hens:document.getElementById('egg-hens').value||null,notes:document.getElementById('egg-notes').value||''};
   await fetch('/api/egg_log',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(entry)});
   const idx=appData.egg_log.findIndex(e=>e.date===ds);
