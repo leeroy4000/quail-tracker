@@ -683,25 +683,15 @@ async function deleteEgg(ds){
 /* ── Batches ── */
 function renderBatches(){
   const el=document.getElementById('batches-section');
-  const active=appData.batches.filter(b=>b.active), archived=appData.batches.filter(b=>!b.active);
   if(!appData.batches.length){el.innerHTML=`<div class="batches-title">No batches yet — add one to get started</div>`;return;}
   let html=`<div class="batches-title">Active Batches</div><div class="batch-list">`;
-  active.forEach(b=>{
+  appData.batches.forEach(b=>{
     const hatch=toDS(addDays(parseLocal(b.start_date),18));
     html+=`<div class="batch-item">
       <div class="batch-item-info"><div class="batch-item-name">${b.name}</div><div class="batch-item-date">Set ${fmtShort(b.start_date)} &middot; Hatch ~${fmtShort(hatch)}</div></div>
-      <div class="batch-actions"><button class="batch-btn archive" onclick="archiveBatch('${b.id}')">Archive</button><button class="batch-btn delete" onclick="deleteBatch('${b.id}')">&times;</button></div>
+      <div class="batch-actions"><button class="batch-btn delete" onclick="deleteBatch('${b.id}')">&times;</button></div>
     </div>`;
   });
-  if(archived.length){
-    html+=`</div><div class="batches-title" style="margin-top:9px">Archived</div><div class="batch-list">`;
-    archived.forEach(b=>{
-      html+=`<div class="batch-item batch-archived">
-        <div class="batch-item-info"><div class="batch-item-name">${b.name}</div><div class="batch-item-date">Set ${fmtShort(b.start_date)}</div></div>
-        <div class="batch-actions"><button class="batch-btn delete" onclick="deleteBatch('${b.id}')">&times;</button></div>
-      </div>`;
-    });
-  }
   el.innerHTML=html+'</div>';
 }
 
@@ -718,11 +708,6 @@ async function saveBatch(){
   appData.batches.push(batch);closeModal();showToast(`${name} added`);
   const d=parseLocal(start);calYear=d.getFullYear();calMonth=d.getMonth();
   renderBatches();renderCalendar();
-}
-async function archiveBatch(id){
-  await fetch(`/api/batches/${id}/archive`,{method:'POST'});
-  const b=appData.batches.find(b=>b.id===id);if(b)b.active=false;
-  showToast('Batch archived');renderBatches();renderCalendar();
 }
 async function deleteBatch(id){
   await fetch(`/api/batches/${id}`,{method:'DELETE'});
