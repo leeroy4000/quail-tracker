@@ -5,12 +5,23 @@ from datetime import datetime, timedelta, timezone
 app = Flask(__name__)
 DATA_FILE = "/data/quail_data.json"
 
-DEFAULT_DATA = {"batches": [], "egg_log": [], "custom_events": []}
+DEFAULT_DATA = {
+    "batches": [],
+    "egg_log": [],
+    "incubation_log": [],
+    "hatch_log": [],
+    "harvest_log": [],
+    "custom_events": [],
+}
+
+
+# ── Data helpers ───────────────────────────────────────────────────────────
 
 def load_data():
     if os.path.exists(DATA_FILE):
         with open(DATA_FILE, "r") as f:
             data = json.load(f)
+            # Migrate old single-incubation format to batches array
             if "incubation" in data and "batches" not in data:
                 batches = []
                 if data["incubation"].get("start_date"):
@@ -18,34 +29,46 @@ def load_data():
                         "id": str(uuid.uuid4()),
                         "name": "Initial Batch",
                         "start_date": data["incubation"]["start_date"],
-                        "active": True
+                        "active": True,
                     })
                 data["batches"] = batches
                 del data["incubation"]
                 save_data(data)
+            # Fill in any keys added since the file was last written
+            for key, default in DEFAULT_DATA.items():
+                if key not in data:
+                    data[key] = default
             return data
     return dict(DEFAULT_DATA)
+
 
 def save_data(data):
     os.makedirs(os.path.dirname(DATA_FILE), exist_ok=True)
     with open(DATA_FILE, "w") as f:
         json.dump(data, f, indent=2)
 
+
+# ── ICS calendar helpers ───────────────────────────────────────────────────
+
 def parse_date(s):
     y, m, d = map(int, s.split("-"))
     return datetime(y, m, d, tzinfo=timezone.utc)
 
+
 def add_days(dt, n):
     return dt + timedelta(days=n)
+
 
 def ics_dt(dt):
     return dt.strftime("%Y%m%d")
 
+
 def ics_stamp():
     return datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
 
+
 def fold(s):
-    """Fold long ICS lines at 75 octets."""
+    """Fold long ICS lines at 75 octets per RFC 5545."""
     result, line = [], ""
     for ch in s:
         if len((line + ch).encode("utf-8")) > 75:
@@ -57,24 +80,26 @@ def fold(s):
         result.append(line)
     return "\r\n".join(result)
 
+
 INC_MILESTONES = [
-    (0,  "Eggs Set",         "Confirm incubator stable at 99.5F / 45-55% humidity. Start auto-turner. Rest shipped eggs pointy-end down 12-24h before setting."),
-    (7,  "First Candle",     "Candle eggs. Remove clearly infertile eggs or early quitters. Veins = developing. Fully clear = likely infertile."),
-    (14, "Second Candle",    "Final candle before lockdown. Remove late quitters. Air cell should be large and well-defined. Target 13-15% egg weight loss by today."),
-    (15, "Lockdown",         "Stop turning eggs. Raise humidity to 65-70%. Do NOT open incubator until hatch is complete. Lay eggs on their sides."),
-    (17, "Hatch Begins",     "Watch for pipping and zipping. Do not assist unless a chick is stuck for 24h+. Do not open the lid."),
-    (18, "Hatch Complete",   "Move dry fluffy chicks to brooder. Discard unhatched eggs after 24h. Chicks survive 24-48h on yolk reserves."),
+    (0,  "Eggs Set",       "Confirm incubator stable at 99.5F / 45-55% humidity. Start auto-turner. Rest shipped eggs pointy-end down 12-24h before setting."),
+    (7,  "First Candle",   "Candle eggs. Remove clearly infertile eggs or early quitters. Veins = developing. Fully clear = likely infertile."),
+    (14, "Second Candle",  "Final candle before lockdown. Remove late quitters. Air cell should be large and well-defined. Target 13-15% egg weight loss by today."),
+    (15, "Lockdown",       "Stop turning eggs. Raise humidity to 65-70%. Do NOT open incubator until hatch is complete. Lay eggs on their sides."),
+    (17, "Hatch Begins",   "Watch for pipping and zipping. Do not assist unless a chick is stuck for 24h+. Do not open the lid."),
+    (18, "Hatch Complete", "Move dry fluffy chicks to brooder. Discard unhatched eggs after 24h. Chicks survive 24-48h on yolk reserves."),
 ]
 
 BRD_MILESTONES = [
-    (0,  "Move to Brooder",      "Set brooder at 95F. Dip beaks in water. Chick starter feed. Marbles in water dish. Paper towels on floor first 3 days."),
-    (7,  "Brooder: Drop Temp",   "Reduce brooder temp to 90F. Check for pasty butt daily. Piling up = cold; spread to edges = hot."),
-    (14, "Brooder: Drop Temp",   "Reduce brooder temp to 85F. Switch floor to pine shavings if not already done."),
-    (21, "Sexing Window",        "Sex by feather coloration. Pharaoh males: rusty-red chest. Females: speckled/tan. Begin culling plan for extra roosters beyond 1:4-5 ratio."),
-    (28, "Fully Feathered",      "Reduce heat if ambient temp >70F. Transition to grower feed. Watch for feather pecking if crowded."),
-    (42, "Harvest Window Opens", "Extra roosters ready for harvest (~4-5 oz dressed weight). Hens may begin laying - watch for eggs."),
-    (56, "Full Production",      "All keepers at full size. Consistent egg laying expected. Target colony ratio: 1 rooster per 4-5 hens."),
+    (0,  "Move to Brooder",        "Set brooder at 95F. Dip beaks in water. Chick starter feed. Marbles in water dish. Paper towels on floor first 3 days."),
+    (7,  "Brooder: Drop Temp",     "Reduce brooder temp to 90F. Check for pasty butt daily. Piling up = cold; spread to edges = hot."),
+    (14, "Brooder: Drop Temp",     "Reduce brooder temp to 85F. Switch floor to pine shavings if not already done."),
+    (21, "Sexing Window",          "Sex by feather coloration. Pharaoh males: rusty-red chest. Females: speckled/tan. Begin culling plan for extra roosters beyond 1:4-5 ratio."),
+    (28, "Move to Permanent Cage", "Chicks are fully feathered. Transition off heat if ambient >65F. Set up hardware cloth housing with free-choice oyster shell and game bird feed."),
+    (42, "Harvest Window Opens",   "Extra roosters ready for harvest (~4-5 oz dressed weight). Hens may begin laying - watch for eggs."),
+    (56, "Full Production",        "All keepers at full size. Consistent egg laying expected. Target colony ratio: 1 rooster per 4-5 hens."),
 ]
+
 
 def build_ics(data):
     lines = [
@@ -86,9 +111,7 @@ def build_ics(data):
         "X-WR-CALNAME:Quail Tracker",
         "X-WR-CALDESC:Quail incubation and brooder milestones",
     ]
-
     stamp = ics_stamp()
-
     for batch in data.get("batches", []):
         if not batch.get("start_date"):
             continue
@@ -96,7 +119,6 @@ def build_ics(data):
         hatch = add_days(start, 18)
         name  = batch["name"]
         bid   = batch["id"].replace("-", "")
-
         for offset, label, desc in INC_MILESTONES:
             dt  = add_days(start, offset)
             uid = f"inc-{bid}-{offset}@quail-tracker"
@@ -110,7 +132,6 @@ def build_ics(data):
                 fold(f"DESCRIPTION:{desc}"),
                 "END:VEVENT",
             ]
-
         for offset, label, desc in BRD_MILESTONES:
             dt  = add_days(hatch, offset)
             uid = f"brd-{bid}-{offset}@quail-tracker"
@@ -124,17 +145,21 @@ def build_ics(data):
                 fold(f"DESCRIPTION:{desc}"),
                 "END:VEVENT",
             ]
-
     lines.append("END:VCALENDAR")
     return "\r\n".join(lines) + "\r\n"
+
+
+# ── Routes ─────────────────────────────────────────────────────────────────
 
 @app.route("/")
 def index():
     return render_template("index.html")
 
+
 @app.route("/api/data", methods=["GET"])
 def get_data():
     return jsonify(load_data())
+
 
 @app.route("/calendar.ics")
 def calendar_ics():
@@ -143,23 +168,26 @@ def calendar_ics():
     return Response(
         ics,
         mimetype="text/calendar",
-        headers={"Content-Disposition": "attachment; filename=quail-tracker.ics"}
+        headers={"Content-Disposition": "attachment; filename=quail-tracker.ics"},
     )
 
+
 # ── Batches ────────────────────────────────────────────────────────────────
+
 @app.route("/api/batches", methods=["POST"])
 def add_batch():
-    data = load_data()
-    body = request.get_json()
+    data  = load_data()
+    body  = request.get_json()
     batch = {
-        "id": str(uuid.uuid4()),
-        "name": body.get("name", "Unnamed Batch"),
+        "id":         str(uuid.uuid4()),
+        "name":       body.get("name", "Unnamed Batch"),
         "start_date": body.get("start_date"),
-        "active": True
+        "active":     True,
     }
     data["batches"].append(batch)
     save_data(data)
     return jsonify(batch)
+
 
 @app.route("/api/batches/<batch_id>", methods=["DELETE"])
 def delete_batch(batch_id):
@@ -168,28 +196,22 @@ def delete_batch(batch_id):
     save_data(data)
     return jsonify({"status": "ok"})
 
-@app.route("/api/batches/<batch_id>/archive", methods=["POST"])
-def archive_batch(batch_id):
-    data = load_data()
-    for b in data["batches"]:
-        if b["id"] == batch_id:
-            b["active"] = False
-    save_data(data)
-    return jsonify({"status": "ok"})
 
-# ── Egg Log ────────────────────────────────────────────────────────────────
+# ── Egg log ────────────────────────────────────────────────────────────────
+
 @app.route("/api/egg_log", methods=["POST"])
 def save_egg_log():
-    data = load_data()
+    data  = load_data()
     entry = request.get_json()
-    existing = next((i for i, e in enumerate(data["egg_log"]) if e["date"] == entry["date"]), None)
-    if existing is not None:
-        data["egg_log"][existing] = entry
+    idx   = next((i for i, e in enumerate(data["egg_log"]) if e["date"] == entry["date"]), None)
+    if idx is not None:
+        data["egg_log"][idx] = entry
     else:
         data["egg_log"].append(entry)
     data["egg_log"].sort(key=lambda x: x["date"])
     save_data(data)
     return jsonify({"status": "ok"})
+
 
 @app.route("/api/egg_log/<date>", methods=["DELETE"])
 def delete_egg_log(date):
@@ -198,12 +220,46 @@ def delete_egg_log(date):
     save_data(data)
     return jsonify({"status": "ok"})
 
+
+# ── Incubation log ─────────────────────────────────────────────────────────
+
+@app.route("/api/incubation_log", methods=["POST"])
+def save_incubation_log():
+    data = load_data()
+    data["incubation_log"] = request.get_json()
+    save_data(data)
+    return jsonify({"status": "ok"})
+
+
+# ── Hatch log ──────────────────────────────────────────────────────────────
+
+@app.route("/api/hatch_log", methods=["POST"])
+def save_hatch_log():
+    data = load_data()
+    data["hatch_log"] = request.get_json()
+    save_data(data)
+    return jsonify({"status": "ok"})
+
+
+# ── Harvest log ────────────────────────────────────────────────────────────
+
+@app.route("/api/harvest_log", methods=["POST"])
+def save_harvest_log():
+    data = load_data()
+    data["harvest_log"] = request.get_json()
+    save_data(data)
+    return jsonify({"status": "ok"})
+
+
+# ── Custom events ──────────────────────────────────────────────────────────
+
 @app.route("/api/custom_events", methods=["POST"])
 def save_custom_events():
     data = load_data()
     data["custom_events"] = request.get_json()
     save_data(data)
     return jsonify({"status": "ok"})
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)

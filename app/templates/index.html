@@ -32,16 +32,13 @@
   --border:    #D4C5A9;
   --border-dk: #B8A48A;
   --shadow:    rgba(42,31,14,0.10);
-  --ev-inc:    #C49A6C;
   --ev-brd:    #6B8C6B;
-  --ev-egg:    #B5541E;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 body { font-family: 'Lato', sans-serif; background: var(--cream); color: var(--ink); min-height: 100dvh; }
 
 header {
-  background: var(--bark);
-  color: var(--parchment);
+  background: var(--bark); color: var(--parchment);
   padding: 14px 16px 12px;
   display: flex; align-items: center; justify-content: space-between;
   border-bottom: 3px solid var(--tan);
@@ -53,13 +50,9 @@ header p  { font-size: 0.72rem; color: var(--tan); margin-top: 1px; font-weight:
   padding: 7px 14px; font-family: 'Lato', sans-serif; font-size: 0.82rem; font-weight: 700;
   cursor: pointer; flex-shrink: 0; letter-spacing: 0.03em;
 }
-
 .woodgrain { height: 3px; background: repeating-linear-gradient(90deg,var(--tan) 0,var(--tan) 6px,var(--straw) 6px,var(--straw) 10px,var(--border-dk) 10px,var(--border-dk) 14px); opacity: 0.4; }
 
-/* ── Tab nav ── */
-.tab-nav {
-  display: flex; background: var(--parchment); border-bottom: 1.5px solid var(--border);
-}
+.tab-nav { display: flex; background: var(--parchment); border-bottom: 1.5px solid var(--border); }
 .tab-btn {
   flex: 1; padding: 10px 0; font-family: 'Lato', sans-serif; font-size: 0.82rem; font-weight: 700;
   text-transform: uppercase; letter-spacing: 0.08em; color: var(--clay); background: none;
@@ -68,11 +61,23 @@ header p  { font-size: 0.72rem; color: var(--tan); margin-top: 1px; font-weight:
 }
 .tab-btn.active { color: var(--bark); border-bottom-color: var(--bark); }
 
-/* ── Pages ── */
+.sub-tab-nav {
+  display: flex; background: var(--cream); border-bottom: 1px solid var(--border);
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+}
+.sub-tab-btn {
+  flex-shrink: 0; padding: 8px 14px; font-family: 'Lato', sans-serif; font-size: 0.75rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.07em; color: var(--clay); background: none;
+  border: none; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px;
+  transition: color 0.15s, border-color 0.15s; white-space: nowrap;
+}
+.sub-tab-btn.active { color: var(--bark); border-bottom-color: var(--bark); }
+
 .page { display: none; }
 .page.active { display: block; }
+.sub-page { display: none; }
+.sub-page.active { display: block; }
 
-/* batches */
 .batches-section { background: var(--parchment); border-bottom: 1px solid var(--border); padding: 10px 14px; }
 .batches-title { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--clay); margin-bottom: 7px; }
 .batch-list { display: flex; flex-direction: column; gap: 5px; }
@@ -81,49 +86,30 @@ header p  { font-size: 0.72rem; color: var(--tan); margin-top: 1px; font-weight:
 .batch-item-date { font-size: 0.72rem; color: var(--clay); margin-top: 1px; }
 .batch-actions { display: flex; gap: 5px; }
 .batch-btn { background: none; border: 1px solid var(--border); border-radius: 6px; padding: 3px 9px; font-size: 0.7rem; font-weight: 700; cursor: pointer; color: var(--clay); font-family: 'Lato', sans-serif; }
-.batch-btn.archive { color: var(--sage); border-color: var(--sage-lt); }
-.batch-btn.delete  { color: var(--rust); border-color: #E8B49A; }
-.batch-archived { opacity: 0.45; }
+.batch-btn.delete { color: var(--rust); border-color: #E8B49A; }
 
-/* calendar outer */
 .calendar-outer { padding: 12px 12px 4px; }
-.calendar-wrap {
-  background: var(--white); border: 1.5px solid var(--border-dk);
-  border-radius: 16px; overflow: hidden; box-shadow: 0 2px 10px var(--shadow);
-  max-width: 460px; margin: 0 auto;
-}
+.calendar-wrap { background: var(--white); border: 1.5px solid var(--border-dk); border-radius: 16px; overflow: hidden; box-shadow: 0 2px 10px var(--shadow); max-width: 460px; margin: 0 auto; }
 .cal-nav { display: flex; align-items: center; justify-content: space-between; background: var(--bark); padding: 9px 12px; }
 .cal-nav button { background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--straw); padding: 2px 8px; border-radius: 6px; line-height: 1; }
 .cal-nav h2 { font-family: 'Playfair Display', serif; font-size: 0.95rem; font-weight: 600; color: var(--straw); }
-
 .cal-grid { display: grid; grid-template-columns: repeat(7,1fr); border-left: 1px solid var(--mist); border-top: 1px solid var(--mist); }
 .cal-dow { text-align: center; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--clay); padding: 6px 0 5px; background: var(--parchment); border-right: 1px solid var(--mist); border-bottom: 1px solid var(--border); }
 .cal-day { position: relative; display: flex; flex-direction: column; align-items: center; padding: 4px 2px 5px; border-right: 1px solid var(--mist); border-bottom: 1px solid var(--mist); cursor: pointer; min-height: 46px; background: var(--white); transition: background 0.12s; }
 .cal-day:hover { background: var(--parchment); }
 .cal-day.empty { cursor: default; background: var(--cream); }
-.cal-day.other-month { background: var(--cream); }
-.cal-day.other-month .day-num { color: var(--border-dk); }
 .cal-day.today { background: #FFF8EC; }
 .cal-day.today .day-num { background: var(--bark); color: var(--straw); border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; }
 .cal-day.selected { background: var(--parchment); outline: 2px solid var(--tan); outline-offset: -2px; z-index: 1; }
 .day-num { font-size: 0.78rem; font-weight: 700; color: var(--ink); width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .dot-row { display: flex; gap: 2px; justify-content: center; margin-top: 3px; flex-wrap: wrap; padding: 0 1px; }
-.dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
-.dot-inc { background: var(--ev-inc); }
-.dot-brd { background: var(--ev-brd); }
+.dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; background: var(--ev-brd); }
 
-.legend { display: flex; gap: 14px; padding: 7px 14px 10px; justify-content: center; }
-.legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.68rem; color: var(--clay); font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
-.legend-dot { width: 8px; height: 8px; border-radius: 50%; }
-
-/* detail */
 .detail-panel { padding: 14px 14px 80px; max-width: 460px; margin: 0 auto; }
 .detail-date-header { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 600; color: var(--bark); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid var(--mist); }
-.no-selection { text-align: center; padding: 36px 20px; color: var(--clay); font-size: 0.88rem; }
-
-.milestone-card { border-radius: 12px; border: 1px solid var(--border); border-left: 4px solid var(--ev-inc); background: var(--white); box-shadow: 0 1px 5px var(--shadow); padding: 12px 13px; margin-bottom: 10px; }
-.milestone-card.brooder { border-left-color: var(--ev-brd); }
-.milestone-card.custom-card { border-left-color: var(--moss); } font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--tan); margin-bottom: 3px; }
+.milestone-card { border-radius: 12px; border: 1px solid var(--border); border-left: 4px solid var(--ev-brd); background: var(--white); box-shadow: 0 1px 5px var(--shadow); padding: 12px 13px; margin-bottom: 10px; }
+.milestone-card.custom-card { border-left-color: var(--moss); }
+.mc-batch { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--tan); margin-bottom: 3px; }
 .mc-label { font-family: 'Playfair Display', serif; font-size: 0.97rem; font-weight: 600; color: var(--bark); margin-bottom: 5px; }
 .mc-action { font-size: 0.84rem; color: var(--clay); line-height: 1.55; }
 .mc-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
@@ -136,114 +122,83 @@ header p  { font-size: 0.72rem; color: var(--tan); margin-top: 1px; font-weight:
 .btn:active { opacity: 0.8; }
 .btn-primary { background: var(--bark); color: var(--straw); }
 .btn-sage    { background: var(--moss); color: #E0EDDC; }
-.btn-rust    { background: var(--rust); color: #F9E0D4; }
 .btn-cancel  { background: var(--mist); color: var(--clay); }
 .btn-full    { width: 100%; }
 
-.modal-overlay { position: fixed; inset: 0; background: rgba(42,31,14,0.55); z-index: 200; display: flex; align-items: flex-end; justify-content: center; }
+.modal-overlay { position: fixed; inset: 0; background: rgba(42,31,14,0.55); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 16px; }
 .modal-overlay.hidden { display: none; }
-.modal { background: var(--cream); border-radius: 20px 20px 0 0; border-top: 3px solid var(--tan); padding: 22px 18px 40px; width: 100%; max-width: 480px; }
+.modal { background: var(--cream); border-radius: 20px; border-top: 3px solid var(--tan); padding: 22px 18px 24px; width: 100%; max-width: 480px; max-height: 90dvh; overflow-y: auto; }
 .modal h3 { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--bark); margin-bottom: 16px; }
-.modal .input-group { margin-bottom: 11px; }
 .modal-actions { display: flex; gap: 10px; margin-top: 16px; }
-
-/* ── Egg log modal (centered) ── */
-#egg-modal { align-items: center; padding: 16px; }
-#egg-modal .modal { border-radius: 20px; padding: 22px 18px 24px; }
-#egg-modal .input-group { margin-bottom: 11px; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.input-group { margin-bottom: 11px; }
 .input-group label { display: block; font-size: 0.67rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--clay); margin-bottom: 4px; }
-.input-group input, .input-group textarea { width: 100%; padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Lato', sans-serif; font-size: 0.92rem; color: var(--ink); background: var(--parchment); -webkit-appearance: none; }
-.input-group input:focus, .input-group textarea:focus { outline: none; border-color: var(--tan); background: var(--white); }
+.input-group input, .input-group textarea, .input-group select { width: 100%; padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Lato', sans-serif; font-size: 0.92rem; color: var(--ink); background: var(--parchment); -webkit-appearance: none; appearance: none; }
+.input-group input:focus, .input-group textarea:focus, .input-group select:focus { outline: none; border-color: var(--tan); background: var(--white); }
 .input-group textarea { resize: vertical; min-height: 54px; }
 
 .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(16px); background: var(--bark); color: var(--straw); padding: 9px 20px; border-radius: 20px; font-size: 0.84rem; font-weight: 700; opacity: 0; transition: opacity 0.25s, transform 0.25s; z-index: 999; white-space: nowrap; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-/* ── Export bar ── */
 .export-bar { display: flex; gap: 8px; padding: 8px 14px 4px; justify-content: flex-end; max-width: 460px; margin: 0 auto; }
 .export-btn { display: inline-flex; align-items: center; gap: 5px; background: none; border: 1.5px solid var(--border-dk); border-radius: 20px; padding: 5px 13px; font-family: 'Lato', sans-serif; font-size: 0.75rem; font-weight: 700; color: var(--clay); cursor: pointer; letter-spacing: 0.04em; text-decoration: none; }
 .export-btn:hover { background: var(--parchment); }
 .export-btn.print-btn { border-color: var(--bark); color: var(--bark); }
 
-/* ── Egg Log Page ── */
-.egg-page { padding: 12px 12px 80px; max-width: 460px; margin: 0 auto; }
-
-.egg-page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-.egg-page-header h2 { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 600; color: var(--bark); }
-
-.chart-card {
-  background: var(--white); border: 1.5px solid var(--border-dk); border-radius: 16px;
-  box-shadow: 0 2px 10px var(--shadow); overflow: hidden; margin-bottom: 14px;
-}
-.chart-header { background: var(--bark); padding: 9px 14px; display: flex; align-items: center; justify-content: space-between; }
+.log-page { padding: 12px 12px 80px; max-width: 460px; margin: 0 auto; }
+.chart-card { background: var(--white); border: 1.5px solid var(--border-dk); border-radius: 16px; box-shadow: 0 2px 10px var(--shadow); overflow: hidden; margin-bottom: 14px; }
+.chart-header { background: var(--bark); padding: 9px 14px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
 .chart-title { font-family: 'Playfair Display', serif; font-size: 0.92rem; font-weight: 600; color: var(--straw); }
 .range-pills { display: flex; gap: 4px; }
-.range-pill {
-  background: rgba(255,255,255,0.12); border: 1px solid rgba(232,200,122,0.3);
-  color: var(--tan); border-radius: 20px; padding: 3px 10px;
-  font-family: 'Lato', sans-serif; font-size: 0.68rem; font-weight: 700;
-  letter-spacing: 0.06em; cursor: pointer; transition: background 0.15s, color 0.15s;
-}
+.range-pill { background: rgba(255,255,255,0.12); border: 1px solid rgba(232,200,122,0.3); color: var(--tan); border-radius: 20px; padding: 3px 10px; font-family: 'Lato', sans-serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.06em; cursor: pointer; transition: background 0.15s, color 0.15s; }
 .range-pill.active { background: var(--straw); color: var(--bark); border-color: var(--straw); }
 .chart-body { padding: 14px 10px 10px; position: relative; height: 200px; }
-
-.chart-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border-top: 1px solid var(--border); }
+.chart-stats { display: grid; gap: 1px; background: var(--border); border-top: 1px solid var(--border); }
+.chart-stats.cols-3 { grid-template-columns: repeat(3,1fr); }
 .stat-cell { background: var(--parchment); padding: 9px 10px; text-align: center; }
 .stat-val { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--bark); }
 .stat-lbl { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--clay); margin-top: 1px; }
 
-/* egg table */
-.egg-table-wrap {
-  background: var(--white); border: 1.5px solid var(--border-dk); border-radius: 16px;
-  overflow: hidden; box-shadow: 0 2px 10px var(--shadow);
-}
-.egg-table-header { background: var(--bark); padding: 9px 14px; display: flex; align-items: center; justify-content: space-between; }
-.egg-table-header span { font-family: 'Playfair Display', serif; font-size: 0.92rem; font-weight: 600; color: var(--straw); }
-.egg-table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
-.egg-table th { background: var(--parchment); padding: 7px 10px; text-align: left; font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--clay); border-bottom: 1px solid var(--border); }
-.egg-table td { padding: 8px 10px; border-bottom: 1px solid var(--mist); vertical-align: top; }
-.egg-table tr:last-child td { border-bottom: none; }
-.egg-table tr:hover td { background: var(--parchment); }
-.egg-count { font-family: 'Playfair Display', serif; font-size: 1.0rem; font-weight: 600; color: var(--bark); }
-.egg-hens { font-size: 0.75rem; color: var(--clay); margin-top: 1px; }
-.egg-notes-cell { font-size: 0.78rem; color: var(--clay); line-height: 1.4; }
+.log-table-wrap { background: var(--white); border: 1.5px solid var(--border-dk); border-radius: 16px; overflow: hidden; box-shadow: 0 2px 10px var(--shadow); }
+.log-table-header { background: var(--bark); padding: 9px 14px; display: flex; align-items: center; justify-content: space-between; }
+.log-table-header span { font-family: 'Playfair Display', serif; font-size: 0.92rem; font-weight: 600; color: var(--straw); }
+.log-table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+.log-table th { background: var(--parchment); padding: 7px 10px; text-align: left; font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--clay); border-bottom: 1px solid var(--border); }
+.log-table td { padding: 8px 10px; border-bottom: 1px solid var(--mist); vertical-align: top; }
+.log-table tr:last-child td { border-bottom: none; }
+.log-table tr:hover td { background: var(--parchment); }
+.primary-val { font-family: 'Playfair Display', serif; font-size: 1.0rem; font-weight: 600; color: var(--bark); }
+.sub-val { font-size: 0.75rem; color: var(--clay); margin-top: 1px; }
+.notes-cell { font-size: 0.78rem; color: var(--clay); line-height: 1.4; }
 .row-actions { display: flex; gap: 5px; white-space: nowrap; }
 .tbl-btn { background: none; border: 1px solid var(--border); border-radius: 6px; padding: 3px 8px; font-size: 0.68rem; font-weight: 700; cursor: pointer; color: var(--clay); font-family: 'Lato', sans-serif; }
 .tbl-btn.edit   { color: var(--moss); border-color: var(--sage-lt); }
 .tbl-btn.delete { color: var(--rust); border-color: #E8B49A; }
 .empty-log { text-align: center; padding: 32px 20px; color: var(--clay); font-size: 0.85rem; }
 
-/* ── Print styles ── */
 @media print {
-  header, .woodgrain, .batches-section, .export-bar, .legend,
-  .cal-nav button, .header-add-btn, .tab-nav,
-  .batch-actions, .modal-overlay, .toast, #egg-page { display: none !important; }
+  header, .woodgrain, .batches-section, .export-bar,
+  .cal-nav button, .header-add-btn, .tab-nav, .sub-tab-nav,
+  .batch-actions, .modal-overlay, .toast, #logs-page { display: none !important; }
   #calendar-page { display: block !important; }
-
   body { background: white; font-size: 10pt; color: #000; }
   .calendar-outer { padding: 0; }
   .calendar-wrap { border: 1pt solid #999; border-radius: 0; box-shadow: none; max-width: 100%; page-break-inside: avoid; }
   .cal-nav { background: #3B2000; padding: 6pt 10pt; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .cal-nav h2 { color: #E8C87A; font-size: 12pt; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .cal-dow { background: #F5EDD8; font-size: 7pt; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-
   .cal-day { min-height: 72pt; align-items: flex-start; padding: 3pt 4pt; border-color: #CCC; }
   .cal-day.today { background: #FFFAED; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .cal-day.today .day-num { background: #3B2000; color: #E8C87A; border-radius: 50%; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .day-num { font-size: 8pt; font-weight: 700; }
   .dot-row { display: none; }
-
   .print-events { display: flex !important; flex-direction: column; gap: 1pt; margin-top: 2pt; width: 100%; }
-  .print-event { font-size: 6.5pt; line-height: 1.3; padding: 1pt 2pt; border-radius: 2pt; font-weight: 700; word-break: break-word; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .print-event.inc { background: #F5EDD8; color: #5C3D1E; }
-  .print-event.brd { background: #E8F0E8; color: #2E4A2E; }
-
+  .print-event { font-size: 6.5pt; line-height: 1.3; padding: 1pt 2pt; border-radius: 2pt; font-weight: 700; word-break: break-word; background: #E8F0E8; color: #2E4A2E; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .detail-panel { page-break-before: always; padding: 10pt; }
   .detail-date-header { font-size: 14pt; border-bottom: 1pt solid #CCC; }
   .milestone-card { box-shadow: none; border: 0.5pt solid #CCC; page-break-inside: avoid; }
 }
-
 @media screen { .print-events { display: none; } }
 </style>
 </head>
@@ -260,14 +215,12 @@ header p  { font-size: 0.72rem; color: var(--tan); margin-top: 1px; font-weight:
 
 <div class="tab-nav">
   <button class="tab-btn active" onclick="switchTab('calendar')">Calendar</button>
-  <button class="tab-btn" onclick="switchTab('eggs')">Egg Log</button>
+  <button class="tab-btn" onclick="switchTab('logs')">Logs</button>
 </div>
 
-<!-- ══ CALENDAR PAGE ══ -->
+<!-- CALENDAR PAGE -->
 <div class="page active" id="calendar-page">
-
   <div class="batches-section" id="batches-section"></div>
-
   <div class="calendar-outer">
     <div class="calendar-wrap">
       <div class="cal-nav">
@@ -278,60 +231,129 @@ header p  { font-size: 0.72rem; color: var(--tan); margin-top: 1px; font-weight:
       <div class="cal-grid" id="cal-grid"></div>
     </div>
   </div>
-
   <div class="woodgrain"></div>
-
   <div class="export-bar">
     <a class="export-btn" href="/calendar.ics" download="quail-tracker.ics">&#x2913; Download .ics</a>
     <button class="export-btn print-btn" onclick="window.print()">&#x2399; Print</button>
   </div>
-
   <div class="detail-panel" id="detail-panel">
-    <div class="no-selection">Tap a date to see what&rsquo;s happening</div>
+    <div style="text-align:center;padding:36px 20px;color:var(--clay);font-size:0.88rem;">Tap a date to see what&rsquo;s happening</div>
+  </div>
+</div>
+
+<!-- LOGS PAGE -->
+<div class="page" id="logs-page">
+  <div class="sub-tab-nav">
+    <button class="sub-tab-btn active" onclick="switchSubTab('eggs')">Egg Production</button>
+    <button class="sub-tab-btn" onclick="switchSubTab('incubation')">Incubation</button>
+    <button class="sub-tab-btn" onclick="switchSubTab('hatch')">Hatch</button>
+    <button class="sub-tab-btn" onclick="switchSubTab('harvest')">Harvest</button>
   </div>
 
-</div><!-- /calendar-page -->
-
-<!-- ══ EGG LOG PAGE ══ -->
-<div class="page" id="egg-page">
-  <div class="egg-page">
-
-    <div class="egg-page-header">
-      <h2>Egg Production</h2>
-    </div>
-
-    <!-- Chart card -->
-    <div class="chart-card">
-      <div class="chart-header">
-        <span class="chart-title">Daily Egg Count</span>
-        <div class="range-pills">
-          <button class="range-pill" onclick="setRange(7)" id="pill-7">7D</button>
-          <button class="range-pill active" onclick="setRange(30)" id="pill-30">30D</button>
-          <button class="range-pill" onclick="setRange(90)" id="pill-90">3M</button>
-          <button class="range-pill" onclick="setRange(365)" id="pill-365">1Y</button>
+  <!-- Egg Production -->
+  <div class="sub-page active" id="sub-eggs">
+    <div class="log-page">
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-title">Daily Egg Count</span>
+          <div class="range-pills">
+            <button class="range-pill" onclick="setEggRange(7)" id="epill-7">7D</button>
+            <button class="range-pill active" onclick="setEggRange(30)" id="epill-30">30D</button>
+            <button class="range-pill" onclick="setEggRange(90)" id="epill-90">3M</button>
+            <button class="range-pill" onclick="setEggRange(365)" id="epill-365">1Y</button>
+          </div>
+        </div>
+        <div class="chart-body"><canvas id="egg-chart"></canvas></div>
+        <div class="chart-stats cols-3">
+          <div class="stat-cell"><div class="stat-val" id="egg-stat-total">—</div><div class="stat-lbl">Total Eggs</div></div>
+          <div class="stat-cell"><div class="stat-val" id="egg-stat-avg">—</div><div class="stat-lbl">Daily Avg</div></div>
+          <div class="stat-cell"><div class="stat-val" id="egg-stat-best">—</div><div class="stat-lbl">Best Day</div></div>
         </div>
       </div>
-      <div class="chart-body">
-        <canvas id="egg-chart"></canvas>
-      </div>
-      <div class="chart-stats">
-        <div class="stat-cell"><div class="stat-val" id="stat-total">—</div><div class="stat-lbl">Total Eggs</div></div>
-        <div class="stat-cell"><div class="stat-val" id="stat-avg">—</div><div class="stat-lbl">Daily Avg</div></div>
-        <div class="stat-cell"><div class="stat-val" id="stat-best">—</div><div class="stat-lbl">Best Day</div></div>
+      <div class="log-table-wrap">
+        <div class="log-table-header">
+          <span>All Entries</span>
+          <button class="export-btn" onclick="exportCsv('eggs')" style="border-color:rgba(232,200,122,0.4);color:var(--straw);">&#x2913; Export .csv</button>
+        </div>
+        <div id="egg-table-body"></div>
       </div>
     </div>
-
-    <!-- Table -->
-    <div class="egg-table-wrap">
-      <div class="egg-table-header">
-        <span>All Entries</span>
-        <button class="export-btn" onclick="exportEggLog()" style="border-color:rgba(232,200,122,0.4);color:var(--straw);">&#x2913; Export .csv</button>
-      </div>
-      <div id="egg-table-body"></div>
-    </div>
-
   </div>
-</div><!-- /egg-page -->
+
+  <!-- Incubation -->
+  <div class="sub-page" id="sub-incubation">
+    <div class="log-page">
+      <div class="chart-card">
+        <div class="chart-header"><span class="chart-title">Hatch Rate by Batch</span></div>
+        <div class="chart-body"><canvas id="inc-chart"></canvas></div>
+        <div class="chart-stats cols-3">
+          <div class="stat-cell"><div class="stat-val" id="inc-stat-hatched">—</div><div class="stat-lbl">Total Hatched</div></div>
+          <div class="stat-cell"><div class="stat-val" id="inc-stat-rate">—</div><div class="stat-lbl">Avg Hatch Rate</div></div>
+          <div class="stat-cell"><div class="stat-val" id="inc-stat-best">—</div><div class="stat-lbl">Best Batch</div></div>
+        </div>
+      </div>
+      <div class="log-table-wrap">
+        <div class="log-table-header">
+          <span>All Entries</span>
+          <button class="export-btn" onclick="exportCsv('incubation')" style="border-color:rgba(232,200,122,0.4);color:var(--straw);">&#x2913; Export .csv</button>
+        </div>
+        <div id="inc-table-body"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hatch -->
+  <div class="sub-page" id="sub-hatch">
+    <div class="log-page">
+      <div class="chart-card">
+        <div class="chart-header"><span class="chart-title">Roosters vs Hens by Batch</span></div>
+        <div class="chart-body"><canvas id="hatch-chart"></canvas></div>
+        <div class="chart-stats cols-3">
+          <div class="stat-cell"><div class="stat-val" id="hatch-stat-roosters">—</div><div class="stat-lbl">Total Roosters</div></div>
+          <div class="stat-cell"><div class="stat-val" id="hatch-stat-hens">—</div><div class="stat-lbl">Total Hens</div></div>
+          <div class="stat-cell"><div class="stat-val" id="hatch-stat-ratio">—</div><div class="stat-lbl">R:H Ratio</div></div>
+        </div>
+      </div>
+      <div class="log-table-wrap">
+        <div class="log-table-header">
+          <span>All Entries</span>
+          <button class="export-btn" onclick="exportCsv('hatch')" style="border-color:rgba(232,200,122,0.4);color:var(--straw);">&#x2913; Export .csv</button>
+        </div>
+        <div id="hatch-table-body"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Harvest -->
+  <div class="sub-page" id="sub-harvest">
+    <div class="log-page">
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-title">Harvest Weight (oz)</span>
+          <div class="range-pills">
+            <button class="range-pill" onclick="setHarvestRange(7)" id="hpill-7">7D</button>
+            <button class="range-pill active" onclick="setHarvestRange(30)" id="hpill-30">30D</button>
+            <button class="range-pill" onclick="setHarvestRange(90)" id="hpill-90">3M</button>
+            <button class="range-pill" onclick="setHarvestRange(365)" id="hpill-365">1Y</button>
+          </div>
+        </div>
+        <div class="chart-body"><canvas id="harvest-chart"></canvas></div>
+        <div class="chart-stats cols-3">
+          <div class="stat-cell"><div class="stat-val" id="harvest-stat-birds">—</div><div class="stat-lbl">Total Birds</div></div>
+          <div class="stat-cell"><div class="stat-val" id="harvest-stat-total">—</div><div class="stat-lbl">Total oz</div></div>
+          <div class="stat-cell"><div class="stat-val" id="harvest-stat-avg">—</div><div class="stat-lbl">Avg oz/Bird</div></div>
+        </div>
+      </div>
+      <div class="log-table-wrap">
+        <div class="log-table-header">
+          <span>All Entries</span>
+          <button class="export-btn" onclick="exportCsv('harvest')" style="border-color:rgba(232,200,122,0.4);color:var(--straw);">&#x2913; Export .csv</button>
+        </div>
+        <div id="harvest-table-body"></div>
+      </div>
+    </div>
+  </div>
+</div><!-- /logs-page -->
 
 <!-- New Batch Modal -->
 <div class="modal-overlay hidden" id="modal-overlay" onclick="closeModalOutside(event)">
@@ -346,9 +368,9 @@ header p  { font-size: 0.72rem; color: var(--tan); margin-top: 1px; font-weight:
   </div>
 </div>
 
-<!-- Egg Entry Modal -->
-<div class="modal-overlay hidden" id="egg-modal" onclick="closeEggModalOutside(event)">
-  <div class="modal" id="egg-modal-inner">
+<!-- Egg Modal -->
+<div class="modal-overlay hidden" id="egg-modal" onclick="if(event.target===this)closeEggModal()">
+  <div class="modal">
     <h3 id="egg-modal-title">Log Eggs</h3>
     <div class="input-group"><label>Date</label><input type="date" id="egg-date"></div>
     <div class="form-row">
@@ -363,15 +385,65 @@ header p  { font-size: 0.72rem; color: var(--tan); margin-top: 1px; font-weight:
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<!-- Incubation Modal -->
+<div class="modal-overlay hidden" id="inc-modal" onclick="if(event.target===this)closeIncModal()">
+  <div class="modal">
+    <h3 id="inc-modal-title">Log Incubation Result</h3>
+    <div class="input-group"><label>Date</label><input type="date" id="inc-date"></div>
+    <div class="input-group"><label>Batch</label><select id="inc-batch"></select></div>
+    <div class="form-row-3">
+      <div class="input-group"><label>Eggs Set</label><input type="number" id="inc-set" min="0" placeholder="0"></div>
+      <div class="input-group"><label>Candled Out</label><input type="number" id="inc-candled" min="0" placeholder="0"></div>
+      <div class="input-group"><label>Hatched</label><input type="number" id="inc-hatched" min="0" placeholder="0"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel btn-full" onclick="closeIncModal()">Cancel</button>
+      <button class="btn btn-sage btn-full" onclick="saveIncModal()">Save Entry</button>
+    </div>
+  </div>
+</div>
+
+<!-- Hatch Modal -->
+<div class="modal-overlay hidden" id="hatch-modal" onclick="if(event.target===this)closeHatchModal()">
+  <div class="modal">
+    <h3 id="hatch-modal-title">Log Hatch Breakdown</h3>
+    <div class="input-group"><label>Date</label><input type="date" id="hatch-date"></div>
+    <div class="input-group"><label>Batch</label><select id="hatch-batch"></select></div>
+    <div class="form-row">
+      <div class="input-group"><label>Roosters</label><input type="number" id="hatch-roosters" min="0" placeholder="0"></div>
+      <div class="input-group"><label>Hens</label><input type="number" id="hatch-hens" min="0" placeholder="0"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel btn-full" onclick="closeHatchModal()">Cancel</button>
+      <button class="btn btn-sage btn-full" onclick="saveHatchModal()">Save Entry</button>
+    </div>
+  </div>
+</div>
+
+<!-- Harvest Modal -->
+<div class="modal-overlay hidden" id="harvest-modal" onclick="if(event.target===this)closeHarvestModal()">
+  <div class="modal">
+    <h3 id="harvest-modal-title">Log Harvest</h3>
+    <div class="input-group"><label>Date</label><input type="date" id="harvest-date"></div>
+    <div class="form-row">
+      <div class="input-group"><label>Birds Harvested</label><input type="number" id="harvest-birds" min="0" placeholder="0"></div>
+      <div class="input-group"><label>Total Weight (oz)</label><input type="number" id="harvest-weight" min="0" step="0.1" placeholder="0.0"></div>
+    </div>
+    <div class="input-group"><label>Notes</label><textarea id="harvest-notes" placeholder="Any observations..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel btn-full" onclick="closeHarvestModal()">Cancel</button>
+      <button class="btn btn-sage btn-full" onclick="saveHarvestModal()">Save Entry</button>
+    </div>
+  </div>
+</div>
 
 <!-- Custom Event Modal -->
-<div class="modal-overlay hidden" id="custom-modal" onclick="closeCustomModalOutside(event)" style="align-items:center;padding:16px;">
-  <div class="modal" style="border-radius:20px;padding:22px 18px 24px;">
+<div class="modal-overlay hidden" id="custom-modal" onclick="if(event.target===this)closeCustomModal()">
+  <div class="modal">
     <h3 id="custom-modal-title">Add Event</h3>
-    <div class="input-group" style="margin-bottom:11px"><label>Date</label><input type="date" id="custom-date"></div>
-    <div class="input-group" style="margin-bottom:11px"><label>Title</label><input type="text" id="custom-title" placeholder="e.g. Start holding eggs for next batch"></div>
-    <div class="input-group" style="margin-bottom:11px"><label>Notes (optional)</label><textarea id="custom-note" placeholder="Any details..."></textarea></div>
+    <div class="input-group"><label>Date</label><input type="date" id="custom-date"></div>
+    <div class="input-group"><label>Title</label><input type="text" id="custom-title" placeholder="e.g. Start holding eggs for next batch"></div>
+    <div class="input-group"><label>Notes (optional)</label><textarea id="custom-note" placeholder="Any details..."></textarea></div>
     <div class="modal-actions">
       <button class="btn btn-cancel btn-full" onclick="closeCustomModal()">Cancel</button>
       <button class="btn btn-primary btn-full" onclick="saveCustomEvent()">Save Event</button>
@@ -379,28 +451,37 @@ header p  { font-size: 0.72rem; color: var(--tan); margin-top: 1px; font-weight:
   </div>
 </div>
 
-<script>
-let appData={batches:[],egg_log:[],custom_events:[]}, calYear, calMonth, selectedDateStr=null;
-let currentRange=30, eggChart=null, editingEggDate=null, currentTab='calendar';
+<div class="toast" id="toast"></div>
 
+<script>
+/* ── State ── */
+let appData={batches:[],egg_log:[],incubation_log:[],hatch_log:[],harvest_log:[],custom_events:[]};
+let calYear,calMonth,selectedDateStr=null;
+let currentTab='calendar',currentSubTab='eggs';
+let eggRange=30,harvestRange=30;
+let eggChart=null,incChart=null,hatchChart=null,harvestChart=null;
+let editingEggDate=null,editingIncId=null,editingHatchId=null,editingHarvestId=null,editingCustomId=null;
+
+/* ── Milestone data ── */
 const INC=[
-  {day:0, label:"Eggs Set",       type:"milestone", action:"Confirm incubator stable at 99.5\u00b0F / 45\u201355% humidity. Start auto-turner.",       temp:"99.5\u00b0F", hum:"45\u201355%", tip:"Rest shipped eggs pointy-end down 12\u201324h before setting."},
-  {day:7, label:"First Candle",   type:"milestone", action:"Candle eggs. Remove clearly infertile eggs or early quitters.",                              temp:"99.5\u00b0F", hum:"45\u201355%", tip:"Veins = developing. Fully clear = likely infertile. Dark mass with movement = great."},
-  {day:14,label:"Second Candle",  type:"milestone", action:"Final candle before lockdown. Remove any late quitters.",                                    temp:"99.5\u00b0F", hum:"45\u201355%", tip:"Air cell should be large and well-defined. Target 13\u201315% egg weight loss by today."},
-  {day:15,label:"Lockdown",       type:"milestone", action:"Stop turning eggs. Raise humidity. Do NOT open incubator until hatch is complete.",         temp:"99.5\u00b0F", hum:"65\u201370%", tip:"Lay eggs on their sides. Resist opening the lid \u2014 humidity loss kills chicks during hatch."},
-  {day:17,label:"Hatch Begins",   type:"milestone", action:"Watch for pipping and zipping. Do not assist unless a chick is stuck for 24h+.",            temp:"99.5\u00b0F", hum:"70%",        tip:"Coturnix hatch fast. Do not open the lid \u2014 shrink-wrapping is a real risk."},
-  {day:18,label:"Hatch Complete", type:"milestone", action:"Move dry fluffy chicks to brooder. Discard unhatched eggs after 24h.",                      temp:"99.5\u00b0F", hum:"70%",        tip:"Chicks survive 24\u201348h on yolk reserves. Don\u2019t rush them while still wet."},
+  {day:0, label:"Eggs Set",       type:"milestone",action:"Confirm incubator stable at 99.5\u00b0F / 45\u201355% humidity. Start auto-turner.",     temp:"99.5\u00b0F",hum:"45\u201355%",tip:"Rest shipped eggs pointy-end down 12\u201324h before setting."},
+  {day:7, label:"First Candle",   type:"milestone",action:"Candle eggs. Remove clearly infertile eggs or early quitters.",                           temp:"99.5\u00b0F",hum:"45\u201355%",tip:"Veins = developing. Fully clear = likely infertile. Dark mass with movement = great."},
+  {day:14,label:"Second Candle",  type:"milestone",action:"Final candle before lockdown. Remove any late quitters.",                                 temp:"99.5\u00b0F",hum:"45\u201355%",tip:"Air cell should be large and well-defined. Target 13\u201315% egg weight loss by today."},
+  {day:15,label:"Lockdown",       type:"milestone",action:"Stop turning eggs. Raise humidity. Do NOT open incubator until hatch is complete.",      temp:"99.5\u00b0F",hum:"65\u201370%",tip:"Lay eggs on their sides. Resist opening the lid \u2014 humidity loss kills chicks during hatch."},
+  {day:17,label:"Hatch Begins",   type:"milestone",action:"Watch for pipping and zipping. Do not assist unless a chick is stuck for 24h+.",         temp:"99.5\u00b0F",hum:"70%",        tip:"Coturnix hatch fast. Do not open the lid \u2014 shrink-wrapping is a real risk."},
+  {day:18,label:"Hatch Complete", type:"milestone",action:"Move dry fluffy chicks to brooder. Discard unhatched eggs after 24h.",                   temp:"99.5\u00b0F",hum:"70%",        tip:"Chicks survive 24\u201348h on yolk reserves. Don\u2019t rush them while still wet."},
 ];
 const BRD=[
-  {day:0, label:"Move to Brooder",         type:"milestone", action:"Set up brooder at 95\u00b0F. Dip beaks in water. Chick starter feed. Marbles in water dish.", temp:"95\u00b0F", tip:"Paper towels on floor first 3 days \u2014 easier to clean, prevents leg splaying."},
-  {day:7, label:"Week 1 \u2014 Drop Temp", type:"milestone", action:"Reduce brooder temp to 90\u00b0F. Check for pasty butt daily.",                               temp:"90\u00b0F", tip:"Piling up = cold. Spread to edges = hot."},
-  {day:14,label:"Week 2 \u2014 Drop Temp", type:"milestone", action:"Reduce brooder temp to 85\u00b0F.",                                                           temp:"85\u00b0F", tip:"Switch floor to pine shavings if not already done."},
-  {day:21,label:"Sexing Window",            type:"milestone", action:"Sex by feather coloration. Begin culling plan for extra roosters.",                            temp:"80\u00b0F", tip:"Pharaoh males: rusty-red chest. Females: speckled/tan. Cull beyond 1:4\u20135 ratio."},
-  {day:28,label:"Move to Permanent Cage",  type:"milestone", action:"Chicks are fully feathered and ready for permanent housing. Transition off heat entirely if ambient temps are above 65\u00b0F.", temp:"Ambient", tip:"1/4\" hardware cloth floor, 1/2\u00d71\" walls. Ensure predator protection before moving outdoors. Set up free-choice oyster shell and game bird feed now if not already done."},
-  {day:42,label:"Harvest Window",          type:"milestone", action:"Extra roosters ready for harvest (~4\u20135 oz dressed weight).",                              temp:"Ambient", tip:"Hens may begin laying around this time \u2014 watch for eggs."},
-  {day:56,label:"Full Production",         type:"milestone", action:"All keepers at full size. Consistent egg laying expected from hens.",                          temp:"Ambient", tip:"Target colony ratio: 1 rooster per 4\u20135 hens."},
+  {day:0, label:"Move to Brooder",         type:"milestone",action:"Set up brooder at 95\u00b0F. Dip beaks in water. Chick starter feed. Marbles in water dish.",temp:"95\u00b0F",tip:"Paper towels on floor first 3 days \u2014 easier to clean, prevents leg splaying."},
+  {day:7, label:"Week 1 \u2014 Drop Temp", type:"milestone",action:"Reduce brooder temp to 90\u00b0F. Check for pasty butt daily.",                              temp:"90\u00b0F",tip:"Piling up = cold. Spread to edges = hot."},
+  {day:14,label:"Week 2 \u2014 Drop Temp", type:"milestone",action:"Reduce brooder temp to 85\u00b0F.",                                                          temp:"85\u00b0F",tip:"Switch floor to pine shavings if not already done."},
+  {day:21,label:"Sexing Window",            type:"milestone",action:"Sex by feather coloration. Begin culling plan for extra roosters.",                           temp:"80\u00b0F",tip:"Pharaoh males: rusty-red chest. Females: speckled/tan. Cull beyond 1:4\u20135 ratio."},
+  {day:28,label:"Move to Permanent Cage",  type:"milestone",action:"Chicks are fully feathered and ready for permanent housing. Transition off heat entirely if ambient temps are above 65\u00b0F.",temp:"Ambient",tip:"1/4\" hardware cloth floor, 1/2\u00d71\" walls. Ensure predator protection before moving outdoors. Set up free-choice oyster shell and game bird feed now if not already done."},
+  {day:42,label:"Harvest Window",          type:"milestone",action:"Extra roosters ready for harvest (~4\u20135 oz dressed weight).",                             temp:"Ambient",tip:"Hens may begin laying around this time \u2014 watch for eggs."},
+  {day:56,label:"Full Production",         type:"milestone",action:"All keepers at full size. Consistent egg laying expected from hens.",                         temp:"Ambient",tip:"Target colony ratio: 1 rooster per 4\u20135 hens."},
 ];
 
+/* ── Helpers ── */
 function parseLocal(s){if(!s)return null;const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);}
 function toDS(d){return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 function addDays(d,n){const r=new Date(d);r.setDate(r.getDate()+n);return r;}
@@ -409,23 +490,72 @@ function fmtFull(s){return parseLocal(s).toLocaleDateString('en-US',{weekday:'lo
 function fmtShort(s){return parseLocal(s).toLocaleDateString('en-US',{month:'short',day:'numeric'});}
 function fmtMed(s){return parseLocal(s).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
+function genId(){return'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==='x'?r:(r&0x3|0x8)).toString(16);});}
+
+function downloadCsv(filename,rows){
+  const csv=rows.map(r=>r.map(v=>{const s=String(v==null?'':v);return(s.includes(',')||s.includes('"'))?'"'+s.replace(/"/g,'""')+'"':s;}).join(',')).join('\r\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=filename;
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},100);
+}
+
+function baseChartOpts(tooltipCb){
+  return{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{backgroundColor:'#2A1F0E',titleColor:'#E8C87A',bodyColor:'#F5EDD8',padding:9,cornerRadius:8,callbacks:tooltipCb}},
+    scales:{
+      x:{ticks:{color:'#8B5E3C',font:{size:10},maxTicksLimit:8,maxRotation:0},grid:{color:'rgba(212,197,169,0.3)'},border:{color:'rgba(212,197,169,0.5)'}},
+      y:{beginAtZero:true,ticks:{color:'#8B5E3C',font:{size:10}},grid:{color:'rgba(212,197,169,0.3)'},border:{color:'rgba(212,197,169,0.5)'}}
+    }
+  };
+}
 
 /* ── Tab switching ── */
 function switchTab(tab){
   currentTab=tab;
-  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',['calendar','eggs'][i]===tab));
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',['calendar','logs'][i]===tab));
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById(tab==='calendar'?'calendar-page':'egg-page').classList.add('active');
-  const btn=document.getElementById('header-action-btn');
-  const sub=document.getElementById('header-sub');
+  document.getElementById(tab==='calendar'?'calendar-page':'logs-page').classList.add('active');
   if(tab==='calendar'){
-    btn.textContent='+ New Batch';btn.onclick=openAddBatch;
-    sub.textContent='Tap a date to see details';
+    document.getElementById('header-action-btn').textContent='+ New Batch';
+    document.getElementById('header-action-btn').onclick=openAddBatch;
+    document.getElementById('header-sub').textContent='Tap a date to see details';
   } else {
-    btn.textContent='+ Log Eggs';btn.onclick=()=>openEggModal(todayStr());
-    sub.textContent='Egg production log';
-    renderEggPage();
+    updateLogsHeader();
+    renderCurrentSubTab();
   }
+}
+
+function switchSubTab(sub){
+  currentSubTab=sub;
+  document.querySelectorAll('.sub-tab-btn').forEach((b,i)=>b.classList.toggle('active',['eggs','incubation','hatch','harvest'][i]===sub));
+  document.querySelectorAll('.sub-page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('sub-'+sub).classList.add('active');
+  updateLogsHeader();renderCurrentSubTab();
+}
+
+function updateLogsHeader(){
+  const labels={eggs:'+ Log Eggs',incubation:'+ Log Incubation',hatch:'+ Log Hatch',harvest:'+ Log Harvest'};
+  const subs={eggs:'Egg production log',incubation:'Incubation results',hatch:'Hatch breakdown',harvest:'Harvest records'};
+  document.getElementById('header-action-btn').textContent=labels[currentSubTab];
+  document.getElementById('header-action-btn').onclick=()=>openLogModal(currentSubTab);
+  document.getElementById('header-sub').textContent=subs[currentSubTab];
+}
+
+function openLogModal(type){
+  if(type==='eggs')openEggModal(todayStr());
+  else if(type==='incubation')openIncModal(null);
+  else if(type==='hatch')openHatchModal(null);
+  else if(type==='harvest')openHarvestModal(null);
+}
+
+function renderCurrentSubTab(){
+  if(currentSubTab==='eggs')renderEggPage();
+  else if(currentSubTab==='incubation')renderIncPage();
+  else if(currentSubTab==='hatch')renderHatchPage();
+  else if(currentSubTab==='harvest')renderHarvestPage();
 }
 
 /* ── Calendar ── */
@@ -434,40 +564,37 @@ function buildEventMap(){
   const add=(ds,ev)=>{if(!map[ds])map[ds]=[];map[ds].push(ev);};
   appData.batches.forEach(b=>{
     if(!b.start_date)return;
-    const start=parseLocal(b.start_date), hatch=addDays(start,18);
-    INC.forEach(m=>add(toDS(addDays(start,m.day)),{...m,batchName:b.name,batchId:b.id,active:b.active}));
-    BRD.forEach(m=>add(toDS(addDays(hatch,m.day)),{...m,batchName:b.name,batchId:b.id,active:b.active}));
+    const start=parseLocal(b.start_date),hatch=addDays(start,18);
+    INC.forEach(m=>add(toDS(addDays(start,m.day)),{...m,batchName:b.name,batchId:b.id}));
+    BRD.forEach(m=>add(toDS(addDays(hatch,m.day)),{...m,batchName:b.name,batchId:b.id}));
   });
   (appData.custom_events||[]).forEach(e=>add(e.date,{type:'custom',label:e.title,note:e.note,id:e.id}));
   return map;
 }
 
 function renderCalendar(){
-  const em=buildEventMap(), today=todayStr();
-  const first=new Date(calYear,calMonth,1), last=new Date(calYear,calMonth+1,0);
+  const em=buildEventMap(),today=todayStr();
+  const first=new Date(calYear,calMonth,1),last=new Date(calYear,calMonth+1,0);
   document.getElementById('cal-title').textContent=first.toLocaleDateString('en-US',{month:'long',year:'numeric'});
-  const grid=document.getElementById('cal-grid'); grid.innerHTML='';
+  const grid=document.getElementById('cal-grid');grid.innerHTML='';
   ['Su','Mo','Tu','We','Th','Fr','Sa'].forEach(d=>{const el=document.createElement('div');el.className='cal-dow';el.textContent=d;grid.appendChild(el);});
   for(let i=0;i<first.getDay();i++){const el=document.createElement('div');el.className='cal-day empty';grid.appendChild(el);}
   for(let d=1;d<=last.getDate();d++){
     const ds=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const evs=em[ds]||[], el=document.createElement('div');
+    const evs=em[ds]||[],el=document.createElement('div');
     el.className='cal-day'+(ds===today?' today':'')+(ds===selectedDateStr?' selected':'');
     el.onclick=()=>selectDate(ds);
     const num=document.createElement('div');num.className='day-num';num.textContent=d;el.appendChild(num);
     if(evs.length){
       const row=document.createElement('div');row.className='dot-row';
-      const dot=document.createElement('div');dot.className='dot dot-brd';
-      row.appendChild(dot);
+      const dot=document.createElement('div');dot.className='dot';row.appendChild(dot);
       el.appendChild(row);
       const pe=document.createElement('div');pe.className='print-events';
       evs.filter(e=>e.type==='milestone').forEach(e=>{
-        const ev=document.createElement('div');
-        ev.className='print-event brd';
-        ev.textContent=e.label+(e.batchName?' · '+e.batchName:'');
-        pe.appendChild(ev);
+        const ev=document.createElement('div');ev.className='print-event';
+        ev.textContent=e.label+(e.batchName?' · '+e.batchName:'');pe.appendChild(ev);
       });
-      if(pe.children.length) el.appendChild(pe);
+      if(pe.children.length)el.appendChild(pe);
     }
     grid.appendChild(el);
   }
@@ -476,14 +603,14 @@ function renderCalendar(){
 function selectDate(ds){selectedDateStr=ds;renderCalendar();renderDetail(ds);}
 
 function renderDetail(ds){
-  const em=buildEventMap(), evs=em[ds]||[], panel=document.getElementById('detail-panel');
+  const em=buildEventMap(),evs=em[ds]||[],panel=document.getElementById('detail-panel');
   const milestones=evs.filter(e=>e.type==='milestone');
   const customs=evs.filter(e=>e.type==='custom');
   let html=`<div class="detail-date-header">${fmtFull(ds)}</div>`;
-  if(!milestones.length&&!customs.length) html+=`<p style="font-size:0.85rem;color:var(--clay);margin-bottom:12px;">Nothing scheduled today.</p>`;
+  if(!milestones.length&&!customs.length)html+=`<p style="font-size:0.85rem;color:var(--clay);margin-bottom:12px;">Nothing scheduled today.</p>`;
   milestones.forEach(m=>{
     html+=`<div class="milestone-card">
-      <div class="mc-batch">${m.batchName}${!m.active?' · archived':''}</div>
+      <div class="mc-batch">${m.batchName}</div>
       <div class="mc-label">${m.label}</div>
       <div class="mc-action">${m.action}</div>
       <div class="mc-badges">
@@ -508,160 +635,65 @@ function renderDetail(ds){
   panel.innerHTML=html;
 }
 
-/* ── Egg Log Page ── */
-function setRange(days){
-  currentRange=days;
-  document.querySelectorAll('.range-pill').forEach(p=>p.classList.remove('active'));
-  document.getElementById('pill-'+days).classList.add('active');
-  renderChart();
+function prevMonth(){calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendar();}
+function nextMonth(){calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();}
+
+/* ── Egg Log ── */
+function setEggRange(days){
+  eggRange=days;
+  document.querySelectorAll('[id^="epill-"]').forEach(p=>p.classList.remove('active'));
+  document.getElementById('epill-'+days).classList.add('active');
+  renderEggChart();
 }
 
-function getWindowedLog(days){
-  const cutoff=toDS(addDays(new Date(), -days+1));
-  return appData.egg_log.filter(e=>e.date>=cutoff).sort((a,b)=>a.date.localeCompare(b.date));
-}
-
-function renderChart(){
-  const log=getWindowedLog(currentRange);
-  const labels=log.map(e=>fmtShort(e.date));
-  const data=log.map(e=>e.eggs);
-
-  // Stats (over full windowed range)
+function renderEggChart(){
+  const cutoff=toDS(addDays(new Date(),-eggRange+1));
+  const log=appData.egg_log.filter(e=>e.date>=cutoff).sort((a,b)=>a.date.localeCompare(b.date));
+  const labels=log.map(e=>fmtShort(e.date)),data=log.map(e=>e.eggs);
   const total=data.reduce((s,v)=>s+v,0);
-  const avg=data.length?Math.round(total/data.length*10)/10:0;
-  const best=data.length?Math.max(...data):0;
-  document.getElementById('stat-total').textContent=data.length?total:'—';
-  document.getElementById('stat-avg').textContent=data.length?avg:'—';
-  document.getElementById('stat-best').textContent=data.length?best:'—';
-
+  document.getElementById('egg-stat-total').textContent=data.length?total:'—';
+  document.getElementById('egg-stat-avg').textContent=data.length?Math.round(total/data.length*10)/10:'—';
+  document.getElementById('egg-stat-best').textContent=data.length?Math.max(...data):'—';
   const ctx=document.getElementById('egg-chart').getContext('2d');
-
-  const gradient=ctx.createLinearGradient(0,0,0,180);
-  gradient.addColorStop(0,'rgba(181,84,30,0.35)');
-  gradient.addColorStop(1,'rgba(181,84,30,0.02)');
-
-  if(eggChart) eggChart.destroy();
-
-  eggChart=new Chart(ctx,{
-    type:'line',
-    data:{
-      labels,
-      datasets:[{
-        data,
-        borderColor:'#B5541E',
-        backgroundColor:gradient,
-        borderWidth:2,
-        pointBackgroundColor:'#B5541E',
-        pointRadius:data.length>60?0:3,
-        pointHoverRadius:5,
-        fill:true,
-        tension:0.35,
-      }]
-    },
-    options:{
-      responsive:true,
-      maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{
-        backgroundColor:'#2A1F0E',
-        titleColor:'#E8C87A',
-        bodyColor:'#F5EDD8',
-        padding:9,
-        cornerRadius:8,
-        callbacks:{
-          title:items=>labels[items[0].dataIndex],
-          label:item=>`${item.raw} egg${item.raw!==1?'s':''}`
-        }
-      }},
-      scales:{
-        x:{
-          ticks:{color:'#8B5E3C',font:{size:10},maxTicksLimit:8,maxRotation:0},
-          grid:{color:'rgba(212,197,169,0.3)'},
-          border:{color:'rgba(212,197,169,0.5)'}
-        },
-        y:{
-          beginAtZero:true,
-          ticks:{color:'#8B5E3C',font:{size:10},stepSize:1,precision:0},
-          grid:{color:'rgba(212,197,169,0.3)'},
-          border:{color:'rgba(212,197,169,0.5)'}
-        }
-      }
-    }
-  });
+  const grad=ctx.createLinearGradient(0,0,0,180);
+  grad.addColorStop(0,'rgba(181,84,30,0.35)');grad.addColorStop(1,'rgba(181,84,30,0.02)');
+  if(eggChart)eggChart.destroy();
+  eggChart=new Chart(ctx,{type:'line',data:{labels,datasets:[{data,borderColor:'#B5541E',backgroundColor:grad,borderWidth:2,pointBackgroundColor:'#B5541E',pointRadius:data.length>60?0:3,pointHoverRadius:5,fill:true,tension:0.35}]},options:baseChartOpts({title:i=>labels[i[0].dataIndex],label:i=>`${i.raw} egg${i.raw!==1?'s':''}`})});
 }
 
 function renderEggTable(){
   const sorted=[...appData.egg_log].sort((a,b)=>b.date.localeCompare(a.date));
   const wrap=document.getElementById('egg-table-body');
-  if(!sorted.length){
-    wrap.innerHTML=`<div class="empty-log">No egg entries yet.<br>Tap &ldquo;+ Log Eggs&rdquo; to add your first entry.</div>`;
-    return;
-  }
-  let html=`<table class="egg-table"><thead><tr>
-    <th>Date</th><th>Eggs</th><th>Notes</th><th></th>
-  </tr></thead><tbody>`;
+  if(!sorted.length){wrap.innerHTML=`<div class="empty-log">No entries yet.</div>`;return;}
+  let html=`<table class="log-table"><thead><tr><th>Date</th><th>Eggs</th><th>Notes</th><th></th></tr></thead><tbody>`;
   sorted.forEach(e=>{
     html+=`<tr>
-      <td style="white-space:nowrap">
-        <div style="font-size:0.83rem;font-weight:700;color:var(--ink)">${fmtMed(e.date)}</div>
-        ${e.hens?`<div class="egg-hens">${e.hens} hens</div>`:''}
-      </td>
-      <td><span class="egg-count">${e.eggs}</span></td>
-      <td class="egg-notes-cell">${e.notes||''}</td>
-      <td>
-        <div class="row-actions">
-          <button class="tbl-btn edit" onclick="openEggModal('${e.date}')">Edit</button>
-          <button class="tbl-btn delete" onclick="deleteEgg('${e.date}')">✕</button>
-        </div>
-      </td>
+      <td><div style="font-size:0.83rem;font-weight:700;color:var(--ink)">${fmtMed(e.date)}</div>${e.hens?`<div class="sub-val">${e.hens} hens</div>`:''}</td>
+      <td><span class="primary-val">${e.eggs}</span></td>
+      <td class="notes-cell">${e.notes||''}</td>
+      <td><div class="row-actions"><button class="tbl-btn edit" onclick="openEggModal('${e.date}')">Edit</button><button class="tbl-btn delete" onclick="deleteEgg('${e.date}')">✕</button></div></td>
     </tr>`;
   });
   wrap.innerHTML=html+'</tbody></table>';
 }
 
-function exportEggLog(){
-  if(!appData.egg_log.length){showToast('No entries to export');return;}
-  const rows=appData.egg_log.slice().sort((a,b)=>a.date.localeCompare(b.date));
-  const csv=[
-    ['Date','Eggs Collected','Hens Laying','Notes'].join(','),
-    ...rows.map(e=>[
-      e.date,
-      e.eggs!=null?e.eggs:0,
-      e.hens!=null?e.hens:'',
-      '"'+(e.notes||'').replace(/"/g,'""')+'"'
-    ].join(','))
-  ].join('\r\n');
-  const blob=new Blob([csv],{type:'text/csv'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url;a.download='quail-egg-log.csv';
-  document.body.appendChild(a);a.click();
-  setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},100);
-}
+function renderEggPage(){renderEggChart();renderEggTable();}
 
-function renderEggPage(){
-  renderChart();
-  renderEggTable();
-}
-
-/* ── Egg Modal ── */
 function openEggModal(ds){
   editingEggDate=ds;
-  const existing=appData.egg_log.find(e=>e.date===ds);
-  document.getElementById('egg-modal-title').textContent=existing?'Edit Entry':'Log Eggs';
+  const ex=appData.egg_log.find(e=>e.date===ds);
+  document.getElementById('egg-modal-title').textContent=ex?'Edit Entry':'Log Eggs';
   document.getElementById('egg-date').value=ds;
-  document.getElementById('egg-count').value=existing?existing.eggs:'';
-  document.getElementById('egg-hens').value=existing&&existing.hens?existing.hens:'';
-  document.getElementById('egg-notes').value=existing?existing.notes||'':'';
+  document.getElementById('egg-count').value=ex?ex.eggs:'';
+  document.getElementById('egg-hens').value=ex&&ex.hens?ex.hens:'';
+  document.getElementById('egg-notes').value=ex?ex.notes||'':'';
   document.getElementById('egg-modal').classList.remove('hidden');
   setTimeout(()=>document.getElementById('egg-count').focus(),50);
 }
 function closeEggModal(){document.getElementById('egg-modal').classList.add('hidden');editingEggDate=null;}
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeEggModal();closeCustomModal();}});
-function closeEggModalOutside(e){if(e.target===document.getElementById('egg-modal'))closeEggModal();}
 
 async function saveEggModal(){
-  const ds=document.getElementById('egg-date').value;
-  const eggs=document.getElementById('egg-count').value;
+  const ds=document.getElementById('egg-date').value,eggs=document.getElementById('egg-count').value;
   if(!ds){showToast('Choose a date');return;}
   if(eggs===''){showToast('Enter an egg count');return;}
   const entry={date:ds,eggs:parseInt(eggs),hens:document.getElementById('egg-hens').value||null,notes:document.getElementById('egg-notes').value||''};
@@ -669,21 +701,272 @@ async function saveEggModal(){
   const idx=appData.egg_log.findIndex(e=>e.date===ds);
   if(idx>=0)appData.egg_log[idx]=entry;else{appData.egg_log.push(entry);appData.egg_log.sort((a,b)=>a.date.localeCompare(b.date));}
   closeEggModal();showToast('Saved');
-  if(currentTab==='eggs') renderEggPage();
+  if(currentTab==='logs'&&currentSubTab==='eggs')renderEggPage();
 }
 
 async function deleteEgg(ds){
   if(!confirm(`Delete entry for ${fmtMed(ds)}?`))return;
   await fetch(`/api/egg_log/${ds}`,{method:'DELETE'});
   appData.egg_log=appData.egg_log.filter(e=>e.date!==ds);
-  showToast('Entry deleted');
-  if(currentTab==='eggs') renderEggPage();
+  showToast('Deleted');renderEggPage();
+}
+
+/* ── Incubation Log ── */
+function populateBatchSelect(id){
+  const sel=document.getElementById(id);
+  sel.innerHTML=appData.batches.length?appData.batches.map(b=>`<option value="${b.id}">${b.name}</option>`).join(''):'<option value="">No batches</option>';
+}
+
+function renderIncChart(){
+  const log=[...appData.incubation_log].sort((a,b)=>a.date.localeCompare(b.date));
+  const labels=log.map(e=>e.batch_name);
+  const data=log.map(e=>e.eggs_set>0?Math.round(e.hatched/e.eggs_set*1000)/10:0);
+  const totalHatched=log.reduce((s,e)=>s+e.hatched,0);
+  const avgRate=data.length?Math.round(data.reduce((s,v)=>s+v,0)/data.length*10)/10:0;
+  const bestIdx=data.length?data.indexOf(Math.max(...data)):-1;
+  document.getElementById('inc-stat-hatched').textContent=log.length?totalHatched:'—';
+  document.getElementById('inc-stat-rate').textContent=log.length?avgRate+'%':'—';
+  document.getElementById('inc-stat-best').textContent=bestIdx>=0?labels[bestIdx]:'—';
+  const ctx=document.getElementById('inc-chart').getContext('2d');
+  const grad=ctx.createLinearGradient(0,0,0,180);
+  grad.addColorStop(0,'rgba(74,103,65,0.5)');grad.addColorStop(1,'rgba(74,103,65,0.05)');
+  if(incChart)incChart.destroy();
+  const opts=baseChartOpts({title:i=>labels[i[0].dataIndex],label:i=>`${i.raw}% hatch rate`});
+  opts.scales.y.max=100;opts.scales.y.ticks.callback=v=>v+'%';
+  incChart=new Chart(ctx,{type:'bar',data:{labels,datasets:[{data,backgroundColor:grad,borderColor:'#4A6741',borderWidth:2,borderRadius:4}]},options:opts});
+}
+
+function renderIncTable(){
+  const sorted=[...appData.incubation_log].sort((a,b)=>b.date.localeCompare(a.date));
+  const wrap=document.getElementById('inc-table-body');
+  if(!sorted.length){wrap.innerHTML=`<div class="empty-log">No entries yet.</div>`;return;}
+  let html=`<table class="log-table"><thead><tr><th>Date</th><th>Batch</th><th>Set</th><th>Culled</th><th>Hatched</th><th>Rate</th><th></th></tr></thead><tbody>`;
+  sorted.forEach(e=>{
+    const rate=e.eggs_set>0?Math.round(e.hatched/e.eggs_set*1000)/10:0;
+    html+=`<tr>
+      <td style="white-space:nowrap"><div style="font-size:0.83rem;font-weight:700">${fmtMed(e.date)}</div></td>
+      <td class="notes-cell">${e.batch_name}</td>
+      <td>${e.eggs_set}</td><td>${e.candled_out}</td>
+      <td><span class="primary-val">${e.hatched}</span></td>
+      <td><span style="color:var(--moss);font-weight:700">${rate}%</span></td>
+      <td><div class="row-actions"><button class="tbl-btn edit" onclick="openIncModal('${e.id}')">Edit</button><button class="tbl-btn delete" onclick="deleteIncEntry('${e.id}')">✕</button></div></td>
+    </tr>`;
+  });
+  wrap.innerHTML=html+'</tbody></table>';
+}
+
+function renderIncPage(){renderIncChart();renderIncTable();}
+
+function openIncModal(id){
+  editingIncId=id;
+  const ex=id?appData.incubation_log.find(e=>e.id===id):null;
+  document.getElementById('inc-modal-title').textContent=ex?'Edit Incubation Entry':'Log Incubation Result';
+  document.getElementById('inc-date').value=ex?ex.date:todayStr();
+  populateBatchSelect('inc-batch');
+  if(ex)document.getElementById('inc-batch').value=ex.batch_id;
+  document.getElementById('inc-set').value=ex?ex.eggs_set:'';
+  document.getElementById('inc-candled').value=ex?ex.candled_out:'';
+  document.getElementById('inc-hatched').value=ex?ex.hatched:'';
+  document.getElementById('inc-modal').classList.remove('hidden');
+  setTimeout(()=>document.getElementById('inc-set').focus(),50);
+}
+function closeIncModal(){document.getElementById('inc-modal').classList.add('hidden');editingIncId=null;}
+
+async function saveIncModal(){
+  const ds=document.getElementById('inc-date').value,batchId=document.getElementById('inc-batch').value;
+  const set=document.getElementById('inc-set').value,candled=document.getElementById('inc-candled').value,hatched=document.getElementById('inc-hatched').value;
+  if(!ds||!batchId||set===''||hatched===''){showToast('Fill in all required fields');return;}
+  const batch=appData.batches.find(b=>b.id===batchId);
+  const entry={id:editingIncId||genId(),date:ds,batch_id:batchId,batch_name:batch?batch.name:'',eggs_set:parseInt(set),candled_out:parseInt(candled)||0,hatched:parseInt(hatched)};
+  if(!appData.incubation_log)appData.incubation_log=[];
+  const idx=appData.incubation_log.findIndex(e=>e.id===entry.id);
+  if(idx>=0)appData.incubation_log[idx]=entry;else appData.incubation_log.push(entry);
+  await fetch('/api/incubation_log',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(appData.incubation_log)});
+  closeIncModal();showToast('Saved');renderIncPage();
+}
+
+async function deleteIncEntry(id){
+  if(!confirm('Delete this entry?'))return;
+  appData.incubation_log=appData.incubation_log.filter(e=>e.id!==id);
+  await fetch('/api/incubation_log',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(appData.incubation_log)});
+  showToast('Deleted');renderIncPage();
+}
+
+/* ── Hatch Log ── */
+function renderHatchChart(){
+  const log=[...appData.hatch_log].sort((a,b)=>a.date.localeCompare(b.date));
+  const labels=log.map(e=>e.batch_name);
+  const roosters=log.map(e=>e.roosters),hens=log.map(e=>e.hens);
+  const totalR=roosters.reduce((s,v)=>s+v,0),totalH=hens.reduce((s,v)=>s+v,0);
+  document.getElementById('hatch-stat-roosters').textContent=log.length?totalR:'—';
+  document.getElementById('hatch-stat-hens').textContent=log.length?totalH:'—';
+  document.getElementById('hatch-stat-ratio').textContent=log.length&&totalH>0?(totalR/totalH).toFixed(2)+':1':'—';
+  const ctx=document.getElementById('hatch-chart').getContext('2d');
+  if(hatchChart)hatchChart.destroy();
+  const opts=baseChartOpts({title:i=>labels[i[0].dataIndex],label:i=>`${i.dataset.label}: ${i.raw}`});
+  opts.plugins.legend={display:true,labels:{color:'#8B5E3C',font:{size:10},boxWidth:12}};
+  hatchChart=new Chart(ctx,{type:'bar',data:{labels,datasets:[
+    {label:'Roosters',data:roosters,backgroundColor:'rgba(181,84,30,0.7)',borderColor:'#B5541E',borderWidth:1.5,borderRadius:3},
+    {label:'Hens',data:hens,backgroundColor:'rgba(74,103,65,0.7)',borderColor:'#4A6741',borderWidth:1.5,borderRadius:3}
+  ]},options:opts});
+}
+
+function renderHatchTable(){
+  const sorted=[...appData.hatch_log].sort((a,b)=>b.date.localeCompare(a.date));
+  const wrap=document.getElementById('hatch-table-body');
+  if(!sorted.length){wrap.innerHTML=`<div class="empty-log">No entries yet.</div>`;return;}
+  let html=`<table class="log-table"><thead><tr><th>Date</th><th>Batch</th><th>Roosters</th><th>Hens</th><th>Total</th><th></th></tr></thead><tbody>`;
+  sorted.forEach(e=>{
+    html+=`<tr>
+      <td style="white-space:nowrap"><div style="font-size:0.83rem;font-weight:700">${fmtMed(e.date)}</div></td>
+      <td class="notes-cell">${e.batch_name}</td>
+      <td><span style="color:var(--rust);font-weight:700">${e.roosters}</span></td>
+      <td><span style="color:var(--moss);font-weight:700">${e.hens}</span></td>
+      <td><span class="primary-val">${e.roosters+e.hens}</span></td>
+      <td><div class="row-actions"><button class="tbl-btn edit" onclick="openHatchModal('${e.id}')">Edit</button><button class="tbl-btn delete" onclick="deleteHatchEntry('${e.id}')">✕</button></div></td>
+    </tr>`;
+  });
+  wrap.innerHTML=html+'</tbody></table>';
+}
+
+function renderHatchPage(){renderHatchChart();renderHatchTable();}
+
+function openHatchModal(id){
+  editingHatchId=id;
+  const ex=id?appData.hatch_log.find(e=>e.id===id):null;
+  document.getElementById('hatch-modal-title').textContent=ex?'Edit Hatch Entry':'Log Hatch Breakdown';
+  document.getElementById('hatch-date').value=ex?ex.date:todayStr();
+  populateBatchSelect('hatch-batch');
+  if(ex)document.getElementById('hatch-batch').value=ex.batch_id;
+  document.getElementById('hatch-roosters').value=ex?ex.roosters:'';
+  document.getElementById('hatch-hens').value=ex?ex.hens:'';
+  document.getElementById('hatch-modal').classList.remove('hidden');
+  setTimeout(()=>document.getElementById('hatch-roosters').focus(),50);
+}
+function closeHatchModal(){document.getElementById('hatch-modal').classList.add('hidden');editingHatchId=null;}
+
+async function saveHatchModal(){
+  const ds=document.getElementById('hatch-date').value,batchId=document.getElementById('hatch-batch').value;
+  const roosters=document.getElementById('hatch-roosters').value,hens=document.getElementById('hatch-hens').value;
+  if(!ds||!batchId||roosters===''||hens===''){showToast('Fill in all required fields');return;}
+  const batch=appData.batches.find(b=>b.id===batchId);
+  const entry={id:editingHatchId||genId(),date:ds,batch_id:batchId,batch_name:batch?batch.name:'',roosters:parseInt(roosters),hens:parseInt(hens)};
+  if(!appData.hatch_log)appData.hatch_log=[];
+  const idx=appData.hatch_log.findIndex(e=>e.id===entry.id);
+  if(idx>=0)appData.hatch_log[idx]=entry;else appData.hatch_log.push(entry);
+  await fetch('/api/hatch_log',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(appData.hatch_log)});
+  closeHatchModal();showToast('Saved');renderHatchPage();
+}
+
+async function deleteHatchEntry(id){
+  if(!confirm('Delete this entry?'))return;
+  appData.hatch_log=appData.hatch_log.filter(e=>e.id!==id);
+  await fetch('/api/hatch_log',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(appData.hatch_log)});
+  showToast('Deleted');renderHatchPage();
+}
+
+/* ── Harvest Log ── */
+function setHarvestRange(days){
+  harvestRange=days;
+  document.querySelectorAll('[id^="hpill-"]').forEach(p=>p.classList.remove('active'));
+  document.getElementById('hpill-'+days).classList.add('active');
+  renderHarvestChart();
+}
+
+function renderHarvestChart(){
+  const cutoff=toDS(addDays(new Date(),-harvestRange+1));
+  const log=appData.harvest_log.filter(e=>e.date>=cutoff).sort((a,b)=>a.date.localeCompare(b.date));
+  const labels=log.map(e=>fmtShort(e.date)),data=log.map(e=>e.total_weight_oz);
+  const totalBirds=log.reduce((s,e)=>s+e.birds,0),totalOz=log.reduce((s,e)=>s+e.total_weight_oz,0);
+  document.getElementById('harvest-stat-birds').textContent=log.length?totalBirds:'—';
+  document.getElementById('harvest-stat-total').textContent=log.length?Math.round(totalOz*10)/10:'—';
+  document.getElementById('harvest-stat-avg').textContent=log.length&&totalBirds>0?Math.round(totalOz/totalBirds*10)/10:'—';
+  const ctx=document.getElementById('harvest-chart').getContext('2d');
+  const grad=ctx.createLinearGradient(0,0,0,180);
+  grad.addColorStop(0,'rgba(107,140,107,0.4)');grad.addColorStop(1,'rgba(107,140,107,0.02)');
+  if(harvestChart)harvestChart.destroy();
+  harvestChart=new Chart(ctx,{type:'bar',data:{labels,datasets:[{data,backgroundColor:grad,borderColor:'#6B8C6B',borderWidth:2,borderRadius:4}]},options:baseChartOpts({title:i=>labels[i[0].dataIndex],label:i=>`${i.raw} oz`})});
+}
+
+function renderHarvestTable(){
+  const sorted=[...appData.harvest_log].sort((a,b)=>b.date.localeCompare(a.date));
+  const wrap=document.getElementById('harvest-table-body');
+  if(!sorted.length){wrap.innerHTML=`<div class="empty-log">No entries yet.</div>`;return;}
+  let html=`<table class="log-table"><thead><tr><th>Date</th><th>Birds</th><th>Total oz</th><th>Avg oz</th><th>Notes</th><th></th></tr></thead><tbody>`;
+  sorted.forEach(e=>{
+    const avg=e.birds>0?Math.round(e.total_weight_oz/e.birds*10)/10:0;
+    html+=`<tr>
+      <td style="white-space:nowrap"><div style="font-size:0.83rem;font-weight:700">${fmtMed(e.date)}</div></td>
+      <td><span class="primary-val">${e.birds}</span></td>
+      <td><span class="primary-val">${e.total_weight_oz}</span></td>
+      <td>${avg}</td>
+      <td class="notes-cell">${e.notes||''}</td>
+      <td><div class="row-actions"><button class="tbl-btn edit" onclick="openHarvestModal('${e.id}')">Edit</button><button class="tbl-btn delete" onclick="deleteHarvestEntry('${e.id}')">✕</button></div></td>
+    </tr>`;
+  });
+  wrap.innerHTML=html+'</tbody></table>';
+}
+
+function renderHarvestPage(){renderHarvestChart();renderHarvestTable();}
+
+function openHarvestModal(id){
+  editingHarvestId=id;
+  const ex=id?appData.harvest_log.find(e=>e.id===id):null;
+  document.getElementById('harvest-modal-title').textContent=ex?'Edit Harvest Entry':'Log Harvest';
+  document.getElementById('harvest-date').value=ex?ex.date:todayStr();
+  document.getElementById('harvest-birds').value=ex?ex.birds:'';
+  document.getElementById('harvest-weight').value=ex?ex.total_weight_oz:'';
+  document.getElementById('harvest-notes').value=ex?ex.notes||'':'';
+  document.getElementById('harvest-modal').classList.remove('hidden');
+  setTimeout(()=>document.getElementById('harvest-birds').focus(),50);
+}
+function closeHarvestModal(){document.getElementById('harvest-modal').classList.add('hidden');editingHarvestId=null;}
+
+async function saveHarvestModal(){
+  const ds=document.getElementById('harvest-date').value,birds=document.getElementById('harvest-birds').value,weight=document.getElementById('harvest-weight').value;
+  if(!ds||birds===''||weight===''){showToast('Fill in all required fields');return;}
+  const entry={id:editingHarvestId||genId(),date:ds,birds:parseInt(birds),total_weight_oz:parseFloat(weight),notes:document.getElementById('harvest-notes').value||''};
+  if(!appData.harvest_log)appData.harvest_log=[];
+  const idx=appData.harvest_log.findIndex(e=>e.id===entry.id);
+  if(idx>=0)appData.harvest_log[idx]=entry;else appData.harvest_log.push(entry);
+  await fetch('/api/harvest_log',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(appData.harvest_log)});
+  closeHarvestModal();showToast('Saved');renderHarvestPage();
+}
+
+async function deleteHarvestEntry(id){
+  if(!confirm('Delete this entry?'))return;
+  appData.harvest_log=appData.harvest_log.filter(e=>e.id!==id);
+  await fetch('/api/harvest_log',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(appData.harvest_log)});
+  showToast('Deleted');renderHarvestPage();
+}
+
+/* ── CSV Export ── */
+function exportCsv(type){
+  let rows,filename;
+  if(type==='eggs'){
+    if(!appData.egg_log.length){showToast('No entries to export');return;}
+    rows=[['Date','Eggs Collected','Hens Laying','Notes'],...appData.egg_log.slice().sort((a,b)=>a.date.localeCompare(b.date)).map(e=>[e.date,e.eggs,e.hens||'',e.notes||''])];
+    filename='quail-egg-log.csv';
+  } else if(type==='incubation'){
+    if(!appData.incubation_log.length){showToast('No entries to export');return;}
+    rows=[['Date','Batch','Eggs Set','Candled Out','Hatched','Hatch Rate %'],...appData.incubation_log.slice().sort((a,b)=>a.date.localeCompare(b.date)).map(e=>[e.date,e.batch_name,e.eggs_set,e.candled_out,e.hatched,e.eggs_set>0?Math.round(e.hatched/e.eggs_set*1000)/10:0])];
+    filename='quail-incubation-log.csv';
+  } else if(type==='hatch'){
+    if(!appData.hatch_log.length){showToast('No entries to export');return;}
+    rows=[['Date','Batch','Roosters','Hens','Total'],...appData.hatch_log.slice().sort((a,b)=>a.date.localeCompare(b.date)).map(e=>[e.date,e.batch_name,e.roosters,e.hens,e.roosters+e.hens])];
+    filename='quail-hatch-log.csv';
+  } else if(type==='harvest'){
+    if(!appData.harvest_log.length){showToast('No entries to export');return;}
+    rows=[['Date','Birds','Total oz','Avg oz/Bird','Notes'],...appData.harvest_log.slice().sort((a,b)=>a.date.localeCompare(b.date)).map(e=>[e.date,e.birds,e.total_weight_oz,e.birds>0?Math.round(e.total_weight_oz/e.birds*10)/10:0,e.notes||''])];
+    filename='quail-harvest-log.csv';
+  }
+  downloadCsv(filename,rows);
 }
 
 /* ── Batches ── */
 function renderBatches(){
   const el=document.getElementById('batches-section');
-  if(!appData.batches.length){el.innerHTML=`<div class="batches-title">No batches yet — add one to get started</div>`;return;}
+  if(!appData.batches.length){el.innerHTML=`<div class="batches-title">No batches yet \u2014 add one to get started</div>`;return;}
   let html=`<div class="batches-title">Active Batches</div><div class="batch-list">`;
   appData.batches.forEach(b=>{
     const hatch=toDS(addDays(parseLocal(b.start_date),18));
@@ -695,13 +978,13 @@ function renderBatches(){
   el.innerHTML=html+'</div>';
 }
 
-function headerAction(){openAddBatch();}
+function headerAction(){if(currentTab==='calendar')openAddBatch();else openLogModal(currentSubTab);}
 function openAddBatch(){document.getElementById('batch-name').value='';document.getElementById('batch-start-date').value=todayStr();document.getElementById('modal-overlay').classList.remove('hidden');}
 function closeModal(){document.getElementById('modal-overlay').classList.add('hidden');}
 function closeModalOutside(e){if(e.target===document.getElementById('modal-overlay'))closeModal();}
 
 async function saveBatch(){
-  const name=document.getElementById('batch-name').value.trim(), start=document.getElementById('batch-start-date').value;
+  const name=document.getElementById('batch-name').value.trim(),start=document.getElementById('batch-start-date').value;
   if(!name||!start){showToast('Name and date are required');return;}
   const res=await fetch('/api/batches',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,start_date:start})});
   const batch=await res.json();
@@ -715,27 +998,21 @@ async function deleteBatch(id){
   showToast('Batch deleted');renderBatches();renderCalendar();
 }
 
-function prevMonth(){calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendar();}
-function nextMonth(){calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();}
-
-function genId(){return'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==='x'?r:(r&0x3|0x8)).toString(16);});}
-let editingCustomId=null;
+/* ── Custom Events ── */
 function openCustomModal(ds,id){
   editingCustomId=id;
-  const existing=id?(appData.custom_events||[]).find(e=>e.id===id):null;
-  document.getElementById('custom-modal-title').textContent=existing?'Edit Event':'Add Event';
-  document.getElementById('custom-date').value=existing?existing.date:ds;
-  document.getElementById('custom-title').value=existing?existing.title:'';
-  document.getElementById('custom-note').value=existing?existing.note||'':'';
+  const ex=id?(appData.custom_events||[]).find(e=>e.id===id):null;
+  document.getElementById('custom-modal-title').textContent=ex?'Edit Event':'Add Event';
+  document.getElementById('custom-date').value=ex?ex.date:ds;
+  document.getElementById('custom-title').value=ex?ex.title:'';
+  document.getElementById('custom-note').value=ex?ex.note||'':'';
   document.getElementById('custom-modal').classList.remove('hidden');
   setTimeout(()=>document.getElementById('custom-title').focus(),50);
 }
 function closeCustomModal(){document.getElementById('custom-modal').classList.add('hidden');editingCustomId=null;}
-function closeCustomModalOutside(e){if(e.target===document.getElementById('custom-modal'))closeCustomModal();}
 
 async function saveCustomEvent(){
-  const title=document.getElementById('custom-title').value.trim();
-  const ds=document.getElementById('custom-date').value;
+  const title=document.getElementById('custom-title').value.trim(),ds=document.getElementById('custom-date').value;
   if(!title){showToast('Enter a title');return;}
   if(!ds){showToast('Choose a date');return;}
   if(!appData.custom_events)appData.custom_events=[];
@@ -746,7 +1023,7 @@ async function saveCustomEvent(){
     appData.custom_events.push({id:genId(),date:ds,title,note:document.getElementById('custom-note').value||''});
   }
   await fetch('/api/custom_events',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(appData.custom_events)});
-  closeCustomModal();showToast('Saved');renderCalendar();renderDetail(ds);selectedDateStr=ds;
+  closeCustomModal();showToast('Saved');renderCalendar();selectedDateStr=ds;renderDetail(ds);
 }
 
 async function deleteCustomEvent(id){
@@ -755,11 +1032,20 @@ async function deleteCustomEvent(id){
   showToast('Event deleted');renderCalendar();if(selectedDateStr)renderDetail(selectedDateStr);
 }
 
+/* ── Keyboard ── */
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){[closeEggModal,closeIncModal,closeHatchModal,closeHarvestModal,closeCustomModal,closeModal].forEach(fn=>fn());}
+});
+
+/* ── Init ── */
 async function init(){
   const now=new Date();calYear=now.getFullYear();calMonth=now.getMonth();
   const res=await fetch('/api/data');appData=await res.json();
   if(!appData.batches)appData.batches=[];
   if(!appData.egg_log)appData.egg_log=[];
+  if(!appData.incubation_log)appData.incubation_log=[];
+  if(!appData.hatch_log)appData.hatch_log=[];
+  if(!appData.harvest_log)appData.harvest_log=[];
   if(!appData.custom_events)appData.custom_events=[];
   renderBatches();renderCalendar();selectDate(todayStr());
 }
