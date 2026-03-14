@@ -925,7 +925,7 @@ function renderHarvestChart(){
   const grad=ctx.createLinearGradient(0,0,0,180);
   grad.addColorStop(0,'rgba(107,140,107,0.4)');grad.addColorStop(1,'rgba(107,140,107,0.02)');
   if(harvestChart)harvestChart.destroy();
-  harvestChart=new Chart(ctx,{type:'bar',data:{labels,datasets:[{data,backgroundColor:grad,borderColor:'#6B8C6B',borderWidth:2,borderRadius:4}]},options:baseChartOpts({title:i=>labels[i[0].dataIndex],label:i=>`${i.raw} oz`})});
+  harvestChart=new Chart(ctx,{type:'line',data:{labels,datasets:[{data,borderColor:'#6B8C6B',backgroundColor:grad,borderWidth:2,pointBackgroundColor:'#6B8C6B',pointRadius:data.length>60?0:4,pointHoverRadius:6,fill:true,tension:0.3}]},options:baseChartOpts({title:i=>labels[i[0].dataIndex],label:i=>`${i.raw} oz`})});
 }
 
 function renderHarvestTable(){
