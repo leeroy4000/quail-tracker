@@ -285,7 +285,15 @@ header p  { font-size: 0.72rem; color: var(--tan); margin-top: 1px; font-weight:
   <div class="sub-page" id="sub-incubation">
     <div class="log-page">
       <div class="chart-card">
-        <div class="chart-header"><span class="chart-title">Hatch Rate by Batch</span></div>
+        <div class="chart-header">
+          <span class="chart-title">Hatch Rate %</span>
+          <div class="range-pills">
+            <button class="range-pill" onclick="setIncRange(7)" id="ipill-7">7D</button>
+            <button class="range-pill active" onclick="setIncRange(30)" id="ipill-30">30D</button>
+            <button class="range-pill" onclick="setIncRange(90)" id="ipill-90">3M</button>
+            <button class="range-pill" onclick="setIncRange(365)" id="ipill-365">1Y</button>
+          </div>
+        </div>
         <div class="chart-body"><canvas id="inc-chart"></canvas></div>
         <div class="chart-stats cols-3">
           <div class="stat-cell"><div class="stat-val" id="inc-stat-hatched">—</div><div class="stat-lbl">Total Hatched</div></div>
@@ -307,7 +315,15 @@ header p  { font-size: 0.72rem; color: var(--tan); margin-top: 1px; font-weight:
   <div class="sub-page" id="sub-hatch">
     <div class="log-page">
       <div class="chart-card">
-        <div class="chart-header"><span class="chart-title">Roosters vs Hens by Batch</span></div>
+        <div class="chart-header">
+          <span class="chart-title">Roosters vs Hens</span>
+          <div class="range-pills">
+            <button class="range-pill" onclick="setHatchRange(7)" id="hhpill-7">7D</button>
+            <button class="range-pill active" onclick="setHatchRange(30)" id="hhpill-30">30D</button>
+            <button class="range-pill" onclick="setHatchRange(90)" id="hhpill-90">3M</button>
+            <button class="range-pill" onclick="setHatchRange(365)" id="hhpill-365">1Y</button>
+          </div>
+        </div>
         <div class="chart-body"><canvas id="hatch-chart"></canvas></div>
         <div class="chart-stats cols-3">
           <div class="stat-cell"><div class="stat-val" id="hatch-stat-roosters">—</div><div class="stat-lbl">Total Roosters</div></div>
@@ -459,7 +475,7 @@ header p  { font-size: 0.72rem; color: var(--tan); margin-top: 1px; font-weight:
 let appData={batches:[],egg_log:[],incubation_log:[],hatch_log:[],harvest_log:[],custom_events:[]};
 let calYear,calMonth,selectedDateStr=null;
 let currentTab='calendar',currentSubTab='eggs';
-let eggRange=30,harvestRange=30;
+let eggRange=30,incRange=30,hatchRange=30,harvestRange=30;
 let eggChart=null,incChart=null,hatchChart=null,harvestChart=null;
 let editingEggDate=null,editingIncId=null,editingHatchId=null,editingHarvestId=null,editingCustomId=null;
 
@@ -718,23 +734,31 @@ function populateBatchSelect(id){
   sel.innerHTML=appData.batches.length?appData.batches.map(b=>`<option value="${b.id}">${b.name}</option>`).join(''):'<option value="">No batches</option>';
 }
 
+function setIncRange(days){
+  incRange=days;
+  document.querySelectorAll('[id^="ipill-"]').forEach(p=>p.classList.remove('active'));
+  document.getElementById('ipill-'+days).classList.add('active');
+  renderIncChart();
+}
+
 function renderIncChart(){
-  const log=[...appData.incubation_log].sort((a,b)=>a.date.localeCompare(b.date));
-  const labels=log.map(e=>e.batch_name);
+  const cutoff=toDS(addDays(new Date(),-incRange+1));
+  const log=appData.incubation_log.filter(e=>e.date>=cutoff).sort((a,b)=>a.date.localeCompare(b.date));
+  const labels=log.map(e=>fmtShort(e.date));
   const data=log.map(e=>e.eggs_set>0?Math.round(e.hatched/e.eggs_set*1000)/10:0);
   const totalHatched=log.reduce((s,e)=>s+e.hatched,0);
   const avgRate=data.length?Math.round(data.reduce((s,v)=>s+v,0)/data.length*10)/10:0;
   const bestIdx=data.length?data.indexOf(Math.max(...data)):-1;
   document.getElementById('inc-stat-hatched').textContent=log.length?totalHatched:'—';
   document.getElementById('inc-stat-rate').textContent=log.length?avgRate+'%':'—';
-  document.getElementById('inc-stat-best').textContent=bestIdx>=0?labels[bestIdx]:'—';
+  document.getElementById('inc-stat-best').textContent=bestIdx>=0?log[bestIdx].batch_name:'—';
   const ctx=document.getElementById('inc-chart').getContext('2d');
   const grad=ctx.createLinearGradient(0,0,0,180);
-  grad.addColorStop(0,'rgba(74,103,65,0.5)');grad.addColorStop(1,'rgba(74,103,65,0.05)');
+  grad.addColorStop(0,'rgba(74,103,65,0.4)');grad.addColorStop(1,'rgba(74,103,65,0.02)');
   if(incChart)incChart.destroy();
-  const opts=baseChartOpts({title:i=>labels[i[0].dataIndex],label:i=>`${i.raw}% hatch rate`});
+  const opts=baseChartOpts({title:i=>log[i[0].dataIndex]?`${log[i[0].dataIndex].batch_name} · ${labels[i[0].dataIndex]}`:labels[i[0].dataIndex],label:i=>`${i.raw}% hatch rate`});
   opts.scales.y.max=100;opts.scales.y.ticks.callback=v=>v+'%';
-  incChart=new Chart(ctx,{type:'bar',data:{labels,datasets:[{data,backgroundColor:grad,borderColor:'#4A6741',borderWidth:2,borderRadius:4}]},options:opts});
+  incChart=new Chart(ctx,{type:'line',data:{labels,datasets:[{data,borderColor:'#4A6741',backgroundColor:grad,borderWidth:2,pointBackgroundColor:'#4A6741',pointRadius:data.length>60?0:4,pointHoverRadius:6,fill:true,tension:0.3}]},options:opts});
 }
 
 function renderIncTable(){
@@ -797,9 +821,17 @@ async function deleteIncEntry(id){
 }
 
 /* ── Hatch Log ── */
+function setHatchRange(days){
+  hatchRange=days;
+  document.querySelectorAll('[id^="hhpill-"]').forEach(p=>p.classList.remove('active'));
+  document.getElementById('hhpill-'+days).classList.add('active');
+  renderHatchChart();
+}
+
 function renderHatchChart(){
-  const log=[...appData.hatch_log].sort((a,b)=>a.date.localeCompare(b.date));
-  const labels=log.map(e=>e.batch_name);
+  const cutoff=toDS(addDays(new Date(),-hatchRange+1));
+  const log=appData.hatch_log.filter(e=>e.date>=cutoff).sort((a,b)=>a.date.localeCompare(b.date));
+  const labels=log.map(e=>fmtShort(e.date));
   const roosters=log.map(e=>e.roosters),hens=log.map(e=>e.hens);
   const totalR=roosters.reduce((s,v)=>s+v,0),totalH=hens.reduce((s,v)=>s+v,0);
   document.getElementById('hatch-stat-roosters').textContent=log.length?totalR:'—';
@@ -807,11 +839,12 @@ function renderHatchChart(){
   document.getElementById('hatch-stat-ratio').textContent=log.length&&totalH>0?(totalR/totalH).toFixed(2)+':1':'—';
   const ctx=document.getElementById('hatch-chart').getContext('2d');
   if(hatchChart)hatchChart.destroy();
-  const opts=baseChartOpts({title:i=>labels[i[0].dataIndex],label:i=>`${i.dataset.label}: ${i.raw}`});
-  opts.plugins.legend={display:true,labels:{color:'#8B5E3C',font:{size:10},boxWidth:12}};
-  hatchChart=new Chart(ctx,{type:'bar',data:{labels,datasets:[
-    {label:'Roosters',data:roosters,backgroundColor:'rgba(181,84,30,0.7)',borderColor:'#B5541E',borderWidth:1.5,borderRadius:3},
-    {label:'Hens',data:hens,backgroundColor:'rgba(74,103,65,0.7)',borderColor:'#4A6741',borderWidth:1.5,borderRadius:3}
+  const opts=baseChartOpts({title:i=>log[i[0].dataIndex]?`${log[i[0].dataIndex].batch_name} · ${labels[i[0].dataIndex]}`:labels[i[0].dataIndex],label:i=>`${i.dataset.label}: ${i.raw}`});
+  opts.plugins.legend={display:true,labels:{color:'#8B5E3C',font:{size:10},boxWidth:12,padding:10}};
+  const ptRadius=log.length>60?0:4;
+  hatchChart=new Chart(ctx,{type:'line',data:{labels,datasets:[
+    {label:'Roosters',data:roosters,borderColor:'#B5541E',backgroundColor:'rgba(181,84,30,0.08)',borderWidth:2,pointBackgroundColor:'#B5541E',pointRadius:ptRadius,pointHoverRadius:6,fill:true,tension:0.3},
+    {label:'Hens',data:hens,borderColor:'#4A6741',backgroundColor:'rgba(74,103,65,0.08)',borderWidth:2,pointBackgroundColor:'#4A6741',pointRadius:ptRadius,pointHoverRadius:6,fill:true,tension:0.3}
   ]},options:opts});
 }
 
