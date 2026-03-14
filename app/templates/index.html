@@ -163,7 +163,8 @@ header p  { font-size: 0.72rem; color: var(--tan); margin-top: 1px; font-weight:
 .log-table-wrap { background: var(--white); border: 1.5px solid var(--border-dk); border-radius: 16px; overflow: hidden; box-shadow: 0 2px 10px var(--shadow); }
 .log-table-header { background: var(--bark); padding: 9px 14px; display: flex; align-items: center; justify-content: space-between; }
 .log-table-header span { font-family: 'Playfair Display', serif; font-size: 0.92rem; font-weight: 600; color: var(--straw); }
-.log-table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.log-table { width: 100%; border-collapse: collapse; font-size: 0.83rem; min-width: 380px; }
 .log-table th { background: var(--parchment); padding: 7px 10px; text-align: left; font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--clay); border-bottom: 1px solid var(--border); }
 .log-table td { padding: 8px 10px; border-bottom: 1px solid var(--mist); vertical-align: top; }
 .log-table tr:last-child td { border-bottom: none; }
@@ -674,7 +675,7 @@ function renderEggTable(){
       <td><div class="row-actions"><button class="tbl-btn edit" onclick="openEggModal('${e.date}')">Edit</button><button class="tbl-btn delete" onclick="deleteEgg('${e.date}')">✕</button></div></td>
     </tr>`;
   });
-  wrap.innerHTML=html+'</tbody></table>';
+  wrap.innerHTML='<div class="table-scroll">'+html+'</tbody></table></div>';
 }
 
 function renderEggPage(){renderEggChart();renderEggTable();}
@@ -755,7 +756,7 @@ function renderIncTable(){
       </div></td>
     </tr>`;
   });
-  wrap.innerHTML=html+'</tbody></table>';
+  wrap.innerHTML='<div class="table-scroll">'+html+'</tbody></table></div>';
 }
 
 function renderIncPage(){renderIncChart();renderIncTable();}
@@ -832,7 +833,7 @@ function renderHatchTable(){
       </div></td>
     </tr>`;
   });
-  wrap.innerHTML=html+'</tbody></table>';
+  wrap.innerHTML='<div class="table-scroll">'+html+'</tbody></table></div>';
 }
 
 function renderHatchPage(){renderHatchChart();renderHatchTable();}
@@ -913,7 +914,7 @@ function renderHarvestTable(){
       </div></td>
     </tr>`;
   });
-  wrap.innerHTML=html+'</tbody></table>';
+  wrap.innerHTML='<div class="table-scroll">'+html+'</tbody></table></div>';
 }
 
 function renderHarvestPage(){renderHarvestChart();renderHarvestTable();}
