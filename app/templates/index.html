@@ -749,7 +749,10 @@ function renderIncTable(){
       <td>${e.eggs_set}</td><td>${e.candled_out}</td>
       <td><span class="primary-val">${e.hatched}</span></td>
       <td><span style="color:var(--moss);font-weight:700">${rate}%</span></td>
-      <td><div class="row-actions"><button class="tbl-btn edit" onclick="openIncModal('${e.id}')">Edit</button><button class="tbl-btn delete" onclick="deleteIncEntry('${e.id}')">✕</button></div></td>
+      <td><div class="row-actions">
+        <button class="tbl-btn edit" data-action="edit-inc" data-id="${e.id}">Edit</button>
+        <button class="tbl-btn delete" data-action="delete-inc" data-id="${e.id}">✕</button>
+      </div></td>
     </tr>`;
   });
   wrap.innerHTML=html+'</tbody></table>';
@@ -823,7 +826,10 @@ function renderHatchTable(){
       <td><span style="color:var(--rust);font-weight:700">${e.roosters}</span></td>
       <td><span style="color:var(--moss);font-weight:700">${e.hens}</span></td>
       <td><span class="primary-val">${e.roosters+e.hens}</span></td>
-      <td><div class="row-actions"><button class="tbl-btn edit" onclick="openHatchModal('${e.id}')">Edit</button><button class="tbl-btn delete" onclick="deleteHatchEntry('${e.id}')">✕</button></div></td>
+      <td><div class="row-actions">
+        <button class="tbl-btn edit" data-action="edit-hatch" data-id="${e.id}">Edit</button>
+        <button class="tbl-btn delete" data-action="delete-hatch" data-id="${e.id}">✕</button>
+      </div></td>
     </tr>`;
   });
   wrap.innerHTML=html+'</tbody></table>';
@@ -901,7 +907,10 @@ function renderHarvestTable(){
       <td><span class="primary-val">${e.total_weight_oz}</span></td>
       <td>${avg}</td>
       <td class="notes-cell">${e.notes||''}</td>
-      <td><div class="row-actions"><button class="tbl-btn edit" onclick="openHarvestModal('${e.id}')">Edit</button><button class="tbl-btn delete" onclick="deleteHarvestEntry('${e.id}')">✕</button></div></td>
+      <td><div class="row-actions">
+        <button class="tbl-btn edit" data-action="edit-harvest" data-id="${e.id}">Edit</button>
+        <button class="tbl-btn delete" data-action="delete-harvest" data-id="${e.id}">✕</button>
+      </div></td>
     </tr>`;
   });
   wrap.innerHTML=html+'</tbody></table>';
@@ -1031,6 +1040,19 @@ async function deleteCustomEvent(id){
   await fetch('/api/custom_events',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(appData.custom_events)});
   showToast('Event deleted');renderCalendar();if(selectedDateStr)renderDetail(selectedDateStr);
 }
+
+/* ── Table event delegation ── */
+document.addEventListener('click', e => {
+  const btn = e.target.closest('[data-action]');
+  if (!btn) return;
+  const action = btn.dataset.action, id = btn.dataset.id;
+  if (action === 'edit-inc')        openIncModal(id);
+  else if (action === 'delete-inc') deleteIncEntry(id);
+  else if (action === 'edit-hatch')        openHatchModal(id);
+  else if (action === 'delete-hatch')      deleteHatchEntry(id);
+  else if (action === 'edit-harvest')      openHarvestModal(id);
+  else if (action === 'delete-harvest')    deleteHarvestEntry(id);
+});
 
 /* ── Keyboard ── */
 document.addEventListener('keydown',e=>{
